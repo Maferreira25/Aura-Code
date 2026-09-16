@@ -1,0 +1,43 @@
+{
+  "experiment_id": "pilot-001",
+  "framework_commit": "REPLACE_WITH_COMMIT_SHA",
+  "suite_version": "0.1.1-alpha",
+  "arms": [
+    "A0",
+    "A1",
+    "A2"
+  ],
+  "primary_comparison": [
+    "A0",
+    "A2"
+  ],
+  "secondary_comparison": [
+    "A1",
+    "A2"
+  ],
+  "repetitions_per_scenario": 3,
+  "randomize_arm_order": true,
+  "fresh_context_per_run": true,
+  "equal_budget": true,
+  "human_review_blinded": true,
+  "models": [
+    {
+      "execution_surface": "ide",
+      "antigravity_version": "REPLACE_WITH_EXACT_BUILD",
+      "model_family": "Gemini 3.8 Flash",
+      "model_display_name": "Gemini 3.8 Flash Medium",
+      "reasoning_effort": "medium"
+    }
+  ],
+  "scenarios": "pre-register exact list before run",
+  "execution_surface": "ide",
+  "antigravity_version": "REPLACE_WITH_EXACT_BUILD",
+  "model_family": "Gemini 3.8 Flash",
+  "model_display_name": "Gemini 3.8 Flash Medium",
+  "reasoning_effort": "medium",
+  "artifact_review": "request-review",
+  "terminal_auto_execution": "request-review",
+  "strict_mode": "same_across_all_arms",
+  "non_workspace_file_access": "off",
+  "note": "Do not vary model/reasoning/security settings between A0/A1/A2."
+}

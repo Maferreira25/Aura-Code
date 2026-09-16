@@ -1,0 +1,189 @@
+{
+  "version": "0.1.1-draft",
+  "sources": {
+    "NIST-SSDF-1.1": {
+      "type": "standard-guidance",
+      "status": "final",
+      "year": 2022,
+      "title": "NIST SP 800-218 — Secure Software Development Framework (SSDF) Version 1.1",
+      "url": "https://csrc.nist.gov/pubs/sp/800/218/final",
+      "role": "Primary secure SDLC baseline."
+    },
+    "NIST-SSDF-1.2-DRAFT": {
+      "type": "standard-guidance",
+      "status": "draft",
+      "year": 2025,
+      "title": "NIST SP 800-218 Rev. 1 — SSDF Version 1.2 (Initial Public Draft)",
+      "url": "https://csrc.nist.gov/pubs/sp/800/218/r1/ipd",
+      "role": "Informative future-direction cross-check only; not treated as a final standard."
+    },
+    "OWASP-ASVS-5": {
+      "type": "verification-standard",
+      "status": "stable",
+      "year": 2025,
+      "title": "OWASP Application Security Verification Standard 5.0.0",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "role": "Application-security verification reference."
+    },
+    "OWASP-TOP10-2025": {
+      "type": "risk-awareness",
+      "status": "current",
+      "year": 2025,
+      "title": "OWASP Top 10:2025",
+      "url": "https://owasp.org/Top10/2025/",
+      "role": "Web application risk taxonomy."
+    },
+    "OWASP-AGENTIC-2026": {
+      "type": "agentic-security",
+      "status": "current",
+      "year": 2026,
+      "title": "OWASP Top 10 for Agentic Applications 2026",
+      "url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/",
+      "role": "Agent-specific security risk taxonomy."
+    },
+    "OPENSSF-AI-CODE": {
+      "type": "secure-development-guidance",
+      "status": "current",
+      "year": 2025,
+      "title": "OpenSSF Security-Focused Guide for AI Code Assistant Instructions",
+      "url": "https://best.openssf.org/Security-Focused-Guide-for-AI-Code-Assistant-Instructions",
+      "role": "Actionable AI coding assistant and supply-chain guidance."
+    },
+    "CISA-SBD": {
+      "type": "secure-by-design",
+      "status": "current",
+      "year": 2023,
+      "title": "CISA Secure by Design",
+      "url": "https://www.cisa.gov/securebydesign",
+      "role": "Secure-by-design and secure-by-default principles."
+    },
+    "SLSA-1.2": {
+      "type": "supply-chain-standard",
+      "status": "approved",
+      "year": 2026,
+      "title": "SLSA Specification Version 1.2",
+      "url": "https://slsa.dev/spec/v1.2/",
+      "role": "Build/source provenance and supply-chain assurance."
+    },
+    "CYCLONEDX-1.7": {
+      "type": "bom-standard",
+      "status": "current",
+      "year": 2025,
+      "title": "CycloneDX 1.7",
+      "url": "https://cyclonedx.org/specification/overview/",
+      "role": "Machine-readable software component and dependency transparency."
+    },
+    "ISO-25010-2023": {
+      "type": "quality-model",
+      "status": "published",
+      "year": 2023,
+      "title": "ISO/IEC 25010:2023 — Product quality model",
+      "url": "https://www.iso.org/standard/78176.html",
+      "role": "High-level product quality model crosswalk; proprietary text is not reproduced."
+    },
+    "GOOGLE-SRE": {
+      "type": "reliability-guidance",
+      "status": "current",
+      "year": 2016,
+      "title": "Google Site Reliability Engineering",
+      "url": "https://sre.google/sre-book/table-of-contents/",
+      "role": "SLO, monitoring, capacity, overload, reliability and operational practices."
+    },
+    "BAXBENCH": {
+      "type": "empirical-research",
+      "status": "preprint",
+      "year": 2025,
+      "title": "BaxBench: Can LLMs Generate Correct and Secure Backends?",
+      "url": "https://arxiv.org/abs/2502.11844",
+      "role": "Evidence that functional correctness and security can diverge in generated backends."
+    },
+    "SECUREAGENTBENCH": {
+      "type": "empirical-research",
+      "status": "preprint",
+      "year": 2025,
+      "title": "SecureAgentBench: Benchmarking Secure Code Generation under Realistic Vulnerability Scenarios",
+      "url": "https://arxiv.org/abs/2509.22097",
+      "role": "Evidence of correct-but-insecure and newly introduced vulnerabilities in agent edits."
+    },
+    "PACKAGE-HALLUCINATION-USENIX": {
+      "type": "peer-reviewed-research",
+      "status": "published",
+      "year": 2025,
+      "title": "We Have a Package for You! A Comprehensive Analysis of Package Hallucinations by Code Generating LLMs",
+      "url": "https://www.usenix.org/conference/usenixsecurity25/presentation/spracklen",
+      "role": "Evidence for package hallucination and software supply-chain exposure."
+    },
+    "SLOPCODEBENCH": {
+      "type": "empirical-research",
+      "status": "preprint",
+      "year": 2026,
+      "title": "SlopCodeBench: Benchmarking How Coding Agents Degrade Over Long-Horizon Iterative Tasks",
+      "url": "https://arxiv.org/abs/2603.24755",
+      "role": "Evidence for structural erosion and verbosity in long-horizon agent development."
+    },
+    "AI-TECH-DEBT": {
+      "type": "empirical-research",
+      "status": "preprint",
+      "year": 2026,
+      "title": "Debt Behind the AI Boom: A Large-Scale Empirical Study of AI-Generated Code in the Wild",
+      "url": "https://arxiv.org/abs/2603.28592",
+      "role": "Evidence for AI-attributed defects/code smells persisting as technical debt."
+    },
+    "METR-REWARD-HACKING": {
+      "type": "empirical-observation",
+      "status": "published-note",
+      "year": 2025,
+      "title": "METR — Recent Frontier Models Are Reward Hacking",
+      "url": "https://metr.org/blog/2025-06-05-recent-reward-hacking/",
+      "role": "Evidence that agents may alter tests/scoring or exploit evaluation loopholes."
+    },
+    "METR-MERGEABILITY": {
+      "type": "empirical-observation",
+      "status": "published-note",
+      "year": 2026,
+      "title": "METR — Many SWE-bench-Passing PRs Would Not Be Merged into Main",
+      "url": "https://metr.org/notes/2026-03-10-many-swe-bench-passing-prs-would-not-be-merged-into-main/",
+      "role": "Evidence that benchmark/test pass does not fully capture maintainer-quality acceptance."
+    },
+    "SOFTWARE-AGING-2026": {
+      "type": "empirical-research",
+      "status": "preprint",
+      "year": 2026,
+      "title": "Investigating Software Aging in LLM-Generated Software Systems across Generation-and-Execution Environments",
+      "url": "https://arxiv.org/abs/2608.26391",
+      "role": "Evidence that sustained runtime behavior requires separate validation from functional tests."
+    },
+    "OPENSSF-OSPS-2026-08-28": {
+      "type": "open-source-security-baseline",
+      "status": "current",
+      "year": 2026,
+      "title": "OpenSSF Open Source Project Security Baseline v2026.08.28",
+      "url": "https://baseline.openssf.org/versions/2026-08-28.html",
+      "role": "Current open-source repository, build/release, governance, documentation and vulnerability-management baseline."
+    },
+    "ANTIGRAVITY-MODELS-2026": {
+      "type": "tool-documentation",
+      "status": "current",
+      "year": 2026,
+      "title": "Google Antigravity Docs — Models",
+      "url": "https://antigravity.google/docs/models",
+      "role": "Adapter operational reference for current IDE model selector and model variants."
+    },
+    "ANTIGRAVITY-IDE-SETTINGS-2026": {
+      "type": "tool-documentation",
+      "status": "current",
+      "year": 2026,
+      "title": "Google Antigravity Docs — IDE Settings",
+      "url": "https://antigravity.google/docs/ide/settings/",
+      "role": "Adapter operational reference for Artifact Review, terminal review, Strict Mode and workspace isolation."
+    },
+    "ANTIGRAVITY-CLI-HEADLESS-2026": {
+      "type": "tool-documentation",
+      "status": "current",
+      "year": 2026,
+      "title": "Google Antigravity Docs — CLI Headless",
+      "url": "https://antigravity.google/docs/cli/headless/",
+      "role": "Adapter reference establishing separate CLI model/effort controls; not used to infer IDE UI."
+    }
+  }
+}

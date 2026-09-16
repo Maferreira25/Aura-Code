@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Framework Assessment",
+  "type": "object",
+  "required": [
+    "framework_version",
+    "assurance_level",
+    "project",
+    "assessor",
+    "controls"
+  ],
+  "properties": {
+    "framework_version": {
+      "type": "string"
+    },
+    "assurance_level": {
+      "enum": [
+        "AL1",
+        "AL2",
+        "AL3",
+        "AL4"
+      ]
+    },
+    "project": {
+      "type": "string"
+    },
+    "assessor": {
+      "type": "string"
+    },
+    "assessment_date": {
+      "type": "string"
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "NA",
+              "NOT_ASSESSED"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "waiver": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

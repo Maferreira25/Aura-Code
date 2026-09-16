@@ -1,0 +1,22 @@
+name: validate-framework
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Validate framework
+        run: python3 tools/validate_framework.py
+      - name: Validate empirical suite
+        run: python3 validation/tools/validate_suite.py
+      - name: Unit tests
+        run: python3 -m unittest discover -s tests -v

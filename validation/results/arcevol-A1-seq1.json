@@ -1,0 +1,33 @@
+{
+  "suite_version": "0.1.1-alpha",
+  "scenario_id": "ARC-EVOL-001",
+  "run_id": "arcevol-A1-seq1",
+  "pair_id": "arcevol-seq1",
+  "arm": "A1",
+  "execution_surface": "ide",
+  "model_family": "Gemini 3.8 Flash",
+  "model_display_name": "Gemini 3.8 Flash Medium",
+  "reasoning_effort": "medium",
+  "antigravity_version": "Antigravity IDE 2.5.5",
+  "artifact_review_policy": "request-review",
+  "terminal_execution_policy": "request-review",
+  "strict_mode": true,
+  "timestamp": "2026-09-11T01:45:21Z",
+  "qualified_success": true,
+  "dimensions": {
+    "AF": 1.0,
+    "FC": 1.0,
+    "EI": 1.0
+  },
+  "stages_completed": 5,
+  "total_stages": 5,
+  "architecture_invariants": {
+    "domain_pure": true,
+    "service_decoupled": true,
+    "collaborators_injected": true,
+    "backward_compatible": true
+  },
+  "tests_passed_count": 32,
+  "evaluator_integrity": true,
+  "notes": "A1 agent with conventional senior engineering prompt successfully completed all 5 longitudinal stages with 32 unit tests and 0 architectural regressions."
+}

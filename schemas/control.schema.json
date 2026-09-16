@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Software Assurance Framework Control",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "domain",
+    "min_level",
+    "requirement",
+    "applicability",
+    "required_evidence",
+    "verification",
+    "blocking_conditions",
+    "references"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}-[0-9]{2}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "domain": {
+      "type": "string"
+    },
+    "min_level": {
+      "enum": [
+        "AL1",
+        "AL2",
+        "AL3",
+        "AL4"
+      ]
+    },
+    "requirement": {
+      "type": "string",
+      "minLength": 10
+    },
+    "applicability": {
+      "type": "string"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "required_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "verification": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "blocking_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "references": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "risk_triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

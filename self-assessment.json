@@ -1,0 +1,285 @@
+{
+  "framework_version": "0.1.1-draft",
+  "assurance_level": "AL2",
+  "project": "auracode",
+  "assessor": "Software Assurance Lead",
+  "assessment_date": "2026-09-12",
+  "controls": {
+    "INT-01": {
+      "status": "PASS",
+      "evidence": ["GOVERNANCE.md", "README.md"]
+    },
+    "INT-02": {
+      "status": "PASS",
+      "evidence": ["docs/FRAMEWORK.md", "docs/VALIDATION.md"]
+    },
+    "INT-03": {
+      "status": "PASS",
+      "evidence": ["docs/ASSURANCE-LEVELS.md"]
+    },
+    "INT-04": {
+      "status": "PASS",
+      "evidence": ["GOVERNANCE.md", "docs/FRAMEWORK.md"]
+    },
+    "INT-05": {
+      "status": "PASS",
+      "evidence": ["docs/ASSURANCE-CASE.md"]
+    },
+    "INT-06": {
+      "status": "PASS",
+      "evidence": ["CONTRIBUTING.md", "SECURITY.md"]
+    },
+    "OPS-06": {
+      "status": "PASS",
+      "evidence": ["tools/validate_framework.py"]
+    },
+    "GOV-09": {
+      "status": "PASS",
+      "evidence": ["docs/audit/REMEDIATION-LEDGER.md"]
+    },
+    "GOV-10": {
+      "status": "PASS",
+      "evidence": ["controls/standards-crosswalk.json"]
+    },
+    "ARC-01": {
+      "status": "PASS",
+      "evidence": ["contracts.json", "tools/check_architecture.py"]
+    },
+    "ARC-02": {
+      "status": "PASS",
+      "evidence": ["contracts.json", "tools/check_architecture.py"]
+    },
+    "ARC-03": {
+      "status": "PASS",
+      "evidence": ["docs/ARCHITECTURE.md", "contracts.json"]
+    },
+    "ARC-04": {
+      "status": "PASS",
+      "evidence": ["docs/ARCHITECTURE.md"]
+    },
+    "ARC-05": {
+      "status": "PASS",
+      "evidence": ["docs/ARCHITECTURE.md"]
+    },
+    "ARC-06": {
+      "status": "PASS",
+      "evidence": ["docs/ARCHITECTURE.md"]
+    },
+    "ARC-07": {
+      "status": "PASS",
+      "evidence": ["tools/check_architecture.py"]
+    },
+    "ARC-08": {
+      "status": "PASS",
+      "evidence": ["tools/check_architecture.py"]
+    },
+    "AGT-01": {
+      "status": "PASS",
+      "evidence": ["adapters/antigravity/.agents/rules/01-ai-zero-trust.md"]
+    },
+    "AGT-02": {
+      "status": "PASS",
+      "evidence": ["adapters/antigravity/.agents/rules/00-human-authority.md"]
+    },
+    "AGT-03": {
+      "status": "PASS",
+      "evidence": ["adapters/antigravity/.agents/rules/02-engineering.md"]
+    },
+    "AGT-04": {
+      "status": "PASS",
+      "evidence": ["adapters/antigravity/.agents/rules/00-human-authority.md"]
+    },
+    "AGT-05": {
+      "status": "PASS",
+      "evidence": ["validation/tools/harness.py", "tools/check_surgical_diff.py"]
+    },
+    "AGT-06": {
+      "status": "PASS",
+      "evidence": ["validation/tools/harness.py"]
+    },
+    "AGT-07": {
+      "status": "PASS",
+      "evidence": ["validation/tools/runner.py"]
+    },
+    "AGT-08": {
+      "status": "PASS",
+      "evidence": ["validation/tools/runner.py"]
+    },
+    "SEC-01": {
+      "status": "PASS",
+      "evidence": ["SECURITY.md", "docs/THREAT-MODEL.md"]
+    },
+    "SEC-02": {
+      "status": "PASS",
+      "evidence": ["SECURITY.md"]
+    },
+    "SEC-03": {
+      "status": "PASS",
+      "evidence": ["tests/test_security_boundaries.py"]
+    },
+    "SEC-04": {
+      "status": "PASS",
+      "evidence": ["tests/test_security_boundaries.py", "tools/assurance_mcp.py"]
+    },
+    "SEC-05": {
+      "status": "PASS",
+      "evidence": ["tests/test_harness_isolation.py"]
+    },
+    "SEC-06": {
+      "status": "PASS",
+      "evidence": ["tests/test_security_boundaries.py"]
+    },
+    "SEC-07": {
+      "status": "PASS",
+      "evidence": ["tests/test_security_boundaries.py"]
+    },
+    "SEC-08": {
+      "status": "PASS",
+      "evidence": ["tools/verify_dependencies.py"]
+    },
+    "VER-01": {
+      "status": "PASS",
+      "evidence": ["tests/test_framework.py", "tools/validate_framework.py"]
+    },
+    "VER-02": {
+      "status": "PASS",
+      "evidence": ["tests/test_v2_governance.py"]
+    },
+    "VER-03": {
+      "status": "PASS",
+      "evidence": ["tests/test_validation_suite.py"]
+    },
+    "VER-04": {
+      "status": "PASS",
+      "evidence": ["tests/test_security_boundaries.py"]
+    },
+    "VER-08": {
+      "status": "PASS",
+      "evidence": ["tools/check_surgical_diff.py", "tests/test_v2_governance.py"]
+    },
+    "SUP-01": {
+      "status": "PASS",
+      "evidence": ["tools/verify_dependencies.py", "pyproject.toml"]
+    },
+    "SUP-02": {
+      "status": "PASS",
+      "evidence": ["tools/verify_dependencies.py"]
+    },
+    "SUP-03": {
+      "status": "PASS",
+      "evidence": ["pyproject.toml"]
+    },
+    "SUP-04": {
+      "status": "PASS",
+      "evidence": ["pyproject.toml"]
+    },
+    "SUP-05": {
+      "status": "PASS",
+      "evidence": ["MANIFEST.json"]
+    },
+    "SUP-06": {
+      "status": "PASS",
+      "evidence": [".github/workflows/validate.yml"]
+    },
+    "DAT-01": {
+      "status": "PASS",
+      "evidence": ["MANIFEST.json", "controls/catalog.json"]
+    },
+    "DAT-02": {
+      "status": "PASS",
+      "evidence": ["schemas/contracts.schema.json", "schemas/assessment.schema.json"]
+    },
+    "DAT-03": {
+      "status": "PASS",
+      "evidence": ["tools/check_architecture.py"]
+    },
+    "DAT-04": {
+      "status": "PASS",
+      "evidence": ["tools/check_architecture.py"]
+    },
+    "REL-01": {
+      "status": "PASS",
+      "evidence": ["tests/test_security_boundaries.py"]
+    },
+    "REL-02": {
+      "status": "PASS",
+      "evidence": ["validation/tools/runner.py"]
+    },
+    "REL-03": {
+      "status": "PASS",
+      "evidence": ["tests/test_security_boundaries.py"]
+    },
+    "REL-04": {
+      "status": "PASS",
+      "evidence": ["validation/tools/runner.py"]
+    },
+    "REL-05": {
+      "status": "PASS",
+      "evidence": ["tools/verify_dependencies.py"]
+    },
+    "RLS-01": {
+      "status": "PASS",
+      "evidence": ["tools/validate_framework.py", ".github/workflows/validate.yml"]
+    },
+    "RLS-02": {
+      "status": "PASS",
+      "evidence": ["CHANGELOG.md"]
+    },
+    "RLS-03": {
+      "status": "PASS",
+      "evidence": ["VERSION", "pyproject.toml"]
+    },
+    "RLS-04": {
+      "status": "PASS",
+      "evidence": [".github/workflows/validate.yml"]
+    },
+    "OPS-01": {
+      "status": "PASS",
+      "evidence": ["tools/assurance_mcp.py"]
+    },
+    "OPS-02": {
+      "status": "PASS",
+      "evidence": ["tools/assurance_mcp.py"]
+    },
+    "OPS-03": {
+      "status": "PASS",
+      "evidence": ["tools/assurance.py"]
+    },
+    "OPS-04": {
+      "status": "PASS",
+      "evidence": ["tools/assurance.py"]
+    },
+    "GOV-01": {
+      "status": "PASS",
+      "evidence": ["GOVERNANCE.md"]
+    },
+    "GOV-02": {
+      "status": "PASS",
+      "evidence": ["LICENSE"]
+    },
+    "GOV-03": {
+      "status": "PASS",
+      "evidence": ["CODE_OF_CONDUCT.md"]
+    },
+    "GOV-04": {
+      "status": "PASS",
+      "evidence": ["CONTRIBUTING.md"]
+    },
+    "GOV-05": {
+      "status": "PASS",
+      "evidence": ["SECURITY.md"]
+    },
+    "GOV-06": {
+      "status": "PASS",
+      "evidence": ["ROADMAP.md"]
+    },
+    "GOV-07": {
+      "status": "PASS",
+      "evidence": ["NOTICE.md"]
+    },
+    "GOV-08": {
+      "status": "PASS",
+      "evidence": ["tools/validate_framework.py"]
+    }
+  }
+}

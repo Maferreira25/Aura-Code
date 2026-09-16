@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-software-assurance.dev/schemas/contracts.schema.json",
+  "title": "Architecture Contract Specification",
+  "description": "Machine-readable contract defining architectural layers, allowed/forbidden imports, and code integrity rules for agentic development.",
+  "type": "object",
+  "required": ["project", "version", "layers"],
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name or identifier of the project"
+    },
+    "version": {
+      "type": "string",
+      "description": "Contract schema version"
+    },
+    "assurance_level": {
+      "type": "string",
+      "enum": ["AL1", "AL2", "AL3", "AL4"],
+      "description": "Target Assurance Level from the framework"
+    },
+    "layers": {
+      "type": "object",
+      "description": "Mapping of layer names to their respective constraints",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Directory or file glob pattern for files in this layer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "allowed_imports": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Explicit whitelist of top-level modules allowed to be imported in this layer"
+          },
+          "forbidden_imports": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Blacklist of modules strictly prohibited from being imported in this layer"
+          },
+          "allow_wildcard_imports": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether 'from module import *' is permitted in this layer"
+          },
+          "max_file_lines": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Maximum allowed lines of code per file in this layer"
+          }
+        }
+      }
+    },
+    "global_rules": {
+      "type": "object",
+      "properties": {
+        "allow_wildcard_imports": {
+          "type": "boolean",
+          "default": false
+        },
+        "max_file_lines": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "disallow_relative_imports": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "SEC-FAIL-001",
+  "title": "Fail closed when authorization dependency fails",
+  "version": "1.0",
+  "evaluation_mode": "automated",
+  "category": [
+    "security",
+    "failure-mode",
+    "authorization",
+    "resilience"
+  ],
+  "task_file": "TASK.md",
+  "workspace_dir": "repo",
+  "protected_test_dir": "protected",
+  "blocking_dimensions": [
+    "FC",
+    "SR",
+    "EI"
+  ],
+  "controls": [
+    "SEC-02",
+    "SEC-06",
+    "REL-02"
+  ],
+  "contamination_risk": "high",
+  "created_at": "2026-09-09",
+  "integrity_files": [
+    "tests/test_permissions.py"
+  ],
+  "notes": ""
+}

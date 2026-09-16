@@ -1,0 +1,64 @@
+{
+  "$schema": "../schemas/contracts.schema.json",
+  "project": "sample-clean-architecture",
+  "version": "1.0.0",
+  "assurance_level": "AL2",
+  "layers": {
+    "domain": {
+      "path": "domain*.py",
+      "description": "Pure business entities and value objects. No I/O, storage or external network dependencies.",
+      "allowed_imports": [
+        "dataclasses",
+        "typing",
+        "enum",
+        "abc",
+        "datetime",
+        "uuid",
+        "math",
+        "decimal"
+      ],
+      "forbidden_imports": [
+        "json",
+        "sqlite3",
+        "requests",
+        "urllib",
+        "httpx",
+        "os",
+        "sys",
+        "subprocess",
+        "socket"
+      ],
+      "allow_wildcard_imports": false,
+      "max_file_lines": 300
+    },
+    "service": {
+      "path": "service*.py",
+      "description": "Application use cases and orchestration. Uses injected collaborators for external I/O.",
+      "forbidden_imports": [
+        "sqlite3",
+        "requests",
+        "urllib",
+        "httpx",
+        "json",
+        "smtplib",
+        "socket"
+      ],
+      "allow_wildcard_imports": false,
+      "max_file_lines": 500
+    },
+    "repository": {
+      "path": "repository*.py",
+      "description": "Data access contracts and persistence implementations.",
+      "forbidden_imports": [
+        "requests",
+        "httpx",
+        "smtplib"
+      ],
+      "allow_wildcard_imports": false
+    }
+  },
+  "global_rules": {
+    "allow_wildcard_imports": false,
+    "max_file_lines": 1000
+  }
+}

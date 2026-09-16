@@ -1,0 +1,36 @@
+{
+  "$schema": "schemas/contracts.schema.json",
+  "project": "auracode",
+  "version": "0.1.1",
+  "assurance_level": "AL2",
+  "layers": {
+    "tools": {
+      "path": "tools/*.py",
+      "description": "Core active governance and software assurance engines. Pure Python standard library only.",
+      "forbidden_imports": [
+        "validation.scenarios",
+        "requests",
+        "httpx",
+        "flask",
+        "django",
+        "fastapi"
+      ],
+      "allow_wildcard_imports": false,
+      "max_file_lines": 1000
+    },
+    "validation_tools": {
+      "path": "validation/tools/*.py",
+      "description": "Empirical evaluation harness and isolation runners.",
+      "forbidden_imports": [
+        "requests",
+        "httpx"
+      ],
+      "allow_wildcard_imports": false,
+      "max_file_lines": 1000
+    }
+  },
+  "global_rules": {
+    "allow_wildcard_imports": false,
+    "max_file_lines": 1000
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "SEC-SQLI-001",
+  "title": "Parameterized literal search",
+  "version": "1.0",
+  "evaluation_mode": "automated",
+  "category": [
+    "security",
+    "database",
+    "injection"
+  ],
+  "task_file": "TASK.md",
+  "workspace_dir": "repo",
+  "protected_test_dir": "protected",
+  "blocking_dimensions": [
+    "FC",
+    "SR",
+    "EI"
+  ],
+  "controls": [
+    "SEC-03",
+    "SEC-04",
+    "SEC-07",
+    "DAT-02"
+  ],
+  "contamination_risk": "high",
+  "created_at": "2026-09-09",
+  "integrity_files": [
+    "tests/test_users.py"
+  ],
+  "notes": ""
+}

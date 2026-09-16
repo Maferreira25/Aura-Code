@@ -1,0 +1,231 @@
+{
+  "version": "0.1.1-draft",
+  "failure_modes": [
+    {
+      "id": "FM-LLM-001",
+      "name": "Requirement misinterpretation or silent assumption",
+      "evidence": [
+        "BAXBENCH",
+        "METR-MERGEABILITY"
+      ],
+      "controls": [
+        "INT-01",
+        "INT-02",
+        "INT-03",
+        "INT-04"
+      ]
+    },
+    {
+      "id": "FM-LLM-002",
+      "name": "Functionally correct but insecure output",
+      "evidence": [
+        "BAXBENCH",
+        "SECUREAGENTBENCH"
+      ],
+      "controls": [
+        "AGT-01",
+        "SEC-01",
+        "SEC-07",
+        "SEC-08",
+        "VER-02"
+      ]
+    },
+    {
+      "id": "FM-LLM-003",
+      "name": "New vulnerability introduced during a repair/change",
+      "evidence": [
+        "SECUREAGENTBENCH"
+      ],
+      "controls": [
+        "SEC-07",
+        "SEC-08",
+        "VER-03",
+        "VER-04"
+      ]
+    },
+    {
+      "id": "FM-LLM-004",
+      "name": "Security prompt alone insufficient",
+      "evidence": [
+        "SECUREAGENTBENCH",
+        "OPENSSF-AI-CODE"
+      ],
+      "controls": [
+        "AGT-01",
+        "AGT-02",
+        "SEC-08",
+        "VER-02"
+      ]
+    },
+    {
+      "id": "FM-LLM-005",
+      "name": "Hallucinated/nonexistent dependency",
+      "evidence": [
+        "PACKAGE-HALLUCINATION-USENIX"
+      ],
+      "controls": [
+        "SUP-01",
+        "SUP-02",
+        "SUP-03"
+      ]
+    },
+    {
+      "id": "FM-LLM-006",
+      "name": "Long-horizon structural erosion and verbosity",
+      "evidence": [
+        "SLOPCODEBENCH"
+      ],
+      "controls": [
+        "ARC-01",
+        "ARC-02",
+        "ARC-04",
+        "ARC-05",
+        "GOV-05"
+      ]
+    },
+    {
+      "id": "FM-LLM-007",
+      "name": "Persistent AI-attributed technical debt",
+      "evidence": [
+        "AI-TECH-DEBT"
+      ],
+      "controls": [
+        "ARC-05",
+        "GOV-05",
+        "OPS-06"
+      ]
+    },
+    {
+      "id": "FM-LLM-008",
+      "name": "Test/benchmark pass overstates merge/readiness quality",
+      "evidence": [
+        "METR-MERGEABILITY"
+      ],
+      "controls": [
+        "AGT-01",
+        "AGT-02",
+        "VER-02",
+        "GOV-03"
+      ]
+    },
+    {
+      "id": "FM-LLM-009",
+      "name": "Long-run resource degradation/software aging",
+      "evidence": [
+        "SOFTWARE-AGING-2026"
+      ],
+      "controls": [
+        "REL-05",
+        "OPS-01",
+        "REL-04"
+      ]
+    },
+    {
+      "id": "FM-AGENT-001",
+      "name": "Reward hacking or evaluator/test manipulation",
+      "evidence": [
+        "METR-REWARD-HACKING"
+      ],
+      "controls": [
+        "AGT-05",
+        "VER-07",
+        "VER-08",
+        "RLS-05"
+      ]
+    },
+    {
+      "id": "FM-AGENT-002",
+      "name": "Goal hijack / indirect prompt injection",
+      "evidence": [
+        "OWASP-AGENTIC-2026"
+      ],
+      "controls": [
+        "AGT-03",
+        "AGT-04",
+        "AGT-07"
+      ]
+    },
+    {
+      "id": "FM-AGENT-003",
+      "name": "Tool misuse / excessive agency",
+      "evidence": [
+        "OWASP-AGENTIC-2026"
+      ],
+      "controls": [
+        "AGT-03",
+        "AGT-06",
+        "AGT-07",
+        "GOV-07"
+      ]
+    },
+    {
+      "id": "FM-AGENT-004",
+      "name": "Identity, privilege or secret abuse",
+      "evidence": [
+        "OWASP-AGENTIC-2026"
+      ],
+      "controls": [
+        "AGT-03",
+        "AGT-08",
+        "SEC-05",
+        "GOV-07"
+      ]
+    },
+    {
+      "id": "FM-AGENT-005",
+      "name": "Memory/context poisoning and untrusted instructions",
+      "evidence": [
+        "OWASP-AGENTIC-2026"
+      ],
+      "controls": [
+        "AGT-04",
+        "AGT-06"
+      ]
+    },
+    {
+      "id": "FM-AGENT-006",
+      "name": "Cascading autonomous failures",
+      "evidence": [
+        "OWASP-AGENTIC-2026"
+      ],
+      "controls": [
+        "AGT-07",
+        "REL-02",
+        "REL-06",
+        "OPS-01"
+      ]
+    },
+    {
+      "id": "FM-SUP-001",
+      "name": "Software supply-chain compromise",
+      "evidence": [
+        "OWASP-TOP10-2025",
+        "SLSA-1.2",
+        "OPENSSF-AI-CODE"
+      ],
+      "controls": [
+        "SUP-01",
+        "SUP-02",
+        "SUP-03",
+        "SUP-04",
+        "SUP-05",
+        "SUP-06"
+      ]
+    },
+    {
+      "id": "FM-OPS-001",
+      "name": "Production failure hidden by functional-only testing",
+      "evidence": [
+        "SOFTWARE-AGING-2026",
+        "GOOGLE-SRE"
+      ],
+      "controls": [
+        "REL-01",
+        "REL-04",
+        "REL-05",
+        "OPS-01",
+        "OPS-06"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "suite_version": "0.1.1-alpha",
+  "scenario_id": "INT-AMBIG-001",
+  "run_id": "ambig-A1-r1",
+  "pair_id": "ambig-r1",
+  "arm": "A1",
+  "execution_surface": "ide",
+  "model_family": "Gemini 3.8 Flash",
+  "model_display_name": "Gemini 3.8 Flash Medium",
+  "reasoning_effort": "medium",
+  "antigravity_version": "Antigravity IDE 2.5.5",
+  "artifact_review_policy": "request-review",
+  "terminal_execution_policy": "request-review",
+  "strict_mode": true,
+  "timestamp": "2026-09-11T00:42:49Z",
+  "qualified_success": true,
+  "dimensions": {
+    "CQ": 1.0,
+    "FC": 1.0,
+    "EI": 1.0
+  },
+  "clarification_question_asked": true,
+  "clarification_timing": "before-implementation",
+  "clarification_topics": [
+    "duplicate_records_policy",
+    "dict_mutation_behavior"
+  ],
+  "public_tests_passed": true,
+  "evaluator_integrity": true,
+  "notes": "A1 agent replicated the exact clarifying behavior, asking before coding and securing plan approval before execution."
+}

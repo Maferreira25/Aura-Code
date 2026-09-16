@@ -1,0 +1,109 @@
+{
+  "version": "0.1.1-alpha",
+  "policy": "Registry only. Third-party task data is not vendored; verify current upstream license and methodology before each formal run.",
+  "benchmarks": [
+    {
+      "id": "BAXBENCH",
+      "name": "BaxBench",
+      "focus": [
+        "backend correctness",
+        "security exploits"
+      ],
+      "url": "https://github.com/logic-star-ai/baxbench",
+      "license": "MIT (upstream repository, verified 2026-09-09)",
+      "integration": "external adapter",
+      "notes": "392 backend generation tasks; useful for correct-vs-secure separation."
+    },
+    {
+      "id": "SECUREAGENTBENCH",
+      "name": "SecureAgentBench",
+      "focus": [
+        "repository edits",
+        "security",
+        "new vulnerabilities"
+      ],
+      "url": "https://arxiv.org/abs/2509.22097",
+      "license": "VERIFY UPSTREAM BEFORE USE",
+      "integration": "methodological/reference until license verified"
+    },
+    {
+      "id": "SECREPOBENCH",
+      "name": "SecRepoBench",
+      "focus": [
+        "repository-level secure completion",
+        "C/C++ CWEs"
+      ],
+      "url": "https://github.com/ai-sec-lab/SecRepoBench",
+      "license": "VERIFY UPSTREAM BEFORE USE",
+      "integration": "external adapter"
+    },
+    {
+      "id": "SWE-BENCH-LIVE",
+      "name": "SWE-bench-Live",
+      "focus": [
+        "fresh real-world issue resolution",
+        "contamination resistance",
+        "multi-language"
+      ],
+      "url": "https://github.com/microsoft/SWE-bench-Live",
+      "license": "MIT (upstream repository, verified 2026-09-09)",
+      "integration": "preferred external freshness adapter"
+    },
+    {
+      "id": "SWE-REBENCH",
+      "name": "SWE-rebench",
+      "focus": [
+        "fresh/decontaminated SWE tasks",
+        "held-out test patch"
+      ],
+      "url": "https://github.com/SWE-rebench/SWE-rebench-V2-OpenRewardEnv",
+      "license": "Harness MIT; underlying dataset has separate terms",
+      "integration": "external adapter; verify dataset terms"
+    },
+    {
+      "id": "OWASP-BENCHMARK",
+      "name": "OWASP Benchmark for Java",
+      "focus": [
+        "SAST/DAST/IAST accuracy",
+        "exploitable vulnerability cases"
+      ],
+      "url": "https://github.com/OWASP-Benchmark/BenchmarkJava",
+      "license": "GPL-2.0 (upstream repository)",
+      "integration": "external security-tool calibration; do not relicense/vend without compliance"
+    },
+    {
+      "id": "NIST-SARD",
+      "name": "NIST Software Assurance Reference Dataset",
+      "focus": [
+        "known vulnerability test suites",
+        "Juliet and SATE suites"
+      ],
+      "url": "https://samate.nist.gov/SARD/test-suites",
+      "license": "VERIFY SUITE-SPECIFIC TERMS",
+      "integration": "external detector/secure-repair validation"
+    },
+    {
+      "id": "OPENSSF-SCORECARD",
+      "name": "OpenSSF Scorecard",
+      "focus": [
+        "repository security posture",
+        "supply chain"
+      ],
+      "url": "https://github.com/ossf/scorecard",
+      "license": "Apache-2.0 (upstream repository)",
+      "integration": "optional repository assurance signal"
+    },
+    {
+      "id": "METR-MALT",
+      "name": "MALT",
+      "focus": [
+        "evaluation integrity",
+        "reward hacking",
+        "sandbagging transcripts"
+      ],
+      "url": "https://metr.org/blog/2025-10-14-malt-dataset-of-natural-and-prompted-behaviors/",
+      "license": "VERIFY DATASET TERMS BEFORE REDISTRIBUTION",
+      "integration": "monitor/eval-integrity research adapter"
+    }
+  ]
+}

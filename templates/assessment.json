@@ -1,0 +1,8 @@
+{
+  "framework_version": "0.1.1-draft",
+  "assurance_level": "AL2",
+  "project": "example-project",
+  "assessor": "replace-me",
+  "assessment_date": "2026-09-09",
+  "controls": {}
+}

@@ -1,0 +1,11 @@
+{
+  "evidence_id": "EV-EXAMPLE-001",
+  "control_id": "VER-02",
+  "type": "protected-test-result",
+  "description": "Replace with evidence description",
+  "producer": "independent-ci",
+  "timestamp": "2026-09-09T00:00:00Z",
+  "location": "ci://example/run/123",
+  "sha256": null,
+  "independence": "deterministic-tool"
+}

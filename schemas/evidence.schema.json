@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Assurance Evidence Record",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "control_id",
+    "type",
+    "description",
+    "producer",
+    "timestamp",
+    "location"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "control_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "producer": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "independence": {
+      "enum": [
+        "implementer-produced",
+        "independent-agent",
+        "deterministic-tool",
+        "human-independent",
+        "external-system"
+      ]
+    }
+  }
+}

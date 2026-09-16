@@ -1,0 +1,1754 @@
+{
+  "framework": "AI Software Assurance Framework for Agentic Development",
+  "working_title": true,
+  "version": "0.1.1-draft",
+  "normative_language": "MUST/MUST NOT = mandatory when applicable; SHOULD/SHOULD NOT = strong recommendation; MAY = optional.",
+  "assurance_levels": [
+    "AL1",
+    "AL2",
+    "AL3",
+    "AL4"
+  ],
+  "domains": {
+    "INT": "Human Intent & Requirements",
+    "ARC": "Architecture & Evolution",
+    "AGT": "AI/Agent Governance",
+    "SEC": "Security Engineering",
+    "VER": "Verification & Test Integrity",
+    "SUP": "Software Supply Chain",
+    "DAT": "Data & Persistence",
+    "REL": "Reliability & Scale",
+    "RLS": "Release Engineering",
+    "OPS": "Production Operations",
+    "GOV": "Governance & Assurance"
+  },
+  "controls": [
+    {
+      "id": "INT-01",
+      "title": "Human authority over material requirements",
+      "domain": "INT",
+      "min_level": "AL1",
+      "requirement": "Material product, behavior, data, security, permission, compatibility, cost or irreversible decisions MUST be made or explicitly delegated by an accountable human.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Requirement/decision record identifying human decision or explicit delegation."
+      ],
+      "verification": [
+        "Review change against decision record."
+      ],
+      "blocking_conditions": [
+        "A material requirement was invented or silently selected by the implementing agent."
+      ],
+      "references": [
+        "ISO-25010-2023",
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "INT-02",
+      "title": "Traceable requirements",
+      "domain": "INT",
+      "min_level": "AL1",
+      "requirement": "Each non-trivial change MUST trace from a stated requirement to implementation and verification evidence.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Requirement ID or issue; linked acceptance evidence."
+      ],
+      "verification": [
+        "Trace sample from requirement to code/test/evidence."
+      ],
+      "blocking_conditions": [
+        "No identifiable requirement or no link to verification."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "ISO-25010-2023"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "INT-03",
+      "title": "Ambiguity gate",
+      "domain": "INT",
+      "min_level": "AL1",
+      "requirement": "Unresolved ambiguities that can materially alter outcomes MUST be resolved before the affected implementation proceeds; discoverable facts SHOULD be investigated before questioning the user.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Clarification record for blocking ambiguity, or documented rationale that no material ambiguity remains."
+      ],
+      "verification": [
+        "Review implementation assumptions against requirements and repository facts."
+      ],
+      "blocking_conditions": [
+        "Material ambiguity remains unresolved."
+      ],
+      "references": [
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "INT-04",
+      "title": "Observable acceptance criteria",
+      "domain": "INT",
+      "min_level": "AL1",
+      "requirement": "Non-trivial requirements MUST have observable, testable acceptance criteria before completion is claimed.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Acceptance criteria linked to tests or other evidence."
+      ],
+      "verification": [
+        "Check each criterion has a verification method and result."
+      ],
+      "blocking_conditions": [
+        "A material criterion has no verification evidence."
+      ],
+      "references": [
+        "ISO-25010-2023",
+        "METR-MERGEABILITY"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "INT-05",
+      "title": "Non-functional requirements",
+      "domain": "INT",
+      "min_level": "AL2",
+      "requirement": "Relevant quality attributes such as security, reliability, performance, scalability, accessibility, privacy, maintainability and operability MUST be explicitly considered and material targets documented.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "NFR record or explicit N/A rationale per relevant attribute."
+      ],
+      "verification": [
+        "Review NFRs against product context and risk classification."
+      ],
+      "blocking_conditions": [
+        "A material quality attribute is omitted without rationale."
+      ],
+      "references": [
+        "ISO-25010-2023",
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "INT-06",
+      "title": "Change-impact analysis",
+      "domain": "INT",
+      "min_level": "AL2",
+      "requirement": "Significant changes MUST identify affected contracts, data, dependencies, users, security boundaries, operations and rollback implications before implementation.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Change-impact record."
+      ],
+      "verification": [
+        "Review impact analysis against dependency graph/diff."
+      ],
+      "blocking_conditions": [
+        "High-impact dependency or data effect is omitted."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "SLOPCODEBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "ARC-01",
+      "title": "Architecture as a maintained system-of-record",
+      "domain": "ARC",
+      "min_level": "AL1",
+      "requirement": "The repository MUST contain a concise description of the architecture actually implemented, not only the intended architecture.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Architecture document with components, responsibilities and external boundaries."
+      ],
+      "verification": [
+        "Compare documented components to repository structure."
+      ],
+      "blocking_conditions": [
+        "Architecture document is absent for a non-trivial system or materially stale."
+      ],
+      "references": [
+        "ISO-25010-2023",
+        "SLOPCODEBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "ARC-02",
+      "title": "Explicit boundaries and dependency direction",
+      "domain": "ARC",
+      "min_level": "AL2",
+      "requirement": "Critical architectural boundaries and allowed dependency directions MUST be explicit and SHOULD be mechanically enforceable where practical.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Boundary/dependency rules; optional architecture tests."
+      ],
+      "verification": [
+        "Dependency analysis or architecture fitness test."
+      ],
+      "blocking_conditions": [
+        "A change creates prohibited cross-boundary dependency."
+      ],
+      "references": [
+        "SLOPCODEBENCH",
+        "AI-TECH-DEBT"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "ARC-03",
+      "title": "Architecture Decision Records",
+      "domain": "ARC",
+      "min_level": "AL2",
+      "requirement": "Material, long-lived architectural decisions and trade-offs MUST be recorded as ADRs or equivalent.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "ADR containing context, alternatives, decision and consequences."
+      ],
+      "verification": [
+        "Review significant architecture changes for ADR coverage."
+      ],
+      "blocking_conditions": [
+        "Material architecture change lacks a decision record."
+      ],
+      "references": [
+        "ISO-25010-2023",
+        "SLOPCODEBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "ARC-04",
+      "title": "System invariants",
+      "domain": "ARC",
+      "min_level": "AL2",
+      "requirement": "Critical properties that must remain true across future changes MUST be recorded as invariants and linked to verification where feasible.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Invariant records; linked tests/checks."
+      ],
+      "verification": [
+        "Verify changed components against touched invariants."
+      ],
+      "blocking_conditions": [
+        "A touched critical invariant has no validation."
+      ],
+      "references": [
+        "SLOPCODEBENCH",
+        "BAXBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "ARC-05",
+      "title": "Architecture fitness and erosion checks",
+      "domain": "ARC",
+      "min_level": "AL3",
+      "requirement": "Projects with sustained evolution MUST measure architecture erosion indicators appropriate to the stack, such as dependency violations, complexity concentration, duplication or cyclic coupling.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Fitness checks or trend report."
+      ],
+      "verification": [
+        "Compare current metrics to baseline/thresholds."
+      ],
+      "blocking_conditions": [
+        "New critical boundary violation; unexplained material erosion beyond project threshold."
+      ],
+      "references": [
+        "SLOPCODEBENCH",
+        "AI-TECH-DEBT"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "ARC-06",
+      "title": "Scale assumptions and limits",
+      "domain": "ARC",
+      "min_level": "AL2",
+      "requirement": "Architecture decisions that depend on load, data volume, geography or concurrency MUST state the assumptions and limits that justify them.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Scale assumptions and target envelope."
+      ],
+      "verification": [
+        "Compare performance/capacity evidence with assumptions."
+      ],
+      "blocking_conditions": [
+        "Production design depends on undocumented or contradicted scale assumption."
+      ],
+      "references": [
+        "GOOGLE-SRE",
+        "ISO-25010-2023"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-01",
+      "title": "AI output is untrusted until verified",
+      "domain": "AGT",
+      "min_level": "AL1",
+      "requirement": "AI-generated code, tests, analysis and claims MUST be treated as untrusted assertions until corroborated by evidence proportionate to risk.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Evidence package independent of agent assertion."
+      ],
+      "verification": [
+        "Inspect release decision for objective evidence."
+      ],
+      "blocking_conditions": [
+        "Completion relies solely on agent statement such as 'tests pass' or 'secure'."
+      ],
+      "references": [
+        "BAXBENCH",
+        "SECUREAGENTBENCH",
+        "METR-MERGEABILITY"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-02",
+      "title": "No sole self-approval",
+      "domain": "AGT",
+      "min_level": "AL2",
+      "requirement": "The implementing AI agent MUST NOT be the sole approver of a significant change.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Independent review record from human, separate agent context, deterministic gates, or combination required by assurance level."
+      ],
+      "verification": [
+        "Check reviewer/approver independence metadata."
+      ],
+      "blocking_conditions": [
+        "Only the implementing agent approved a significant change."
+      ],
+      "references": [
+        "METR-MERGEABILITY",
+        "SECUREAGENTBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-03",
+      "title": "Least agency and least privilege",
+      "domain": "AGT",
+      "min_level": "AL1",
+      "requirement": "Agents MUST receive only the tools, credentials, permissions and action scope required for the current task.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Agent/tool permission manifest or execution policy."
+      ],
+      "verification": [
+        "Compare granted capabilities with task needs."
+      ],
+      "blocking_conditions": [
+        "Agent has unnecessary production, secret, destructive or administrative access."
+      ],
+      "references": [
+        "OWASP-AGENTIC-2026",
+        "OPENSSF-AI-CODE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-04",
+      "title": "Instruction hierarchy and untrusted context",
+      "domain": "AGT",
+      "min_level": "AL1",
+      "requirement": "Repository content, web pages, issues, tool output, MCP/plugin content and retrieved documents MUST be treated as data, not as authority to override trusted project/user policy.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Agent rule defining trust hierarchy; audit evidence for external-context tasks."
+      ],
+      "verification": [
+        "Adversarial prompt-injection test or review where external content is consumed."
+      ],
+      "blocking_conditions": [
+        "Untrusted content can cause policy/tool escalation without authorization."
+      ],
+      "references": [
+        "OWASP-AGENTIC-2026"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-05",
+      "title": "Protected evaluator and oracle",
+      "domain": "AGT",
+      "min_level": "AL2",
+      "requirement": "Agents under evaluation MUST NOT be able to silently weaken, replace or bypass the mechanism used to judge their work.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Protected test/evaluator policy; integrity checks; separate ownership where feasible."
+      ],
+      "verification": [
+        "Review diff and evaluator hashes/permissions."
+      ],
+      "blocking_conditions": [
+        "Agent modified protected tests, scorer, baseline, quality threshold or reference answer without explicit authorized change."
+      ],
+      "references": [
+        "METR-REWARD-HACKING"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-06",
+      "title": "Agent action audit trail",
+      "domain": "AGT",
+      "min_level": "AL2",
+      "requirement": "Significant agent-driven changes MUST preserve sufficient provenance to reconstruct model/agent identity, task, tools, material actions and resulting commit/artifact.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Agent run metadata or audit log linked to change."
+      ],
+      "verification": [
+        "Trace sample from commit to agent execution record."
+      ],
+      "blocking_conditions": [
+        "High-risk change has no reconstructable provenance."
+      ],
+      "references": [
+        "OWASP-AGENTIC-2026",
+        "SLSA-1.2"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-07",
+      "title": "Bounded autonomy, loops and termination",
+      "domain": "AGT",
+      "min_level": "AL2",
+      "requirement": "Autonomous workflows MUST have bounded retries, time/cost/action limits and safe termination behavior appropriate to their privileges.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Execution budget/policy; retry limits; stop conditions."
+      ],
+      "verification": [
+        "Simulate tool failure/loop condition where practical."
+      ],
+      "blocking_conditions": [
+        "Unbounded autonomous loop can consume resources or repeat consequential actions."
+      ],
+      "references": [
+        "OWASP-AGENTIC-2026",
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "AGT-08",
+      "title": "Secret isolation from model context",
+      "domain": "AGT",
+      "min_level": "AL2",
+      "requirement": "Long-lived or high-value secrets MUST NOT be placed in prompts/model context when a scoped credential or brokered action can satisfy the task.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Secret-management design and scoped credential policy."
+      ],
+      "verification": [
+        "Secret scan and agent-context review."
+      ],
+      "blocking_conditions": [
+        "Long-lived production secret is exposed unnecessarily to model context or logs."
+      ],
+      "references": [
+        "OWASP-AGENTIC-2026",
+        "OPENSSF-AI-CODE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-01",
+      "title": "Threat modeling before high-risk implementation",
+      "domain": "SEC",
+      "min_level": "AL2",
+      "requirement": "Security-sensitive or internet-exposed features MUST identify assets, actors, trust boundaries, abuse cases and mitigations before release.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Threat model linked to feature/system."
+      ],
+      "verification": [
+        "Review threat model against data flows and changed surfaces."
+      ],
+      "blocking_conditions": [
+        "Material trust boundary or abuse case is unassessed."
+      ],
+      "references": [
+        "CISA-SBD",
+        "NIST-SSDF-1.1",
+        "OWASP-TOP10-2025"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-02",
+      "title": "Authentication and object/action authorization",
+      "domain": "SEC",
+      "min_level": "AL2",
+      "requirement": "Protected operations MUST verify both identity and authorization for the requested action/object; authorization MUST default to deny when uncertain.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Authorization design; positive and negative access tests."
+      ],
+      "verification": [
+        "Test cross-user/cross-role access attempts."
+      ],
+      "blocking_conditions": [
+        "Unauthorized actor can access or mutate protected resource."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "OWASP-TOP10-2025"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-03",
+      "title": "Validation at trust boundaries",
+      "domain": "SEC",
+      "min_level": "AL1",
+      "requirement": "External input MUST be validated for expected type, format, range, size and semantics as appropriate; output encoding/sanitization MUST be context appropriate.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Validation code and negative tests."
+      ],
+      "verification": [
+        "Boundary tests and security scan."
+      ],
+      "blocking_conditions": [
+        "Untrusted input reaches sensitive sink without appropriate validation/encoding."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "OWASP-TOP10-2025"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-04",
+      "title": "Safe interpreters, queries, commands and paths",
+      "domain": "SEC",
+      "min_level": "AL1",
+      "requirement": "Code MUST use safe parameterization and constrained APIs for database queries, OS commands, templates and file paths; dynamic execution MUST be avoided or strongly isolated.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Implementation evidence; injection/path tests."
+      ],
+      "verification": [
+        "SAST plus targeted negative tests."
+      ],
+      "blocking_conditions": [
+        "Known injection/path traversal class remains reachable."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "OWASP-TOP10-2025",
+        "OPENSSF-AI-CODE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-05",
+      "title": "Secrets and cryptography",
+      "domain": "SEC",
+      "min_level": "AL2",
+      "requirement": "Secrets MUST be externally managed and never hardcoded; cryptography MUST use maintained platform/library primitives rather than custom cryptographic constructions.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Secret scan; secret-store configuration; crypto design where relevant."
+      ],
+      "verification": [
+        "Secret scanning and dependency/API review."
+      ],
+      "blocking_conditions": [
+        "Hardcoded credential/private key; custom/unapproved crypto protecting material assets."
+      ],
+      "references": [
+        "OWASP-TOP10-2025",
+        "OWASP-ASVS-5",
+        "OPENSSF-AI-CODE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-06",
+      "title": "Safe failures and security logging",
+      "domain": "SEC",
+      "min_level": "AL2",
+      "requirement": "Exceptional conditions MUST preserve secure state, avoid sensitive disclosure, produce actionable logs, and fail closed for security decisions unless explicitly justified.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Error-handling tests; logging specification."
+      ],
+      "verification": [
+        "Fault injection/negative tests; log review."
+      ],
+      "blocking_conditions": [
+        "Exception bypasses authorization, corrupts state, leaks secret, or is silently swallowed in critical path."
+      ],
+      "references": [
+        "OWASP-TOP10-2025",
+        "OWASP-ASVS-5"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-07",
+      "title": "Adversarial and negative security tests",
+      "domain": "SEC",
+      "min_level": "AL2",
+      "requirement": "Security controls MUST be tested for expected rejection/failure behavior, not only successful paths.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Negative/adversarial tests linked to threat model."
+      ],
+      "verification": [
+        "Execute representative abuse cases."
+      ],
+      "blocking_conditions": [
+        "Critical security control has no negative verification."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "SECUREAGENTBENCH",
+        "BAXBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SEC-08",
+      "title": "Security findings block by policy",
+      "domain": "SEC",
+      "min_level": "AL2",
+      "requirement": "Known exploitable critical findings MUST block release; severity thresholds for other findings MUST be explicit, risk-based and waiver-controlled.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "SAST/SCA/DAST or equivalent reports as applicable; vulnerability policy."
+      ],
+      "verification": [
+        "Check finding status and waiver records."
+      ],
+      "blocking_conditions": [
+        "Unwaived finding exceeds project blocking threshold."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "OWASP-ASVS-5"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-01",
+      "title": "Tests derived from acceptance criteria",
+      "domain": "VER",
+      "min_level": "AL1",
+      "requirement": "Tests and other verification artifacts MUST trace to acceptance criteria rather than merely mirror the implementation.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Criteria-to-test mapping."
+      ],
+      "verification": [
+        "Sample tests for behavioral independence from code structure."
+      ],
+      "blocking_conditions": [
+        "Material acceptance criterion has no verification."
+      ],
+      "references": [
+        "METR-MERGEABILITY",
+        "ISO-25010-2023"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-02",
+      "title": "Independent oracle principle",
+      "domain": "VER",
+      "min_level": "AL2",
+      "requirement": "For significant changes, at least one material correctness oracle MUST be independent of the implementing agent's unsupported judgment.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Independent expected result, reference contract, human review, protected test, property, or deterministic analyzer."
+      ],
+      "verification": [
+        "Inspect evidence provenance."
+      ],
+      "blocking_conditions": [
+        "All verification logic and expected results originate solely from the same implementation process with no independent oracle."
+      ],
+      "references": [
+        "BAXBENCH",
+        "METR-REWARD-HACKING",
+        "METR-MERGEABILITY"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-03",
+      "title": "Layered test strategy",
+      "domain": "VER",
+      "min_level": "AL2",
+      "requirement": "Projects MUST apply unit, integration and end-to-end tests proportionately to the boundaries and risks actually changed.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Test plan and execution results."
+      ],
+      "verification": [
+        "Check changed boundaries have suitable test layer."
+      ],
+      "blocking_conditions": [
+        "A changed critical integration boundary is covered only by isolated mocks."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "BAXBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-04",
+      "title": "Regression protection",
+      "domain": "VER",
+      "min_level": "AL1",
+      "requirement": "Bug fixes SHOULD include a regression test that demonstrates the prior failure and protects the corrected behavior when feasible.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Regression test or explicit infeasibility rationale."
+      ],
+      "verification": [
+        "Reproduce failure before fix when practical; run after fix."
+      ],
+      "blocking_conditions": [
+        "High-impact recurring bug fixed without durable regression evidence and no rationale."
+      ],
+      "references": [
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-05",
+      "title": "Mutation or equivalent test-strength evidence",
+      "domain": "VER",
+      "min_level": "AL3",
+      "requirement": "Critical business/security logic MUST use mutation testing or an equivalent method to demonstrate that tests detect meaningful behavioral faults.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Mutation report or documented equivalent fault-injection evidence."
+      ],
+      "verification": [
+        "Confirm threshold and surviving mutants disposition."
+      ],
+      "blocking_conditions": [
+        "Critical logic test suite is demonstrably insensitive to material faults."
+      ],
+      "references": [
+        "METR-MERGEABILITY"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-06",
+      "title": "Property, fuzz or generative boundary testing",
+      "domain": "VER",
+      "min_level": "AL3",
+      "requirement": "Parsers, protocol boundaries, validators and complex input spaces SHOULD use property-based, fuzz or equivalent generative testing proportional to attack surface.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Fuzz/property test config and results or N/A rationale."
+      ],
+      "verification": [
+        "Execute bounded campaign; triage crashes/invariants."
+      ],
+      "blocking_conditions": [
+        "High-risk parser/input boundary lacks adversarial coverage without rationale."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "BAXBENCH"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-07",
+      "title": "Held-out or protected tests",
+      "domain": "VER",
+      "min_level": "AL3",
+      "requirement": "High-assurance agent-generated changes MUST include evaluation cases unavailable for modification by the implementing agent when technically feasible.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Protected test location/ownership and results."
+      ],
+      "verification": [
+        "Verify implementer lacked write authority or test contents were held out."
+      ],
+      "blocking_conditions": [
+        "High-risk autonomous change is judged only by tests the same agent could rewrite."
+      ],
+      "references": [
+        "METR-REWARD-HACKING"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-08",
+      "title": "Test/evaluator tamper detection",
+      "domain": "VER",
+      "min_level": "AL2",
+      "requirement": "Changes to tests, golden files, snapshots, thresholds or evaluator logic MUST receive explicit review and MUST NOT be accepted merely because they make the implementation pass.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Diff review for evaluation artifacts; approval record."
+      ],
+      "verification": [
+        "Detect deleted/weakened assertions or threshold reductions."
+      ],
+      "blocking_conditions": [
+        "Evaluation was weakened without documented requirement change."
+      ],
+      "references": [
+        "METR-REWARD-HACKING"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "VER-09",
+      "title": "Critical invariant verification",
+      "domain": "VER",
+      "min_level": "AL4",
+      "requirement": "For AL4 invariants whose failure could cause catastrophic or irreversible harm, stronger assurance techniques such as model checking, formal specification, independent implementation, or equivalent evidence SHOULD be evaluated and used when practical.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Critical-invariant assurance rationale and selected evidence."
+      ],
+      "verification": [
+        "Independent review of assurance method."
+      ],
+      "blocking_conditions": [
+        "Critical invariant relies solely on ordinary happy-path tests without documented risk acceptance."
+      ],
+      "references": [
+        "ISO-25010-2023"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SUP-01",
+      "title": "Dependency existence and source verification",
+      "domain": "SUP",
+      "min_level": "AL1",
+      "requirement": "A newly introduced dependency MUST be verified to exist in the intended official ecosystem and to be the intended package before installation or merge.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Package registry/source verification record or lockfile provenance."
+      ],
+      "verification": [
+        "Verify package name, publisher/source and project linkage."
+      ],
+      "blocking_conditions": [
+        "Dependency was installed solely from an AI suggestion without source verification."
+      ],
+      "references": [
+        "PACKAGE-HALLUCINATION-USENIX",
+        "OPENSSF-AI-CODE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SUP-02",
+      "title": "Reproducible dependency resolution",
+      "domain": "SUP",
+      "min_level": "AL2",
+      "requirement": "Production dependencies MUST use lockfiles, exact immutable references, or an ecosystem-equivalent reproducible resolution mechanism.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Lockfile/immutable references."
+      ],
+      "verification": [
+        "Fresh resolution/build comparison."
+      ],
+      "blocking_conditions": [
+        "Production build can silently resolve materially different dependency versions without policy."
+      ],
+      "references": [
+        "OPENSSF-AI-CODE",
+        "SLSA-1.2"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SUP-03",
+      "title": "Dependency vulnerability and license review",
+      "domain": "SUP",
+      "min_level": "AL2",
+      "requirement": "Direct and transitive dependencies MUST be scanned for known vulnerabilities and license/policy conflicts before release and continuously where practical.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "SCA report; license policy/result."
+      ],
+      "verification": [
+        "Check blocking findings and waivers."
+      ],
+      "blocking_conditions": [
+        "Unwaived dependency finding exceeds blocking threshold."
+      ],
+      "references": [
+        "OWASP-TOP10-2025",
+        "NIST-SSDF-1.1",
+        "CYCLONEDX-1.7"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SUP-04",
+      "title": "Software Bill of Materials",
+      "domain": "SUP",
+      "min_level": "AL2",
+      "requirement": "Release artifacts SHOULD have a machine-readable SBOM; AL3+ release artifacts MUST have one unless technically inapplicable.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "CycloneDX/SPDX/equivalent SBOM linked to artifact."
+      ],
+      "verification": [
+        "Validate SBOM syntax and artifact/version linkage."
+      ],
+      "blocking_conditions": [
+        "AL3+ release has no SBOM and no justified N/A."
+      ],
+      "references": [
+        "CYCLONEDX-1.7",
+        "SLSA-1.2"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SUP-05",
+      "title": "Build provenance",
+      "domain": "SUP",
+      "min_level": "AL3",
+      "requirement": "AL3+ release artifacts MUST have verifiable build provenance or an explicit migration plan toward an equivalent provenance guarantee.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "SLSA-compatible/equivalent provenance attestation."
+      ],
+      "verification": [
+        "Verify provenance authenticity and artifact digest where supported."
+      ],
+      "blocking_conditions": [
+        "Release artifact cannot be traced to source/build inputs at required assurance level."
+      ],
+      "references": [
+        "SLSA-1.2"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "SUP-06",
+      "title": "CI/CD dependency and permission hardening",
+      "domain": "SUP",
+      "min_level": "AL2",
+      "requirement": "CI/CD third-party actions/plugins MUST be version-controlled and SHOULD use immutable references for production-sensitive workflows; workflow permissions and secrets MUST follow least privilege.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Workflow configuration; action/plugin inventory."
+      ],
+      "verification": [
+        "Review references, permissions, secret exposure and pull-request trust boundaries."
+      ],
+      "blocking_conditions": [
+        "Untrusted contribution can obtain write token/production secret; critical action reference is mutable without accepted rationale."
+      ],
+      "references": [
+        "OPENSSF-AI-CODE",
+        "SLSA-1.2",
+        "OWASP-TOP10-2025"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "DAT-01",
+      "title": "Data classification and minimization",
+      "domain": "DAT",
+      "min_level": "AL2",
+      "requirement": "Projects handling user, confidential or regulated data MUST classify material data, minimize collection/retention, and document access and lifecycle requirements.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Data inventory/classification; retention/access rules."
+      ],
+      "verification": [
+        "Review data flows and storage against classification."
+      ],
+      "blocking_conditions": [
+        "Sensitive data has no ownership/access/retention rule."
+      ],
+      "references": [
+        "CISA-SBD",
+        "OWASP-ASVS-5"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "DAT-02",
+      "title": "Schema integrity and transactional correctness",
+      "domain": "DAT",
+      "min_level": "AL2",
+      "requirement": "Persistent data models MUST enforce critical integrity constraints in the appropriate layer and use transactions/atomicity where partial updates would violate invariants.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Schema/constraint definitions; transactional tests."
+      ],
+      "verification": [
+        "Failure-injection test around multi-step writes."
+      ],
+      "blocking_conditions": [
+        "Partial failure can leave critical data invariant violated."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "ISO-25010-2023"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "DAT-03",
+      "title": "Migration and rollback safety",
+      "domain": "DAT",
+      "min_level": "AL2",
+      "requirement": "Schema/data migrations MUST be versioned, tested against representative existing data, and have rollback or forward-recovery strategy proportional to reversibility.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Migration scripts; migration test; recovery plan."
+      ],
+      "verification": [
+        "Dry-run/representative migration and compatibility checks."
+      ],
+      "blocking_conditions": [
+        "Destructive migration has no approved recovery path."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "DAT-04",
+      "title": "Backup restore evidence",
+      "domain": "DAT",
+      "min_level": "AL3",
+      "requirement": "Critical persistent data MUST have backups whose restoration is periodically tested; backup existence alone is not sufficient evidence of recoverability.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Backup policy; successful restore exercise record."
+      ],
+      "verification": [
+        "Restore to isolated environment and verify integrity."
+      ],
+      "blocking_conditions": [
+        "Required restore test is stale/failed or recovery objectives cannot be met."
+      ],
+      "references": [
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "DAT-05",
+      "title": "Tenant isolation and retention enforcement",
+      "domain": "DAT",
+      "min_level": "AL3",
+      "requirement": "Multi-tenant systems MUST verify tenant isolation at every data access boundary and enforce retention/deletion policy consistently.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Tenant-isolation tests; retention/deletion verification."
+      ],
+      "verification": [
+        "Cross-tenant adversarial tests."
+      ],
+      "blocking_conditions": [
+        "Cross-tenant read/write is possible or retention rule is unenforced."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "OWASP-TOP10-2025"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "REL-01",
+      "title": "SLIs, SLOs and error budgets",
+      "domain": "REL",
+      "min_level": "AL2",
+      "requirement": "Production services MUST define user-relevant reliability indicators and objectives; targets MUST be business/product decisions informed by engineering evidence.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "SLI/SLO document and measurement source."
+      ],
+      "verification": [
+        "Check metrics reflect user-visible success and error budget."
+      ],
+      "blocking_conditions": [
+        "Production service has no measurable reliability target at AL2+."
+      ],
+      "references": [
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "REL-02",
+      "title": "Timeout, retry, backoff and idempotency",
+      "domain": "REL",
+      "min_level": "AL2",
+      "requirement": "Remote calls and repeatable operations MUST have explicit timeout/retry behavior; retries MUST be bounded and use backoff/jitter where appropriate; consequential repeated operations MUST be idempotent or deduplicated.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Client policies; idempotency design; fault tests."
+      ],
+      "verification": [
+        "Inject timeout/transient failure; verify bounded recovery and no duplicate effect."
+      ],
+      "blocking_conditions": [
+        "Unbounded retry or duplicate consequential side effect is possible."
+      ],
+      "references": [
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "REL-03",
+      "title": "Concurrency correctness",
+      "domain": "REL",
+      "min_level": "AL2",
+      "requirement": "Shared mutable state and concurrent workflows MUST be analyzed for races, deadlocks, lost updates, TOCTOU and duplicate execution where applicable.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Concurrency analysis/tests; race detector when supported."
+      ],
+      "verification": [
+        "Stress/race test or deterministic concurrency test."
+      ],
+      "blocking_conditions": [
+        "Known critical race/lost update remains unmitigated."
+      ],
+      "references": [
+        "ISO-25010-2023",
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "REL-04",
+      "title": "Load and capacity validation",
+      "domain": "REL",
+      "min_level": "AL2",
+      "requirement": "Systems with scale claims MUST validate expected and peak load against latency, error and saturation targets before relying on those claims.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Load-test report; capacity assumptions."
+      ],
+      "verification": [
+        "Run representative load test and compare p95/p99/error/saturation to targets."
+      ],
+      "blocking_conditions": [
+        "Expected production load violates agreed target without accepted capacity plan."
+      ],
+      "references": [
+        "GOOGLE-SRE",
+        "ISO-25010-2023"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "REL-05",
+      "title": "Soak and software-aging tests",
+      "domain": "REL",
+      "min_level": "AL3",
+      "requirement": "Long-running services with material state/resource usage SHOULD undergo sustained-execution testing sufficient to detect leaks or progressive degradation.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Soak-test report with memory, latency, throughput/error trends."
+      ],
+      "verification": [
+        "Run sustained workload; analyze resource trends."
+      ],
+      "blocking_conditions": [
+        "Material progressive degradation is observed without mitigation/acceptance."
+      ],
+      "references": [
+        "SOFTWARE-AGING-2026",
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "REL-06",
+      "title": "Resilience and cascading-failure controls",
+      "domain": "REL",
+      "min_level": "AL3",
+      "requirement": "Distributed/high-availability systems MUST test representative dependency failures, overload and degraded-mode behavior to limit cascading failures.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Resilience test/game-day evidence; circuit/backpressure/degraded-mode design as applicable."
+      ],
+      "verification": [
+        "Inject dependency latency/error/overload and observe system behavior."
+      ],
+      "blocking_conditions": [
+        "Single dependency degradation predictably cascades beyond accepted blast radius."
+      ],
+      "references": [
+        "GOOGLE-SRE",
+        "OWASP-AGENTIC-2026"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "RLS-01",
+      "title": "Automated release quality gates",
+      "domain": "RLS",
+      "min_level": "AL2",
+      "requirement": "Merge/release workflows MUST automatically enforce project-defined tests, security checks and framework validation appropriate to the assurance level.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "CI configuration and successful run."
+      ],
+      "verification": [
+        "Re-run pipeline on clean checkout."
+      ],
+      "blocking_conditions": [
+        "Required gate is bypassed or non-blocking without waiver."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "OPENSSF-AI-CODE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "RLS-02",
+      "title": "Immutable, identifiable release artifacts",
+      "domain": "RLS",
+      "min_level": "AL2",
+      "requirement": "Release artifacts MUST be uniquely versioned/content-addressable and SHOULD be signed or attestable at higher assurance levels.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Artifact digest/version; signature/attestation when required."
+      ],
+      "verification": [
+        "Verify digest and immutable release reference."
+      ],
+      "blocking_conditions": [
+        "Deployed artifact cannot be uniquely identified."
+      ],
+      "references": [
+        "SLSA-1.2"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "RLS-03",
+      "title": "Staged rollout",
+      "domain": "RLS",
+      "min_level": "AL3",
+      "requirement": "High-impact services SHOULD use staged rollout, canary, feature flags or equivalent blast-radius reduction where architecture permits.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Rollout plan/configuration."
+      ],
+      "verification": [
+        "Verify rollback/stop criteria and staged exposure."
+      ],
+      "blocking_conditions": [
+        "High-risk release changes all production instances/users simultaneously without rationale."
+      ],
+      "references": [
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "RLS-04",
+      "title": "Tested rollback or forward recovery",
+      "domain": "RLS",
+      "min_level": "AL2",
+      "requirement": "Significant releases MUST have a rollback or forward-recovery strategy that is tested proportionally to risk.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Rollback/recovery procedure and test evidence."
+      ],
+      "verification": [
+        "Exercise rollback in staging/representative environment."
+      ],
+      "blocking_conditions": [
+        "Release creates irreversible failure mode without explicit AL-level approval."
+      ],
+      "references": [
+        "GOOGLE-SRE",
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "RLS-05",
+      "title": "Release approval separation",
+      "domain": "RLS",
+      "min_level": "AL3",
+      "requirement": "AL3+ production release authorization MUST be separated from the implementing agent; AL4 MUST include accountable human approval.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Release approval record and identities."
+      ],
+      "verification": [
+        "Verify implementer/approver separation."
+      ],
+      "blocking_conditions": [
+        "Implementing agent is sole authority for AL3+ release; AL4 lacks human approval."
+      ],
+      "references": [
+        "METR-REWARD-HACKING",
+        "OWASP-AGENTIC-2026"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "OPS-01",
+      "title": "Golden-signal monitoring",
+      "domain": "OPS",
+      "min_level": "AL2",
+      "requirement": "Production services MUST monitor latency, traffic/load, errors and saturation or domain-equivalent user-relevant signals.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Dashboards/metric definitions."
+      ],
+      "verification": [
+        "Verify metrics are emitted and queryable."
+      ],
+      "blocking_conditions": [
+        "No visibility into material production failure/saturation."
+      ],
+      "references": [
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "OPS-02",
+      "title": "Structured logs, tracing and correlation",
+      "domain": "OPS",
+      "min_level": "AL2",
+      "requirement": "Systems with distributed or asynchronous workflows SHOULD support correlation across material requests/jobs without logging sensitive secrets.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Logging/tracing design; sample trace/correlation ID."
+      ],
+      "verification": [
+        "Trace representative request across boundaries."
+      ],
+      "blocking_conditions": [
+        "Material incident cannot be correlated across key components at AL3+ without rationale."
+      ],
+      "references": [
+        "GOOGLE-SRE",
+        "OWASP-TOP10-2025"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "OPS-03",
+      "title": "Actionable alerting and runbooks",
+      "domain": "OPS",
+      "min_level": "AL2",
+      "requirement": "Alerts MUST correspond to actionable user-impact or impending capacity/security conditions and critical alerts MUST link to response guidance.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Alert rules; runbooks."
+      ],
+      "verification": [
+        "Test representative alert and escalation."
+      ],
+      "blocking_conditions": [
+        "Critical known failure mode has no detectable/operable response path."
+      ],
+      "references": [
+        "GOOGLE-SRE",
+        "OWASP-TOP10-2025"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "OPS-04",
+      "title": "Incident learning and recurrence prevention",
+      "domain": "OPS",
+      "min_level": "AL2",
+      "requirement": "Material incidents MUST produce a blameless technical record of impact, contributing causes, detection gaps and preventive actions.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Incident/postmortem record and tracked actions."
+      ],
+      "verification": [
+        "Verify actions have owners/status and feed requirements/tests."
+      ],
+      "blocking_conditions": [
+        "Material recurring incident has no root-cause/recurrence action."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "OPS-05",
+      "title": "Disaster recovery objectives and exercises",
+      "domain": "OPS",
+      "min_level": "AL3",
+      "requirement": "Critical services MUST define RPO/RTO or equivalent recovery objectives and periodically exercise recovery/failover against them.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "DR plan; RPO/RTO; exercise results."
+      ],
+      "verification": [
+        "Execute isolated recovery/failover exercise."
+      ],
+      "blocking_conditions": [
+        "Recovery objectives are undefined or unverified for critical service."
+      ],
+      "references": [
+        "GOOGLE-SRE"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "OPS-06",
+      "title": "Production feedback closes the assurance loop",
+      "domain": "OPS",
+      "min_level": "AL2",
+      "requirement": "Operational defects, near misses, security findings and SLO breaches MUST feed back into requirements, tests, controls or risk decisions.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Linked issue/control/test from production signal."
+      ],
+      "verification": [
+        "Trace sample incident/finding to corrective assurance artifact."
+      ],
+      "blocking_conditions": [
+        "Repeated class of production failure has no feedback action."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "AI-TECH-DEBT"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-01",
+      "title": "Risk and assurance-level classification",
+      "domain": "GOV",
+      "min_level": "AL1",
+      "requirement": "Each project/release context MUST select an assurance level using documented risk triggers; risk may promote assurance requirements and MUST NOT be silently downgraded for convenience.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Risk classification and selected AL."
+      ],
+      "verification": [
+        "Review triggers against architecture/data/exposure."
+      ],
+      "blocking_conditions": [
+        "Selected level contradicts mandatory promotion trigger without approved exception."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "ISO-25010-2023"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-02",
+      "title": "Time-bounded waivers",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "Exceptions to mandatory controls MUST identify reason, risk owner, scope, compensating controls, expiry/review date and remediation disposition.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Waiver record."
+      ],
+      "verification": [
+        "Check expiry, owner, compensating control and linked risk."
+      ],
+      "blocking_conditions": [
+        "Blocking control is bypassed with no valid waiver; AL4 prohibited waivers ignored."
+      ],
+      "references": [
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-03",
+      "title": "Evidence package before release",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "Release readiness MUST be based on an evidence package containing applicable control results, unresolved risks, waivers and approver decision.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Machine-readable assessment/evidence records and release summary."
+      ],
+      "verification": [
+        "Validate completeness and hashes/links."
+      ],
+      "blocking_conditions": [
+        "Release decision has no auditable evidence package."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "SLSA-1.2"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-04",
+      "title": "Model, agent, tool and environment provenance",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "Significant AI-assisted changes SHOULD record model/agent/tool versions and material execution environment sufficiently to investigate failures and reproduce decisions where feasible.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Agent provenance metadata."
+      ],
+      "verification": [
+        "Trace representative change to recorded model/tool environment."
+      ],
+      "blocking_conditions": [
+        "AL3+ high-impact AI change lacks model/tool provenance."
+      ],
+      "references": [
+        "OWASP-AGENTIC-2026",
+        "METR-REWARD-HACKING"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-05",
+      "title": "Technical-debt and architecture trend",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "Projects with sustained AI-assisted development MUST monitor selected maintainability indicators and prevent unexplained long-term deterioration.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Trend metrics such as complexity, duplication, dependency violations, static findings, flaky tests or backlog aging."
+      ],
+      "verification": [
+        "Compare trend against baseline and investigate material regression."
+      ],
+      "blocking_conditions": [
+        "Sustained material degradation is ignored without risk decision."
+      ],
+      "references": [
+        "SLOPCODEBENCH",
+        "AI-TECH-DEBT"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-06",
+      "title": "Standards and threat-model maintenance",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "The framework/source registry and project threat model MUST be reviewed periodically for material changes in standards, dependencies, platforms and attack techniques.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Review date/owner and updates."
+      ],
+      "verification": [
+        "Check stale sources and material ecosystem changes."
+      ],
+      "blocking_conditions": [
+        "High-assurance project relies on obsolete security baseline without review."
+      ],
+      "references": [
+        "NIST-SSDF-1.1",
+        "OWASP-TOP10-2025",
+        "OWASP-AGENTIC-2026"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-07",
+      "title": "Accountable human ownership",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "Every production system MUST identify accountable human ownership for product risk, security/risk exceptions and incident escalation; AI agents cannot be the legal/organizational risk owner.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Ownership/approval matrix."
+      ],
+      "verification": [
+        "Verify named roles are reachable and authorized."
+      ],
+      "blocking_conditions": [
+        "Production risk/exception has no accountable human owner."
+      ],
+      "references": [
+        "CISA-SBD",
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-08",
+      "title": "Independent assessment for higher assurance",
+      "domain": "GOV",
+      "min_level": "AL3",
+      "requirement": "AL3 SHOULD receive periodic assessment by a person/team/process independent from implementation; AL4 MUST receive independent assessment before critical release and periodically thereafter.",
+      "applicability": "All software projects unless explicitly not applicable.",
+      "rationale": "Provides independent, reviewable assurance for this risk area.",
+      "required_evidence": [
+        "Independent assessment report and remediation status."
+      ],
+      "verification": [
+        "Verify assessor independence and evidence scope."
+      ],
+      "blocking_conditions": [
+        "AL4 critical release lacks independent assessment."
+      ],
+      "references": [
+        "OWASP-ASVS-5",
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": []
+    },
+    {
+      "id": "GOV-09",
+      "title": "Authoritative repository access and branch protection",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "The authoritative source repository MUST protect sensitive access with strong authentication where supported, grant collaborators least privilege, and prevent unreviewed or unauthorized changes to the primary branch and privileged CI/CD assets.",
+      "applicability": "Projects using a collaborative source-control platform; host-specific mechanisms may vary.",
+      "rationale": "Repository compromise or bypass of the reviewed primary branch can invalidate downstream code, test and release assurance.",
+      "required_evidence": [
+        "Repository/organization access policy and host settings showing applicable MFA/strong authentication, collaborator permissions, protected primary branch and required status/review controls."
+      ],
+      "verification": [
+        "Inspect authoritative repository settings and attempt/confirm that direct unauthorized primary-branch changes and untrusted privileged-CI access are prevented."
+      ],
+      "blocking_conditions": [
+        "AL2+ production project has an unprotected authoritative branch or untrusted contributor path to privileged repository/CI credentials without approved compensating control."
+      ],
+      "references": [
+        "OPENSSF-OSPS-2026-08-28",
+        "OPENSSF-AI-CODE",
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": [
+        "public repository",
+        "multiple collaborators",
+        "privileged CI/CD",
+        "production release"
+      ]
+    },
+    {
+      "id": "GOV-10",
+      "title": "Coordinated vulnerability reporting and response",
+      "domain": "GOV",
+      "min_level": "AL2",
+      "requirement": "Released software MUST provide a documented vulnerability-reporting process with a private reporting path and accountable response ownership; public disclosure MUST not be the only route for reporting an unpatched vulnerability.",
+      "applicability": "Released software or public/open-source projects that can receive vulnerability reports.",
+      "rationale": "Without a private coordinated-disclosure path, reporters may be forced to disclose exploitable defects publicly or findings may lack accountable handling.",
+      "required_evidence": [
+        "Published security/vulnerability policy, private reporting mechanism, response ownership and expected handling process."
+      ],
+      "verification": [
+        "Verify the public documentation and that the private reporting route is operational and reaches an accountable owner."
+      ],
+      "blocking_conditions": [
+        "Released AL2+ software has no documented private vulnerability reporting path or no accountable response owner."
+      ],
+      "references": [
+        "OPENSSF-OSPS-2026-08-28",
+        "NIST-SSDF-1.1"
+      ],
+      "risk_triggers": [
+        "public release",
+        "open source",
+        "internet-exposed product"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Assurance Validation Scenario",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "version",
+    "evaluation_mode",
+    "category",
+    "task_file",
+    "workspace_dir",
+    "protected_test_dir",
+    "blocking_dimensions",
+    "controls"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}-[A-Z0-9]+-[0-9]{3}$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "evaluation_mode": {
+      "enum": [
+        "automated",
+        "manual-scripted",
+        "longitudinal"
+      ]
+    },
+    "category": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "task_file": {
+      "type": "string"
+    },
+    "workspace_dir": {
+      "type": "string"
+    },
+    "protected_test_dir": {
+      "type": "string"
+    },
+    "blocking_dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "controls": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "contamination_risk": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "unknown"
+      ]
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "integrity_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

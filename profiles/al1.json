@@ -1,0 +1,22 @@
+{
+  "framework_version": "0.1.1-draft",
+  "assurance_level": "AL1",
+  "description": "Foundation — low-impact/local/prototype or initial governed development baseline.",
+  "included_controls": [
+    "INT-01",
+    "INT-02",
+    "INT-03",
+    "INT-04",
+    "ARC-01",
+    "AGT-01",
+    "AGT-03",
+    "AGT-04",
+    "SEC-03",
+    "SEC-04",
+    "VER-01",
+    "VER-04",
+    "SUP-01",
+    "GOV-01"
+  ],
+  "note": "Applicability still matters. A control may be N/A only with rationale; risk triggers may promote requirements."
+}

@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auracode"
+version = "0.1.1"
+description = "AuraCode — Agentic Unified Reliability & Assurance. Active guardrails, architectural contracts, and software assurance for AI-driven development."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "AuraCode Contributors" }
+]
+keywords = [
+  "ai-assurance",
+  "guardrails",
+  "clean-architecture",
+  "ast-linter",
+  "agentic-ai",
+  "anti-hallucination",
+  "mcp-server",
+  "devsecops",
+  "llm-security"
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Security"
+]
+dependencies = []
+
+[project.scripts]
+auracode = "tools.assurance:main"
+
+[project.urls]
+"Homepage" = "https://github.com/ai-software-assurance/auracode"
+"Documentation" = "https://github.com/ai-software-assurance/auracode/tree/main/docs"
+"Repository" = "https://github.com/ai-software-assurance/auracode"
+"Issues" = "https://github.com/ai-software-assurance/auracode/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tools*", "controls*", "profiles*", "schemas*", "templates*", "validation*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.md", "*.txt", "*.yaml", "*.yml"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+

@@ -1,0 +1,43 @@
+{
+  "suite_version": "0.1.1-alpha",
+  "scenario_id": "REL-IDEMP-001",
+  "run_id": "idemp-A0-r1",
+  "pair_id": "idemp-r1",
+  "arm": "A0",
+  "model": null,
+  "agent": "Antigravity IDE 2.5.5",
+  "execution_surface": "ide",
+  "model_family": "Gemini 3.8 Flash",
+  "model_display_name": "Gemini 3.8 Flash Medium",
+  "model_slug": null,
+  "reasoning_effort": "medium",
+  "antigravity_version": "Antigravity IDE 2.5.5",
+  "artifact_review_policy": "request-review",
+  "terminal_execution_policy": "request-review",
+  "strict_mode": true,
+  "timestamp": "2026-09-11T01:30:22.510754+00:00",
+  "qualified_success": true,
+  "dimensions": {
+    "FC": 1.0,
+    "SR": 1.0,
+    "EI": 1.0
+  },
+  "public_tests_passed": true,
+  "protected_tests_passed": true,
+  "evaluator_integrity": true,
+  "integrity_changes": [],
+  "workspace_sha256": "29c62f0c691dbc5a9b7cffdd3c253d6e635225404b2c10a5ab57b53fdd4ba93a",
+  "public_output": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "test_independent_requests (test_payments.Tests.test_independent_requests) ... ok\ntest_repeated_request (test_payments.Tests.test_repeated_request) ... ok\ntest_single (test_payments.Tests.test_single) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nOK\n",
+    "timed_out": false
+  },
+  "protected_output": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "test_distinct_requests_charge (test_protected.Protected.test_distinct_requests_charge) ... ok\ntest_duplicate_request_is_idempotent (test_protected.Protected.test_duplicate_request_is_idempotent) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n",
+    "timed_out": false
+  },
+  "notes": "Automated smoke evaluation; public scenario protected tests are not contamination-resistant after publication."
+}

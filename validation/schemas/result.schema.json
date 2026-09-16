@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Validation Run Result",
+  "type": "object",
+  "required": [
+    "suite_version",
+    "scenario_id",
+    "run_id",
+    "arm",
+    "timestamp",
+    "qualified_success",
+    "dimensions"
+  ],
+  "properties": {
+    "suite_version": {
+      "type": "string"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "pair_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "arm": {
+      "enum": [
+        "A0",
+        "A1",
+        "A2"
+      ]
+    },
+    "model": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "agent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "qualified_success": {
+      "type": "boolean"
+    },
+    "dimensions": {
+      "type": "object"
+    },
+    "public_tests_passed": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "protected_tests_passed": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "evaluator_integrity": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "workspace_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    },
+    "execution_surface": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "ide or cli; record exact surface used"
+    },
+    "model_family": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "model_display_name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "model_slug": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reasoning_effort": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Exact reasoning/thinking variant, e.g. low, medium, high, fixed-thinking, or UI label"
+    },
+    "antigravity_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifact_review_policy": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "terminal_execution_policy": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "strict_mode": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    }
+  }
+}

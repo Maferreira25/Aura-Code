@@ -1,0 +1,32 @@
+{
+  "id": "ARC-EVOL-001",
+  "title": "Long-horizon modular evolution",
+  "version": "1.0",
+  "evaluation_mode": "longitudinal",
+  "category": [
+    "architecture",
+    "long-horizon",
+    "maintainability"
+  ],
+  "task_file": "TASK.md",
+  "workspace_dir": "repo",
+  "protected_test_dir": "protected",
+  "blocking_dimensions": [
+    "FC",
+    "AP",
+    "EI"
+  ],
+  "controls": [
+    "ARC-01",
+    "ARC-02",
+    "ARC-04",
+    "ARC-05",
+    "GOV-05"
+  ],
+  "contamination_risk": "high",
+  "created_at": "2026-09-09",
+  "integrity_files": [
+    "tests/test_service.py"
+  ],
+  "notes": "Longitudinal/manual orchestration. Use architecture fitness checks after every stage; public fixture provides base only."
+}
