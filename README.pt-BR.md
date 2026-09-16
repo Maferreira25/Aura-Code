@@ -3,7 +3,45 @@
 > **AuraCode** (**A**gentic **U**nified **R**eliability & **A**ssurance for **Code**)  
 > **Status: 0.1.1 — Motor de Governança e Análise Estática AST Pronto para Produção**
 
+[![English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
+[![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](LICENSE)
+
 Um framework neutro e baseado em evidências para construção, auditoria e operação de software profissional desenvolvido com auxílio de modelos de linguagem (LLMs) e agentes de codificação autônomos.
+
+---
+
+## 📖 Manifesto: AI Software Assurance for Agentic Development
+
+A inteligência artificial transformou profundamente a engenharia de software. Modelos de linguagem e agentes autônomos já interpretam requisitos, refatoram sistemas, operam ferramentas e geram milhares de linhas de código em segundos. Contudo, essa velocidade introduz uma nova classe de riscos que a engenharia tradicional nunca precisou enfrentar de forma tão acelerada: dependências alucinadas, erosão estrutural progressiva, testes superficiais que apenas validam a própria implementação da IA (*oráculos viciados*), manipulação acidental de ferramentas e o chamado *"AI slop"* (código inflado, stubs esquecidos e abstrações desnecessárias).
+
+Software profissional não é apenas código que compila e funciona no *happy path*. Um sistema comercial precisa resistir a acessos maliciosos, operar sob concorrência, recuperar-se de falhas, proteger dados e continuar sustentável após centenas de iterações.
+
+O **AI Software Assurance Framework for Agentic Development** nasce para fechar essa lacuna. Sua proposta não é pedir que engenheiros confiem cegamente na IA, mas estabelecer uma nova premissa:
+
+> **AI Zero Trust:** Não confie na IA apenas porque a resposta parece correta. Exija evidências.
+
+Em vez de depender de prompts frágeis como *"aja como um engenheiro sênior"*, o framework traduz princípios consolidados de engenharia (alinhados a referências como NIST SSDF, OWASP ASVS/Agentic, CISA Secure by Design, OpenSSF e SLSA) em um **sistema de controles determinísticos e verificáveis**, onde toda asserção da IA precisa responder:
+1. *O que precisa ser verdadeiro?*
+2. *Que evidência demonstra isso?*
+3. *Como essa evidência foi verificada de forma independente?*
+4. *Qual condição bloqueia a entrega caso haja falha?*
+
+### Como o AuraCode Opera na Prática
+
+O framework não é uma carta de intenções teórica; é uma **plataforma executável**:
+
+* **Autoridade Humana e Resolução de Ambiguidade (Gate G1):** O usuário mantém a autoridade sobre o *que* o sistema faz; a IA decide *como* implementar. Antes de codificar, qualquer incerteza de negócio, segurança ou custo é apresentada ao usuário em linguagem compreensível — traduzindo complexidade técnica em decisões funcionais (ex.: em vez de perguntar *"SQLite ou Postgres?"*, pergunta *"Os dados ficarão só neste dispositivo ou serão acessados em rede?"*).
+* **Motor de Análise Estática Nativo (AST Linters via CLI `auracode`):** Analisadores sintáticos determinísticos inspecionam o código em busca de vícios típicos de LLMs sem depender de outra IA para julgar: caçam código morto e stubs esquecidos (`auracode slop`), detectam vazamentos de arquivos e conexões (`auracode leaks`), verificam vetores de injeção (`auracode sec`), exigem tipagem estrita e limitam diffs cirúrgicos a menos de 500 linhas para barrar refatorações descontroladas.
+* **Integração em Tempo Real via MCP (Model Context Protocol):** Um servidor nativo (`auracode mcp`) conecta o framework diretamente a agentes e IDEs modernas (como Antigravity IDE, Cursor, Claude Desktop e VS Code), aplicando salvaguardas enquanto o agente escreve o código, e não apenas no CI/CD.
+* **Separação de Papéis com Enxame de Agentes:** A mesma IA que escreve não pode auditar. O ecossistema organiza o trabalho em personas segregadas (*scout* de requisitos, arquiteto, desenvolvedor e auditor de segurança).
+* **Proteção contra Adulteração (*Anti-Tampering*) e Sandboxing:** Execuções e testes ocorrem em sandbox protegido (Docker não-root, sem rede e com cotas de recursos). A integridade do próprio framework é selada criptograficamente via hashes SHA-256 (`MANIFEST.json`), impedindo que agentes autônomos desativem os testes ou adulterem os avaliadores.
+* **Níveis Progressivos de Garantia (AL1 a AL4):** Da automação local de baixo risco (AL1) a plataformas financeiras críticas (AL4), o rigor dos controles e a exigência de testes (adversariais, mutação, fuzzing e SBOM) escalam proporcionalmente à gravidade do impacto de uma falha.
+
+### Verificação Empírica
+
+Fiel ao princípio de que nenhuma afirmação deve ser aceita sem provas, o projeto inclui uma **suíte experimental de validação** com cenários reais. Agentes autônomos são avaliados com e sem a governança do framework, medindo objetivamente correção funcional, robustez contra ataques, integridade dos testes e custo de verificação.
+
+O futuro da programação com IA não consiste em torcer para que o modelo acerte. Consiste em construir sistemas capazes de **demonstrar com evidências quando ele acertou** — e impedir rigorosamente que um erro chegue à produção quando ele errou.
 
 ---
 
