@@ -48,9 +48,28 @@ The future of AI programming is not about hoping the model got it right. It is a
 
 ## 🚀 Quick Start & Installation
 
-Install AuraCode globally on your machine:
+### Option 1: Instant Execution via `uvx` (No installation needed, like `npx`)
+
+Run any AuraCode command directly in an isolated environment without manual setup or cloning:
 
 ```bash
+# Scan current project for AI slop and swallowed exceptions
+uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode slop .
+
+# Scan for injection vulnerabilities and shell risks
+uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode sec .
+
+# Start the stdio MCP server for Antigravity IDE / Cursor / Claude Desktop
+uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode mcp
+```
+
+### Option 2: Local Installation via `pip`
+
+Install AuraCode into your Python environment:
+
+```bash
+git clone https://github.com/Maferreira25/Aura-Code.git
+cd Aura-Code
 pip install -e .
 ```
 

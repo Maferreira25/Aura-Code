@@ -48,9 +48,28 @@ O futuro da programação com IA não consiste em torcer para que o modelo acert
 
 ## 🚀 Instalação e Início Rápido
 
-Instale o AuraCode globalmente no seu sistema Python:
+### Opção 1: Execução Instantânea via `uvx` (Sem necessidade de instalação, estilo `npx`)
+
+Execute qualquer comando do AuraCode diretamente em um ambiente temporário isolado, sem precisar clonar o repositório ou configurar ambientes virtuais:
 
 ```bash
+# Escanear projeto atual para AI slop e exceções silenciadas
+uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode slop .
+
+# Escanear vulnerabilidades de injeção e riscos com shell=True
+uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode sec .
+
+# Iniciar o servidor MCP para Antigravity IDE / Cursor / Claude Desktop
+uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode mcp
+```
+
+### Opção 2: Instalação Local via `pip`
+
+Clone e instale o pacote no seu ambiente Python:
+
+```bash
+git clone https://github.com/Maferreira25/Aura-Code.git
+cd Aura-Code
 pip install -e .
 ```
 
