@@ -1,7 +1,7 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 272,
+  "file_count": 264,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -28,8 +28,8 @@
       "bytes": 530
     },
     ".gitignore": {
-      "sha256": "b72c4f8696ec7ceabf78811020cb6fa1f7ae31eeb1513a27164b16272c1558ec",
-      "bytes": 188
+      "sha256": "71da1d468287a2558a76d1350e064a726af9de66a0bb956fc4bd8553c50eedc2",
+      "bytes": 205
     },
     "adapters/antigravity/.agents/agents/architecture-reviewer/agent.md": {
       "sha256": "138e7742de194258f1be4424912673d574e6edb44cb746d7631793d243102742",
@@ -255,38 +255,6 @@
       "sha256": "2d51ab2548547a7b655a526f61f1b0444b2a109a9f498cb13bdba8d8a826c5af",
       "bytes": 4364
     },
-    "framework_audit/audit_2_master_report.md": {
-      "sha256": "1b62f58f934e166d3fda723d535872e401b26879f81a43ba5dca95c1a324469b",
-      "bytes": 59817
-    },
-    "framework_audit/audit_2_plan.md": {
-      "sha256": "684ee1c27c419119406ca25b52b8ed0e05a1a7289d15b2d1aa373345a27e07f2",
-      "bytes": 15512
-    },
-    "framework_audit/audit_3_meta_audit_and_master_remediation.md": {
-      "sha256": "cfad798ff465ee96485419a3af78270b89de32556a1b26c201b016c579059f18",
-      "bytes": 47123
-    },
-    "framework_audit/first_audit_report.md": {
-      "sha256": "c416922a89fa6a39e34fe1ff549ebed8b24bbbb5a16b7f2fc4db8cafc30edfe2",
-      "bytes": 8989
-    },
-    "framework_audit/README.md": {
-      "sha256": "b4b64643443843cc702d83b61f93a812e8b8f20ac61641818780c3ff4407ca35",
-      "bytes": 2436
-    },
-    "framework_audit/REMEDIATION-LEDGER.md": {
-      "sha256": "304e5ccbbb0f64615855ea77dc750de151139bc7c40e92a5a2c07fee9ad0b1d5",
-      "bytes": 22477
-    },
-    "framework_audit/REMEDIATION-REPORT.md": {
-      "sha256": "f1c48bfd7c48237d4c3ee641cc3f39b9adb0b41baf353f8bc253d70e606bfa8e",
-      "bytes": 27863
-    },
-    "framework_audit/second_stage_review.md": {
-      "sha256": "0bc21d7ecceda6129b5bb524fd492671b538692934fe3b1aba62cd8cdf1d60da",
-      "bytes": 10641
-    },
     "GOVERNANCE.md": {
       "sha256": "43715416ce28d96d2a88de5cfd4de6c000b1ab7d21b3ec9eee559f66cfba98c6",
       "bytes": 877
@@ -476,12 +444,12 @@
       "bytes": 3339
     },
     "tools/update_manifest.py": {
-      "sha256": "dcc2cd9f731feeab74d66cf896ccdb43958cf234021c23167c348b5911895d1c",
-      "bytes": 2041
+      "sha256": "c339673682f2b59951f28297cbeb1da6a650be0a66bad94ff41d4efa006592bf",
+      "bytes": 2064
     },
     "tools/validate_framework.py": {
-      "sha256": "96324a8afde89a90fb35293579b3fe7dd57dec13385e12fa3526958e711082d3",
-      "bytes": 10683
+      "sha256": "9214c16dddf1c38c04a994c3e297068a25f76ac0319d08d36d0d661bfea8e825",
+      "bytes": 10702
     },
     "tools/verify_dependencies.py": {
       "sha256": "e5e0aaa0a5bf1ef15802f72489e909bee9b483f332c652219c2857ababce6e28",

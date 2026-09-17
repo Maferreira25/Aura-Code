@@ -22,6 +22,7 @@ EXCLUDE_DIRS = {
     "_auracode_bugs",
     "_auracode_refactor",
     "_auracode_docs",
+    "framework_audit",
 }
 
 EXCLUDE_EXTENSIONS = {

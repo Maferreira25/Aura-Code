@@ -121,7 +121,7 @@ if manifest_path.exists():
         m_exclude_dirs = {
             ".git", "__pycache__", "graphify-out", "dist", "build", ".venv", ".pytest_cache",
             "auracode.egg-info", ".auracode", "_auracode_sdd", "_auracode_forward",
-            "_auracode_bugs", "_auracode_refactor", "_auracode_docs"
+            "_auracode_bugs", "_auracode_refactor", "_auracode_docs", "framework_audit"
         }
         m_exclude_exts = {".pyc", ".pyo", ".pyd"}
         m_exclude_files = {"MANIFEST.json"}
