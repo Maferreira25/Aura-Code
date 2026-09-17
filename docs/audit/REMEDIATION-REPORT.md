@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary & Before vs After Indicators
 
-This Master Remediation Report marks the completion of the rigorous three-phase audit reconciliation and controlled remediation process (Phases A, B, and C) for the **AI Software Assurance Framework for Agentic Development** (`c:\ai-software-assurance-framework`).
+This Master Remediation Report marks the completion of the rigorous three-phase audit reconciliation and controlled remediation process (Phases A, B, and C) for the **AI Software Assurance Framework for Agentic Development** (AuraCode).
 
 Two independent audit reports were evaluated:
 - **Audit 1 (`framework_audit/first_audit_report.md`):** 16 initial findings across architectural linter, supply chain, MCP server, surgical diff, harness isolation, and governance engine.
@@ -88,8 +88,8 @@ All findings across Audit 1, Audit 2, and the Meta-Audit were reconciled into th
 ### REM-002: Manifest Outdated & Cryptographic Hash Check Missing (CRITICAL)
 - **Problem:** `MANIFEST.json` had 183 files from early development, omitting newly introduced tools, schemas, and test fixtures. Furthermore, `tools/validate_framework.py` did not cross-check file hashes against the manifest.
 - **Remediation:**
-  - Developed automated generator [`tools/update_manifest.py`](file:///c:/ai-software-assurance-framework/tools/update_manifest.py).
-  - Integrated full cryptographic hash and file byte verification into [`tools/validate_framework.py`](file:///c:/ai-software-assurance-framework/tools/validate_framework.py).
+  - Developed automated generator [`tools/update_manifest.py`](../../tools/update_manifest.py).
+  - Integrated full cryptographic hash and file byte verification into [`tools/validate_framework.py`](../../tools/validate_framework.py).
   - Re-cataloged all 233 clean tracked files.
 - **Evidence:** `tools/validate_framework.py` passes with zero discrepancies. Tampering with any file triggers immediate validation failure.
 
@@ -145,9 +145,9 @@ All findings across Audit 1, Audit 2, and the Meta-Audit were reconciled into th
 ### REM-010: Framework Dogfooding Incomplete (HIGH)
 - **Problem:** The repository had no `contracts.json`, no `self-assessment.json`, and its CLI tools could not verify its own project.
 - **Remediation:**
-  - Created [`contracts.json`](file:///c:/ai-software-assurance-framework/contracts.json) defining architecture layers (`tools`, `validation_tools`) and allowed standard library dependencies.
+  - Created [`contracts.json`](../../contracts.json) defining architecture layers (`tools`, `validation_tools`) and allowed standard library dependencies.
   - Added `pyproject.toml` support to `verify_dependencies.py`.
-  - Generated [`self-assessment.json`](file:///c:/ai-software-assurance-framework/self-assessment.json) mapping all 61 AL2 controls with verifiable evidence artifacts.
+  - Generated [`self-assessment.json`](../../self-assessment.json) mapping all 61 AL2 controls with verifiable evidence artifacts.
 - **Evidence:**
   - `python tools/check_architecture.py . --contracts contracts.json` -> **ARCHITECTURE CONTRACT SATISFIED** (13 files checked, 0 violations).
   - `python tools/verify_dependencies.py .` -> **SUPPLY CHAIN DEPENDENCIES VERIFIED** (0 hallucinated packages).
@@ -238,8 +238,8 @@ Throughout the remediation:
 All four verification and testing layers were executed sequentially:
 
 ### Layer 1: Framework Structural Integrity & Cryptographic Manifest
-```powershell
-PS C:\ai-software-assurance-framework> python tools/validate_framework.py
+```bash
+auracode-workspace> python tools/validate_framework.py
 Framework: AI Software Assurance Framework for Agentic Development 0.1.1-draft
 Controls: 75 across 11 domains
 Sources: 23
@@ -253,8 +253,8 @@ VALIDATION PASSED
 ```
 
 ### Layer 2: Empirical Benchmark Suite & Seeded Baselines
-```powershell
-PS C:\ai-software-assurance-framework> python validation/tools/validate_suite.py
+```bash
+auracode-workspace> python validation/tools/validate_suite.py
 Scenarios: 12 (10 automated)
 
 Seeded baselines:
@@ -289,16 +289,16 @@ SUITE VALIDATION PASSED
 ```
 
 ### Layer 3: Comprehensive Unit Test Suite
-```powershell
-PS C:\ai-software-transparency-framework> python -m unittest discover -s tests -v
+```bash
+auracode-workspace> python -m unittest discover -s tests -v
 Ran 58 tests in 1.632s
 
 OK
 ```
 
 ### Layer 4: Empirical Statistical Analysis
-```powershell
-PS C:\ai-software-assurance-framework> python validation/tools/analyze_results.py
+```bash
+auracode-workspace> python validation/tools/analyze_results.py
 Runs: 36
 A0: QS 12/12 = 1.000 (Wilson 95% CI 0.757..1.000)
   dimensions: AF=1.000, CQ=1.000, EI=1.000, FC=1.000, SR=1.000
@@ -310,23 +310,23 @@ Matched A2-A0 QS difference: mean=0.000 over 12 pairs
 ```
 
 ### Layer 5: Framework Self-Assurance (Dogfooding)
-```powershell
-PS C:\ai-software-assurance-framework> python tools/check_architecture.py . --contracts contracts.json
+```bash
+auracode-workspace> python tools/check_architecture.py . --contracts contracts.json
 Architecture Inspection: auracode
-Directory: C:\ai-software-assurance-framework
+Directory: .
 Files inspected: 13
 Violations detected: 0
 ------------------------------------------------------------
 ARCHITECTURE CONTRACT SATISFIED
 
-PS C:\ai-software-assurance-framework> python tools/verify_dependencies.py .
-Supply Chain Verification: C:\ai-software-assurance-framework\pyproject.toml
+auracode-workspace> python tools/verify_dependencies.py .
+Supply Chain Verification: ./pyproject.toml
 Packages checked: 0
 Hallucinated packages: 0
 ------------------------------------------------------------
 SUPPLY CHAIN DEPENDENCIES VERIFIED
 
-PS C:\ai-software-assurance-framework> python tools/assess.py self-assessment.json
+auracode-workspace> python tools/assess.py self-assessment.json
 Project: auracode
 Profile: AL2
 PASS=61 NA=0 FAIL=0 NOT_ASSESSED=0 INVALID_NA=0 INVALID_PASS=0

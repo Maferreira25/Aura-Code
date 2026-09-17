@@ -1,7 +1,7 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 264,
+  "file_count": 265,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -152,8 +152,8 @@
       "bytes": 913
     },
     "CONTRIBUTING.md": {
-      "sha256": "59f209473db24b338d6b9011f554672361f4570bedd0dd07d60a22eeca428159",
-      "bytes": 1127
+      "sha256": "c15b3c9570e68d5a3b6715d803e7391b15faa3a9180808a8fb6f2b333a28aab5",
+      "bytes": 1877
     },
     "controls/__init__.py": {
       "sha256": "c4f93b9ec0486c5f45ec014b263fa13cefee24cc2eb7b5636465e6de3dc9a556",
@@ -204,8 +204,8 @@
       "bytes": 22477
     },
     "docs/audit/REMEDIATION-REPORT.md": {
-      "sha256": "f1c48bfd7c48237d4c3ee641cc3f39b9adb0b41baf353f8bc253d70e606bfa8e",
-      "bytes": 27863
+      "sha256": "9efec0f1828000e98f8f06185289859b6fc6220bee8120647063342d436934bd",
+      "bytes": 27455
     },
     "docs/AUDIT-GUIDE.md": {
       "sha256": "9bc71a50f202a8bce41c82aa07a50310be3d4c7bc099514307327b534e5de506",
@@ -288,8 +288,8 @@
       "bytes": 1425
     },
     "pyproject.toml": {
-      "sha256": "fa3107408729d714f75f06a20293e2e8a3f30f07b767c20475c210610320d518",
-      "bytes": 1753
+      "sha256": "41985d7c66b5b0e93de84fe20d353ef1c9177c18cab37748369e5bdacaa88640",
+      "bytes": 1829
     },
     "README.md": {
       "sha256": "6a5a98a1728adfba1b68841114543f1359cd55a9a293f7bfbbe170534ae83db0",
@@ -374,6 +374,10 @@
     "templates/waiver.md": {
       "sha256": "0e30c2fc9ca2692dc041a579e2d595b0e1d870f22233de5f8f4776dbf5f5ee29",
       "bytes": 265
+    },
+    "tests/test_ast_engines.py": {
+      "sha256": "65ded416e4206f469039c1db18fbd26b5afb3b0b8027d550c765e5ee35db1dfb",
+      "bytes": 12391
     },
     "tests/test_framework.py": {
       "sha256": "27ba348cc405c5e7fe2288f3ad2e30a9c6c47bfd950b4d6ba072c54780ee44f7",

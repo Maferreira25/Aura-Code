@@ -40,3 +40,32 @@ Follow `SECURITY.md`. Do not publish an exploit for an unpatched framework tooli
 ## Style
 
 Normative prose should be concise and testable. Avoid "be secure", "follow best practices", or persona-only instructions without an observable evidence requirement.
+
+## Developer Setup & Testing Workflow
+
+1. **Clone and install dependencies for testing**:
+   ```bash
+   git clone https://github.com/Maferreira25/Aura-Code.git
+   cd Aura-Code
+   pip install -e .[test]
+   ```
+
+2. **Run the test suite**:
+   ```bash
+   pytest
+   # or with Python's built-in runner:
+   python -m unittest discover -s tests -v
+   ```
+
+3. **Verify framework integrity and empirical test benchmarks**:
+   Always run the validators before creating a pull request:
+   ```bash
+   python tools/validate_framework.py
+   python validation/tools/validate_suite.py
+   ```
+
+4. **Update cryptographic manifest**:
+   If adding, deleting, or modifying framework files, regenerate `MANIFEST.json`:
+   ```bash
+   python tools/update_manifest.py
+   ```

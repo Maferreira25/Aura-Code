@@ -39,6 +39,12 @@ classifiers = [
 ]
 dependencies = []
 
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0",
+  "pytest-cov"
+]
+
 [project.scripts]
 auracode = "tools.assurance:main"
 
