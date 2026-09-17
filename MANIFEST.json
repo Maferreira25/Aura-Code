@@ -1,8 +1,12 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 271,
+  "file_count": 272,
   "files": {
+    ".github/dependabot.yml": {
+      "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
+      "bytes": 206
+    },
     ".github/ISSUE_TEMPLATE/bug_report.md": {
       "sha256": "33e9b103b691c5cf0c2d96cf32980f1f5ee69c8b595a2b258ed8e89882e9d2f7",
       "bytes": 334
@@ -228,8 +232,8 @@
       "bytes": 1806
     },
     "docs/PUBLICATION-CHECKLIST.md": {
-      "sha256": "08384bee55bfae6981d062ad08bdb69b0abb03575ec08fd07d7b23c567099887",
-      "bytes": 949
+      "sha256": "e594da3e2cd4441239fb46e70c10bd671ebe9b7777d99fb437aaeeded44e8f3a",
+      "bytes": 1212
     },
     "docs/references/REFERENCES.md": {
       "sha256": "7280a6b5e4eca7096fb581ef367a7d99ceb12b8ce61fc9f4015782bad3cadc34",
@@ -284,8 +288,8 @@
       "bytes": 10641
     },
     "GOVERNANCE.md": {
-      "sha256": "c05a051eccf7d0ed156f922b3b9e71a9361015cc996a4cabe2b6647cec535db6",
-      "bytes": 738
+      "sha256": "43715416ce28d96d2a88de5cfd4de6c000b1ab7d21b3ec9eee559f66cfba98c6",
+      "bytes": 877
     },
     "LICENSE": {
       "sha256": "e8392c3f9fbb5f53ebecd59ef8aa719e920a3e11c0c5152f5e6cbe674a4ed8f2",
@@ -316,16 +320,16 @@
       "bytes": 1425
     },
     "pyproject.toml": {
-      "sha256": "8fddde1d4fbf77a471c8955c6ad0de4c8122345992234c970c2cbcde60f4022c",
-      "bytes": 1785
+      "sha256": "fa3107408729d714f75f06a20293e2e8a3f30f07b767c20475c210610320d518",
+      "bytes": 1753
     },
     "README.md": {
-      "sha256": "980e07dc90ba24a3555edce55070e0da7ec06ef5d3b8fd86e4b91591469d1fd9",
-      "bytes": 8171
+      "sha256": "6a5a98a1728adfba1b68841114543f1359cd55a9a293f7bfbbe170534ae83db0",
+      "bytes": 8375
     },
     "README.pt-BR.md": {
-      "sha256": "673dbe40ca6a33546dc9821ad3794be831f873ed50234f7a5a3857545c1184cf",
-      "bytes": 8247
+      "sha256": "c70be1dfead768541a3ef206fdbb35f1ec9127b4b48581a72515f914d5b44c41",
+      "bytes": 8473
     },
     "ROADMAP.md": {
       "sha256": "6159e8f48a8de9ac177358aa1267cc6b463c9ce21014882cd8a2376ee177b5e1",

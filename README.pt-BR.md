@@ -1,7 +1,8 @@
 # AuraCode — Framework Agêntico de Garantia e Confiabilidade de Software
 
 > **AuraCode** (**A**gentic **U**nified **R**eliability & **A**ssurance for **Code**)  
-> **Status: 0.1.1 — Motor de Governança e Análise Estática AST Pronto para Produção**
+> **Status: 0.1.1 (Beta / Prévia da Comunidade) — Motor de Verificação AST & Governança**  
+> **Suporte a Linguagens:** Princípios arquiteturais e controles de governança são agnósticos de linguagem. O motor automatizado de análise estática AST (`auracode`) atualmente inspeciona código **Python (3.9+)**.
 
 [![English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](LICENSE)

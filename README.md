@@ -1,7 +1,8 @@
 # AuraCode — Agentic Unified Reliability & Assurance Framework
 
 > **AuraCode** (**A**gentic **U**nified **R**eliability & **A**ssurance for **Code**)  
-> **Status: 0.1.1 — Production-Ready Governance & AST Verification Engine**
+> **Status: 0.1.1 (Beta / Community Preview) — AST Verification Engine & Governance Framework**  
+> **Language Support:** Architectural principles and governance controls are language-agnostic. The automated AST inspection engine (`auracode`) currently targets **Python (3.9+)**.
 
 [![Português](https://img.shields.io/badge/Language-Portugu%C3%AAs-blue.svg)](README.pt-BR.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

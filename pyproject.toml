@@ -43,10 +43,10 @@ dependencies = []
 auracode = "tools.assurance:main"
 
 [project.urls]
-"Homepage" = "https://github.com/ai-software-assurance/auracode"
-"Documentation" = "https://github.com/ai-software-assurance/auracode/tree/main/docs"
-"Repository" = "https://github.com/ai-software-assurance/auracode"
-"Issues" = "https://github.com/ai-software-assurance/auracode/issues"
+"Homepage" = "https://github.com/Maferreira25/Aura-Code"
+"Documentation" = "https://github.com/Maferreira25/Aura-Code/tree/main/docs"
+"Repository" = "https://github.com/Maferreira25/Aura-Code"
+"Issues" = "https://github.com/Maferreira25/Aura-Code/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
