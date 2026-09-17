@@ -4,6 +4,20 @@
   "version": "0.1.1",
   "assurance_level": "AL2",
   "layers": {
+    "auracode": {
+      "path": "auracode/*.py",
+      "description": "Public programmatic API facade and package entrypoint.",
+      "forbidden_imports": [
+        "validation.scenarios",
+        "requests",
+        "httpx",
+        "flask",
+        "django",
+        "fastapi"
+      ],
+      "allow_wildcard_imports": false,
+      "max_file_lines": 1000
+    },
     "tools": {
       "path": "tools/*.py",
       "description": "Core active governance and software assurance engines. Pure Python standard library only.",
@@ -24,6 +38,19 @@
       "forbidden_imports": [
         "requests",
         "httpx"
+      ],
+      "allow_wildcard_imports": false,
+      "max_file_lines": 1000
+    },
+    "tests": {
+      "path": "tests/*.py",
+      "description": "Unit and integration test suites for framework governance and verification engines.",
+      "forbidden_imports": [
+        "requests",
+        "httpx",
+        "flask",
+        "django",
+        "fastapi"
       ],
       "allow_wildcard_imports": false,
       "max_file_lines": 1000

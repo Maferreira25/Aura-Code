@@ -307,5 +307,29 @@ class TestCLIEntrypoint(unittest.TestCase):
                         self.assertEqual(mock_exit.call_args[0][0], 0)
 
 
+class TestProgrammaticAPI(unittest.TestCase):
+    """Test top-level auracode package programmatic access and facade."""
+
+    def test_import_auracode_metadata(self):
+        import auracode
+        self.assertEqual(auracode.__version__, "0.1.1")
+        self.assertTrue(callable(auracode.cli))
+        self.assertTrue(callable(auracode.check_architecture))
+        self.assertTrue(callable(auracode.check_slop))
+        self.assertTrue(callable(auracode.check_leaks))
+        self.assertTrue(callable(auracode.check_types))
+        self.assertTrue(callable(auracode.check_sec))
+        self.assertTrue(callable(auracode.check_ambiguity))
+        self.assertTrue(callable(auracode.verify_package))
+
+    def test_programmatic_slop_call(self):
+        import auracode
+        with tempfile.TemporaryDirectory() as td:
+            fpath = Path(td) / "clean.py"
+            fpath.write_text("def valid() -> bool:\n    return True\n", encoding="utf-8")
+            violations = auracode.check_slop(str(fpath), td)
+            self.assertEqual(len(violations), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

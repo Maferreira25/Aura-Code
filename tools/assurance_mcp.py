@@ -11,7 +11,7 @@ import sys
 import os
 import ast
 from pathlib import Path
-from typing import Dict, Any, Optional, Tuple, List
+from typing import Dict, Optional, Tuple, List, Union
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -199,7 +199,7 @@ TOOLS_MANIFEST = [
 ]
 
 
-def handle_initialize(req_id: Any, params: Dict[str, Any]) -> Dict[str, Any]:
+def handle_initialize(req_id: Union[str, int, None], params: Dict[str, object]) -> Dict[str, object]:
     return {
         "jsonrpc": "2.0",
         "id": req_id,
@@ -216,7 +216,7 @@ def handle_initialize(req_id: Any, params: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def handle_tools_list(req_id: Any) -> Dict[str, Any]:
+def handle_tools_list(req_id: Union[str, int, None]) -> Dict[str, object]:
     return {
         "jsonrpc": "2.0",
         "id": req_id,
@@ -240,7 +240,7 @@ def validate_path_in_root(p: Path, root: Optional[Path]) -> Tuple[bool, Optional
     return True, None
 
 
-def handle_tools_call(req_id: Any, params: Dict[str, Any], allowed_root: Optional[Path] = None) -> Dict[str, Any]:
+def handle_tools_call(req_id: Union[str, int, None], params: Dict[str, object], allowed_root: Optional[Path] = None) -> Dict[str, object]:
     if not isinstance(params, dict):
         return {
             "jsonrpc": "2.0",
@@ -417,7 +417,7 @@ def process_message(
     max_message_bytes: int = 1_000_000,
     allowed_root: Optional[Path] = None,
     permit_unrestricted: bool = False,
-) -> Optional[Dict[str, Any]]:
+) -> Optional[Dict[str, object]]:
     """Process a single JSON-RPC message and return response dict if appropriate."""
     effective_root = allowed_root if (allowed_root is not None or permit_unrestricted) else Path.cwd().resolve()
     msg_str = msg_str.strip()
@@ -485,8 +485,8 @@ def process_message(
 
 
 def run_stdio_server(
-    input_stream: Optional[Any] = None,
-    output_stream: Optional[Any] = None,
+    input_stream: Optional[object] = None,
+    output_stream: Optional[object] = None,
     max_message_bytes: int = 1_000_000,
     allowed_root: Optional[Path] = None,
     permit_unrestricted: bool = False,

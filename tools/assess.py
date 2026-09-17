@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assess an assessment JSON against the framework profile."""
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Dict, Optional, List
 import argparse
 import json
 import sys
@@ -11,11 +11,11 @@ VALID_LEVELS = {"AL1", "AL2", "AL3", "AL4"}
 
 
 def assess_data(
-    a: Dict[str, Any],
+    a: Dict[str, object],
     root: Optional[Path] = None,
     project_root: Optional[Path] = None,
     verify_evidence_paths: bool = True,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Assess in-memory assessment data against catalog and profile."""
     base_root = root or ROOT
     level = str(a.get("assurance_level", "")).upper()
@@ -118,7 +118,7 @@ def assess_file(
     filepath: Path,
     max_file_bytes: int = 1_000_000,
     verify_evidence_paths: bool = True,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Load and assess a file path against the framework profile."""
     p = Path(filepath).resolve()
     if not p.exists() or not p.is_file():

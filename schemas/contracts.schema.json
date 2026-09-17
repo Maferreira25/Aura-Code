@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ai-software-assurance.dev/schemas/contracts.schema.json",
+  "$id": "https://raw.githubusercontent.com/Maferreira25/Aura-Code/main/schemas/contracts.schema.json",
   "title": "Architecture Contract Specification",
   "description": "Machine-readable contract defining architectural layers, allowed/forbidden imports, and code integrity rules for agentic development.",
   "type": "object",

@@ -1,7 +1,7 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 265,
+  "file_count": 266,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -139,6 +139,10 @@
       "sha256": "51aa3cd6911abff67d49971076f3108b0f9b6b6b2d366f367e6cd48c390f9b09",
       "bytes": 1116
     },
+    "auracode/__init__.py": {
+      "sha256": "92615211f261768576aafc72209ec6007b9e2aa81ffa3a09408348e949d179b9",
+      "bytes": 1234
+    },
     "CHANGELOG.md": {
       "sha256": "6f04f17a4275ea5007c5699ed9553bcd864896104cdd74be2868b58ff2126602",
       "bytes": 916
@@ -148,8 +152,8 @@
       "bytes": 391
     },
     "contracts.json": {
-      "sha256": "31d341f2923b55a86cba9a0cea878767e41ffffffc14c39b83d9a26ff349a648",
-      "bytes": 913
+      "sha256": "5021bbb9fbec3735f33a24d6e2ffb26142246c31a161c61b9d9a12cd4fd71a60",
+      "bytes": 1630
     },
     "CONTRIBUTING.md": {
       "sha256": "c15b3c9570e68d5a3b6715d803e7391b15faa3a9180808a8fb6f2b333a28aab5",
@@ -288,8 +292,8 @@
       "bytes": 1425
     },
     "pyproject.toml": {
-      "sha256": "41985d7c66b5b0e93de84fe20d353ef1c9177c18cab37748369e5bdacaa88640",
-      "bytes": 1829
+      "sha256": "e2834eb74da0e568b9139fc9c978a59b560048832a097bff6ac8975566f2f32a",
+      "bytes": 1842
     },
     "README.md": {
       "sha256": "6a5a98a1728adfba1b68841114543f1359cd55a9a293f7bfbbe170534ae83db0",
@@ -312,8 +316,8 @@
       "bytes": 1259
     },
     "schemas/contracts.schema.json": {
-      "sha256": "9cf5c902ea4e3552df4ed422469c3b0af6d05ab7e827c886473596220f9daac3",
-      "bytes": 2481
+      "sha256": "a8e10b83b112708d508e3f01a631bfb4e77cfa39b24ca715955ece361404f7ba",
+      "bytes": 2509
     },
     "schemas/control.schema.json": {
       "sha256": "85d884b7dfd9611279bed224e4351840c732652f7dd20ac81eb056f59935632f",
@@ -376,8 +380,8 @@
       "bytes": 265
     },
     "tests/test_ast_engines.py": {
-      "sha256": "65ded416e4206f469039c1db18fbd26b5afb3b0b8027d550c765e5ee35db1dfb",
-      "bytes": 12391
+      "sha256": "a7dd6ffe5b0c2d297c09c2ae7910dbe0767241456e6b64d59191a8bd5a83cb99",
+      "bytes": 13450
     },
     "tests/test_framework.py": {
       "sha256": "27ba348cc405c5e7fe2288f3ad2e30a9c6c47bfd950b4d6ba072c54780ee44f7",
@@ -404,20 +408,20 @@
       "bytes": 55
     },
     "tools/assess.py": {
-      "sha256": "6a692ada549d6fb3710003f9ec3932a4ea87ba0b8f80a4f28d20e342c323a5ff",
-      "bytes": 6708
+      "sha256": "90fde6428fc9f7ee711fec8b9d36a521b75b25bf1032b46f2ba341e0608ce7e4",
+      "bytes": 6712
     },
     "tools/assurance.py": {
       "sha256": "1e60a9d39228d62b308ee732a39979842f8498ba0916a5b4e244d7d49daba435",
       "bytes": 10186
     },
     "tools/assurance_mcp.py": {
-      "sha256": "7c1d761dd824bf815dd4196159655dcc52140f74f7199c861a6cf5f39f076ea7",
-      "bytes": 22102
+      "sha256": "9ea841134f8f25bd0386946ea3d8a3c4a5a9182e53e344402a444ae6bc0db5ae",
+      "bytes": 22182
     },
     "tools/check_architecture.py": {
-      "sha256": "78cbd105da6eb6b4391c023df2f39959871b11038c66790e62d70a291031768a",
-      "bytes": 16852
+      "sha256": "0d2418c927eb1a3b4e0262b42d65be74093d9ff82670c542beca7399b460f35d",
+      "bytes": 16874
     },
     "tools/check_injection_vectors.py": {
       "sha256": "97273701371e4e48dd19123d0039db8d91ccdbd65c760b10196ce4b264e02003",
@@ -440,8 +444,8 @@
       "bytes": 4050
     },
     "tools/check_surgical_diff.py": {
-      "sha256": "fae07be8d47059b630bf4da036d2e8f30842bd28ee28c59e80aeb16eb6e98766",
-      "bytes": 11952
+      "sha256": "f70e08120979c2faa211ba8464ab1c55ddd77b3b87b97e9bc49ca5daacfa982e",
+      "bytes": 11959
     },
     "tools/check_test_integrity.py": {
       "sha256": "a35dcbf38cf326671cda9a4b4d0543c40f0710e533a0808372c571d24be413a4",
@@ -456,8 +460,8 @@
       "bytes": 10702
     },
     "tools/verify_dependencies.py": {
-      "sha256": "e5e0aaa0a5bf1ef15802f72489e909bee9b483f332c652219c2857ababce6e28",
-      "bytes": 15787
+      "sha256": "de9d609aba2949a47cccfc6c16f958434539c5c9edad36534cb204f45024d0c2",
+      "bytes": 15791
     },
     "validation/ANTIGRAVITY-EXPERIMENT.md": {
       "sha256": "575a7520156bb0852be7af75fd97ec00510a32bc3d6f6627f7aac998562c94d8",

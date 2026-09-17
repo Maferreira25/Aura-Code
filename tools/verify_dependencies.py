@@ -15,7 +15,7 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 # Built-in Python Standard Library modules (never need installation)
 if hasattr(sys, "stdlib_module_names"):
@@ -87,7 +87,7 @@ def parse_requirements(file_path: Path) -> List[Dict[str, str]]:
     return packages
 
 
-def query_pypi_package(package_name: str, timeout: int = 5) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+def query_pypi_package(package_name: str, timeout: int = 5) -> Tuple[Optional[Dict[str, object]], Optional[str]]:
     """Fetch package metadata from PyPI JSON API. Returns (data, error_code)."""
     if not re.match(r"^[A-Za-z0-9_.\-]+$", package_name):
         return None, "INVALID_NAME"
@@ -117,7 +117,7 @@ def verify_package(
     requested_version: Optional[str] = None,
     offline: bool = False,
     timeout: int = 5
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Audit a single dependency for existence, hallucination, and risk indicators."""
     normalized_name = package_name.lower().replace("_", "-")
 
@@ -218,7 +218,7 @@ def verify_requirements_file(
     max_file_bytes: int = 100_000,
     max_packages: int = 100,
     total_timeout: Optional[float] = 30.0,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Verify all packages inside a requirements.txt file within resource limits."""
     file_path = Path(file_path).resolve()
     if not file_path.exists():

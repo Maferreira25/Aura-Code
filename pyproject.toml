@@ -56,7 +56,7 @@ auracode = "tools.assurance:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["tools*", "controls*", "profiles*", "schemas*", "templates*", "validation*"]
+include = ["auracode*", "tools*", "controls*", "profiles*", "schemas*", "templates*", "validation*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.md", "*.txt", "*.yaml", "*.yml"]

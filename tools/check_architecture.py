@@ -12,14 +12,14 @@ import fnmatch
 import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 class ImportVisitor(ast.NodeVisitor):
     """AST Visitor to extract all imports with line and column numbers."""
 
     def __init__(self):
-        self.imports: List[Dict[str, Any]] = []
+        self.imports: List[Dict[str, object]] = []
 
     def visit_Import(self, node: ast.Import):
         for alias in node.names:
@@ -135,12 +135,12 @@ def find_files_for_layer(root_dir: Path, pattern: str) -> List[Path]:
 def check_file_architecture(
     file_path: Path,
     layer_name: str,
-    layer_config: Dict[str, Any],
-    global_rules: Dict[str, Any],
+    layer_config: Dict[str, object],
+    global_rules: Dict[str, object],
     base_dir: Path,
-) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+) -> Tuple[List[Dict[str, object]], Optional[str]]:
     """Check a single python file against layer and global rules."""
-    violations: List[Dict[str, Any]] = []
+    violations: List[Dict[str, object]] = []
     
     try:
         content = file_path.read_text(encoding="utf-8")
@@ -242,11 +242,11 @@ def check_file_architecture(
 def check_architecture(
     target_dir: Path,
     contracts_path: Optional[Path] = None,
-    contract_data: Optional[Dict[str, Any]] = None,
+    contract_data: Optional[Dict[str, object]] = None,
     max_files: int = 1000,
     max_file_bytes: int = 1_000_000,
     max_depth: int = 20,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Audit target directory against an architectural contract with resource bounds."""
     target_dir = Path(target_dir).resolve()
 
@@ -292,13 +292,13 @@ def check_architecture(
 
     layers = contract_data.get("layers", {})
     global_rules = contract_data.get("global_rules", {})
-    all_violations: List[Dict[str, Any]] = []
+    all_violations: List[Dict[str, object]] = []
     inspected_files = set()
     errors = []
     complete = True
     limit_reasons: List[str] = []
 
-    file_to_layers: Dict[Path, List[Tuple[str, Dict[str, Any]]]] = {}
+    file_to_layers: Dict[Path, List[Tuple[str, Dict[str, object]]]] = {}
 
     for layer_name, layer_cfg in layers.items():
         pattern = layer_cfg.get("path", "")

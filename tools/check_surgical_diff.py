@@ -13,7 +13,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 
 SAFE_GIT_ARGS = [
@@ -59,7 +59,7 @@ def get_git_diff_stats(
     changes: Optional[List[Dict[str, str]]] = None,
     timeout: int = 15,
     max_file_bytes: int = 1_000_000,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Calculate diff statistics (added, removed lines) per file covering unstaged, staged, and untracked."""
     stats = {}
     complete = True
@@ -181,9 +181,9 @@ def check_surgical_diff(
     allow_test_modifications: bool = False,
     max_modified_lines: int = 500,
     direct_changes: Optional[List[Dict[str, str]]] = None,
-    direct_stats: Optional[Dict[str, Any]] = None,
+    direct_stats: Optional[Dict[str, object]] = None,
     block_on_excessive_churn: bool = False,
-) -> Dict[str, Any]:
+) -> Dict[str, object]:
     """Audit repository diff against surgical change and evaluation integrity rules."""
     repo_dir = Path(repo_dir).resolve()
     
@@ -208,7 +208,7 @@ def check_surgical_diff(
         }
 
     stats = direct_stats if direct_stats is not None else get_git_diff_stats(repo_dir, changes=changes)
-    violations: List[Dict[str, Any]] = []
+    violations: List[Dict[str, object]] = []
 
     if not stats.get("complete", True):
         violations.append({
