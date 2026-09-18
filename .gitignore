@@ -8,9 +8,9 @@ graphify-out/
 validation/workspaces/
 .venv/
 .pytest_cache/
-.auracode/
-_auracode_*/
-.agents/
+/.auracode/
+/_auracode_*/
+/.agents/
 .env
 *.log
 .vscode/
@@ -19,5 +19,5 @@ _auracode_*/
 framework_audit/
 
 # Reversa
-.reversa/
-_reversa_*/
+/.reversa/
+/_reversa_*/

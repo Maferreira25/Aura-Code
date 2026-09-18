@@ -14,13 +14,14 @@ from tools.validate_framework import (
     MANIFEST_EXCLUDE_DIRS,
     MANIFEST_EXCLUDE_EXTS,
     MANIFEST_EXCLUDE_FILES,
+    MANIFEST_EXCLUDE_ROOT_FILES,
+    load_normalized_bytes,
 )
 
 
-def compute_file_sha256(filepath: Path) -> str:
-    h = hashlib.sha256()
-    h.update(filepath.read_bytes())
-    return h.hexdigest()
+def compute_file_metrics(filepath: Path) -> tuple[str, int]:
+    content = load_normalized_bytes(filepath)
+    return hashlib.sha256(content).hexdigest(), len(content)
 
 
 def generate_manifest(root_dir: Path = ROOT) -> dict:
@@ -40,16 +41,11 @@ def generate_manifest(root_dir: Path = ROOT) -> dict:
         if parts and parts[0] in {".agents", ".reversa"}:
             continue
 
-        # Check extension exclusions
-        if f.suffix.lower() in MANIFEST_EXCLUDE_EXTS:
+        # Check extension and filename exclusions
+        if f.suffix.lower() in MANIFEST_EXCLUDE_EXTS or f.name in MANIFEST_EXCLUDE_FILES or rel_str in MANIFEST_EXCLUDE_ROOT_FILES:
             continue
 
-        # Check filename exclusions
-        if f.name in MANIFEST_EXCLUDE_FILES:
-            continue
-
-        sha = compute_file_sha256(f)
-        size = f.stat().st_size
+        sha, size = compute_file_metrics(f)
         files_map[rel_str] = {
             "sha256": sha,
             "bytes": size

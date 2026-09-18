@@ -9,13 +9,19 @@ from typing import Dict, List, Tuple, Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Shared exclusion rules for manifest verification
 MANIFEST_EXCLUDE_DIRS = {
     ".git", "__pycache__", "graphify-out", "dist", "build", ".venv", ".pytest_cache",
     "auracode.egg-info", ".auracode", ".reversa", "framework_audit"
 }
 MANIFEST_EXCLUDE_EXTS = {".pyc", ".pyo", ".pyd"}
-MANIFEST_EXCLUDE_FILES = {"MANIFEST.json", ".cursorrules", "AGENTS.md"}
+MANIFEST_EXCLUDE_FILES = {".DS_Store", "Thumbs.db"}
+MANIFEST_EXCLUDE_ROOT_FILES = {"MANIFEST.json", ".cursorrules", "AGENTS.md", ".gitattributes"}
+
+
+def load_normalized_bytes(f_path: Path) -> bytes:
+    """Read file bytes with normalized LF line endings across all platforms."""
+    raw = f_path.read_bytes()
+    return raw.replace(b"\r\n", b"\n")
 
 
 def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
@@ -131,7 +137,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
                 if not f_path.exists():
                     errors.append(f"Manifest entry not found on disk: {rel_path}")
                     continue
-                content = f_path.read_bytes()
+                content = load_normalized_bytes(f_path)
                 if len(content) != meta.get("bytes"):
                     errors.append(f"Manifest byte count mismatch for {rel_path}: expected {meta.get('bytes')}, got {len(content)}")
                 calc_hash = hashlib.sha256(content).hexdigest()
@@ -146,9 +152,9 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
                 parts = rel.parts
                 if any(p in MANIFEST_EXCLUDE_DIRS or p.startswith("_auracode_") or p.startswith("_reversa_") for p in parts) or (parts and parts[0] in {".agents", ".reversa"}):
                     continue
-                if f.suffix.lower() in MANIFEST_EXCLUDE_EXTS or f.name in MANIFEST_EXCLUDE_FILES:
-                    continue
                 rel_str = str(rel).replace("\\", "/")
+                if f.suffix.lower() in MANIFEST_EXCLUDE_EXTS or f.name in MANIFEST_EXCLUDE_FILES or rel_str in MANIFEST_EXCLUDE_ROOT_FILES:
+                    continue
                 if rel_str not in m_files:
                     errors.append(f"Untracked file on disk missing from MANIFEST.json: {rel_str}")
         except Exception as exc:
