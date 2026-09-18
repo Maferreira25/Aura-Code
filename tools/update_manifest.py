@@ -3,37 +3,18 @@
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-EXCLUDE_DIRS = {
-    ".git",
-    "__pycache__",
-    "graphify-out",
-    "dist",
-    "build",
-    ".venv",
-    ".pytest_cache",
-    "auracode.egg-info",
-    ".auracode",
-    "_auracode_sdd",
-    "_auracode_forward",
-    "_auracode_bugs",
-    "_auracode_refactor",
-    "_auracode_docs",
-    "framework_audit",
-}
-
-EXCLUDE_EXTENSIONS = {
-    ".pyc",
-    ".pyo",
-    ".pyd",
-}
-
-EXCLUDE_FILES = {
-    "MANIFEST.json",
-}
+from tools.validate_framework import (
+    MANIFEST_EXCLUDE_DIRS,
+    MANIFEST_EXCLUDE_EXTS,
+    MANIFEST_EXCLUDE_FILES,
+)
 
 
 def compute_file_sha256(filepath: Path) -> str:
@@ -42,29 +23,29 @@ def compute_file_sha256(filepath: Path) -> str:
     return h.hexdigest()
 
 
-def generate_manifest() -> dict:
+def generate_manifest(root_dir: Path = ROOT) -> dict:
     files_map = {}
-    all_files = sorted(list(ROOT.rglob("*")))
+    all_files = sorted(list(root_dir.rglob("*")))
 
     for f in all_files:
         if not f.is_file():
             continue
-        rel = f.relative_to(ROOT)
+        rel = f.relative_to(root_dir)
         rel_str = str(rel).replace("\\", "/")
 
         # Check directory exclusions
         parts = rel.parts
-        if any(part in EXCLUDE_DIRS or part.startswith("_auracode_") for part in parts):
+        if any(part in MANIFEST_EXCLUDE_DIRS or part.startswith("_auracode_") or part.startswith("_reversa_") for part in parts):
             continue
-        if parts and parts[0] == ".agents":
+        if parts and parts[0] in {".agents", ".reversa"}:
             continue
 
         # Check extension exclusions
-        if f.suffix.lower() in EXCLUDE_EXTENSIONS:
+        if f.suffix.lower() in MANIFEST_EXCLUDE_EXTS:
             continue
 
         # Check filename exclusions
-        if f.name in EXCLUDE_FILES:
+        if f.name in MANIFEST_EXCLUDE_FILES:
             continue
 
         sha = compute_file_sha256(f)
@@ -81,7 +62,7 @@ def generate_manifest() -> dict:
         "files": files_map
     }
 
-    manifest_path = ROOT / "MANIFEST.json"
+    manifest_path = root_dir / "MANIFEST.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(f"MANIFEST.json updated: {len(files_map)} files cataloged.")
     return manifest

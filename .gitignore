@@ -17,3 +17,7 @@ _auracode_*/
 .idea/
 .DS_Store
 framework_audit/
+
+# Reversa
+.reversa/
+_reversa_*/

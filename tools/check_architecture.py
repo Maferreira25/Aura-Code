@@ -410,46 +410,83 @@ def main() -> None:
         max_file_bytes=args.max_file_bytes,
     )
 
-    if args.json:
+def print_architecture_result(result: dict, target_path: Path, is_json: bool = False) -> int:
+    """Format and print architecture inspection result. Returns exit code."""
+    if is_json:
         print(json.dumps(result, indent=2))
         if result.get("error"):
-            sys.exit(2)
-        sys.exit(0 if result.get("success") else 1)
-    else:
-        if result.get("error"):
-            print(f"ERROR: {result['error']}")
-            sys.exit(2)
+            return 2
+        return 0 if result.get("success") else 1
 
-        print(f"Architecture Inspection: {result.get('project', 'Project')}")
-        print(f"Directory: {result.get('target_directory', str(target_path))}")
-        print(f"Files inspected: {result.get('files_inspected', 0)}")
-        print(f"Violations detected: {result.get('violations_count', 0)}")
+    if result.get("error"):
+        print(f"ERROR: {result['error']}")
+        return 2
+
+    print(f"Architecture Inspection: {result.get('project', 'Project')}")
+    print(f"Directory: {result.get('target_directory', str(target_path))}")
+    print(f"Files inspected: {result.get('files_inspected', 0)}")
+    print(f"Violations detected: {result.get('violations_count', 0)}")
+    print("-" * 60)
+
+    for v in result["violations"]:
+        print(
+            f"{v['file']}:{v['lineno']}:{v['col_offset']}: [{v['rule'].upper()}] in layer '{v['layer']}': {v['message']}"
+        )
+
+    if result["errors"]:
         print("-" * 60)
+        for err in result["errors"]:
+            print(f"ERROR: {err}")
 
-        for v in result["violations"]:
-            print(
-                f"{v['file']}:{v['lineno']}:{v['col_offset']}: [{v['rule'].upper()}] in layer '{v['layer']}': {v['message']}"
-            )
+    if result.get("uncontracted_files"):
+        print("-" * 60)
+        print(f"Notice: {len(result['uncontracted_files'])} uncontracted Python file(s) found outside layer specs:")
+        for uf in result["uncontracted_files"][:10]:
+            print(f"  ? {uf}")
+        if len(result["uncontracted_files"]) > 10:
+            print(f"  ... and {len(result['uncontracted_files']) - 10} more")
 
-        if result["errors"]:
-            print("-" * 60)
-            for err in result["errors"]:
-                print(f"ERROR: {err}")
+    if result["success"]:
+        print("\nARCHITECTURE CONTRACT SATISFIED")
+        return 0
+    else:
+        print(f"\nARCHITECTURE CONTRACT VIOLATED ({result['violations_count']} issues)")
+        return 1
 
-        if result.get("uncontracted_files"):
-            print("-" * 60)
-            print(f"Notice: {len(result['uncontracted_files'])} uncontracted Python file(s) found outside layer specs:")
-            for uf in result["uncontracted_files"][:10]:
-                print(f"  ? {uf}")
-            if len(result["uncontracted_files"]) > 10:
-                print(f"  ... and {len(result['uncontracted_files']) - 10} more")
 
-        if result["success"]:
-            print("\nARCHITECTURE CONTRACT SATISFIED")
-            sys.exit(0)
-        else:
-            print(f"\nARCHITECTURE CONTRACT VIOLATED ({result['violations_count']} issues)")
-            sys.exit(1)
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Inspect Python source code against architectural boundary contracts."
+    )
+    parser.add_argument(
+        "target", nargs="?", default=".", help="Directory to inspect (default: .)"
+    )
+    parser.add_argument(
+        "--contracts", "-c", type=str, help="Path to contracts.json specification"
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="Output results in machine-readable JSON format"
+    )
+    parser.add_argument(
+        "--max-files", type=int, default=1000, help="Maximum number of files to inspect (default: 1000)"
+    )
+    parser.add_argument(
+        "--max-file-bytes", type=int, default=1000000, help="Maximum bytes per file (default: 1000000)"
+    )
+    args = parser.parse_args()
+
+    target_path = Path(args.target).resolve()
+    cpath = Path(args.contracts).resolve() if args.contracts else None
+
+    result = check_architecture(
+        target_path,
+        cpath,
+        max_files=args.max_files,
+        max_file_bytes=args.max_file_bytes,
+    )
+
+    code = print_architecture_result(result, target_path, is_json=args.json)
+    sys.exit(code)
 
 
 if __name__ == "__main__":

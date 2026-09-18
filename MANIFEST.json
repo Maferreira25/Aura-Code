@@ -1,7 +1,7 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 266,
+  "file_count": 265,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -28,8 +28,8 @@
       "bytes": 530
     },
     ".gitignore": {
-      "sha256": "71da1d468287a2558a76d1350e064a726af9de66a0bb956fc4bd8553c50eedc2",
-      "bytes": 205
+      "sha256": "f1f3cffcb4f27b630885bf58d07374d173c948b42bd15bbb186ba2a50896f39a",
+      "bytes": 237
     },
     "adapters/antigravity/.agents/agents/architecture-reviewer/agent.md": {
       "sha256": "138e7742de194258f1be4424912673d574e6edb44cb746d7631793d243102742",
@@ -134,10 +134,6 @@
     "adapters/antigravity/README.md": {
       "sha256": "894c8494c116ffddb06f3718b84e4f17b9c70ad8827bf06b2eb5b2576cd30cd2",
       "bytes": 2021
-    },
-    "adapters/generic/AGENTS.md": {
-      "sha256": "51aa3cd6911abff67d49971076f3108b0f9b6b6b2d366f367e6cd48c390f9b09",
-      "bytes": 1116
     },
     "auracode/__init__.py": {
       "sha256": "92615211f261768576aafc72209ec6007b9e2aa81ffa3a09408348e949d179b9",
@@ -384,8 +380,8 @@
       "bytes": 13450
     },
     "tests/test_framework.py": {
-      "sha256": "27ba348cc405c5e7fe2288f3ad2e30a9c6c47bfd950b4d6ba072c54780ee44f7",
-      "bytes": 1621
+      "sha256": "0f82a2d72b0321079ea9b26e0174088d647c4a3c344faf3ca09838ab1487b159",
+      "bytes": 1892
     },
     "tests/test_harness_isolation.py": {
       "sha256": "d24ce4c19ee9a4e351bd86627302f8798239c5237048c9202597934e1e5584ea",
@@ -412,16 +408,16 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "1e60a9d39228d62b308ee732a39979842f8498ba0916a5b4e244d7d49daba435",
-      "bytes": 10186
+      "sha256": "fd0a4242224b75eca4fafe0467c4206571567427f2d717c954966e2806fe95ee",
+      "bytes": 10213
     },
     "tools/assurance_mcp.py": {
       "sha256": "9ea841134f8f25bd0386946ea3d8a3c4a5a9182e53e344402a444ae6bc0db5ae",
       "bytes": 22182
     },
     "tools/check_architecture.py": {
-      "sha256": "0d2418c927eb1a3b4e0262b42d65be74093d9ff82670c542beca7399b460f35d",
-      "bytes": 16874
+      "sha256": "7989988362e831d2f2a9c6b03ae7096e1d4a716bdaf52f77be06c326e283831b",
+      "bytes": 18084
     },
     "tools/check_injection_vectors.py": {
       "sha256": "97273701371e4e48dd19123d0039db8d91ccdbd65c760b10196ce4b264e02003",
@@ -436,8 +432,8 @@
       "bytes": 2660
     },
     "tools/check_slop_code.py": {
-      "sha256": "942810ae13bc4fca1289b843ff2a636d1d1be7b9cd897244d689ad5daebf1393",
-      "bytes": 3754
+      "sha256": "6bed96e28975cc15d3ab588c7e42bcf63fc218f62318d2efadc69497bbe644fb",
+      "bytes": 3763
     },
     "tools/check_strict_types.py": {
       "sha256": "ad1fdd1ba0c3a7572fd4158d9f1306f581f46391957716c00c45b4e8d461e762",
@@ -452,12 +448,12 @@
       "bytes": 3339
     },
     "tools/update_manifest.py": {
-      "sha256": "c339673682f2b59951f28297cbeb1da6a650be0a66bad94ff41d4efa006592bf",
-      "bytes": 2064
+      "sha256": "b009c07604bacf65cebec50705ddd5971afb40cb31c17fa261b8683662f9ef8c",
+      "bytes": 1948
     },
     "tools/validate_framework.py": {
-      "sha256": "9214c16dddf1c38c04a994c3e297068a25f76ac0319d08d36d0d661bfea8e825",
-      "bytes": 10702
+      "sha256": "f2b522172d14ee36b4e69d8ea6634873e6eea001cafe94effb8b1504c441ff13",
+      "bytes": 12517
     },
     "tools/verify_dependencies.py": {
       "sha256": "de9d609aba2949a47cccfc6c16f958434539c5c9edad36534cb204f45024d0c2",

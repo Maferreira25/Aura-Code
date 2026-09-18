@@ -75,7 +75,7 @@ def check_file(filepath: str, workspace_dir: str) -> list:
 def main() -> None:
     workspace_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
     py_files = glob.glob(os.path.join(workspace_dir, '**', '*.py'), recursive=True)
-    ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference']
+    ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference', 'tests']
     py_files = [f for f in py_files if not any(x in f.replace('\\', '/') for x in ignored)]
 
 

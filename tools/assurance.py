@@ -120,16 +120,18 @@ def main() -> None:
         sys.exit(0)
 
     elif args.command == "arch":
-        sys.argv = ["check_architecture.py", args.target]
-        if args.contracts:
-            sys.argv.extend(["--contracts", args.contracts])
-        if args.max_files:
-            sys.argv.extend(["--max-files", str(args.max_files)])
-        if args.max_file_bytes:
-            sys.argv.extend(["--max-file-bytes", str(args.max_file_bytes)])
-        if args.json:
-            sys.argv.append("--json")
-        check_architecture.main()
+        target_path = Path(args.target).resolve()
+        cpath = Path(args.contracts).resolve() if args.contracts else None
+        result = check_architecture.check_architecture(
+            target_path,
+            cpath,
+            max_files=args.max_files,
+            max_file_bytes=args.max_file_bytes,
+        )
+        code = check_architecture.print_architecture_result(
+            result, target_path, is_json=args.json
+        )
+        sys.exit(code)
 
     elif args.command == "deps":
         sys.argv = ["verify_dependencies.py"]

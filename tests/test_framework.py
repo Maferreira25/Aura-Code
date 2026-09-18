@@ -38,5 +38,11 @@ class FrameworkTests(unittest.TestCase):
         for sid,s in self.sources.items():
             self.assertTrue(s["url"].startswith("https://"),sid)
 
+    def test_validate_framework_programmatic(self):
+        from tools.validate_framework import validate_framework
+        result = validate_framework(ROOT)
+        self.assertTrue(result["success"], result["errors"])
+        self.assertEqual(len(result["errors"]), 0)
+
 if __name__=="__main__":
     unittest.main()
