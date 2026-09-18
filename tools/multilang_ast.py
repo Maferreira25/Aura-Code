@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """
-AuraCode Multi-Language AST Analysis Engine.
-Provides unified static analysis for Python (.py), Node.js / TypeScript (.js, .jsx, .ts, .tsx), and Go (.go).
+AuraCode Multi-Language AST Analysis Engine (Phases 1 & 2).
+Provides unified static analysis for:
+- Python (.py)
+- Node.js / TypeScript (.js, .jsx, .ts, .tsx)
+- Go (.go)
+- Java (.java)
+- C# / .NET (.cs)
+
 Detects AI slop, swallowed exceptions, unclosed resource leaks, and injection vectors across language boundaries.
 """
 
@@ -9,7 +15,7 @@ import os
 import re
 import ast
 import json
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 
 SUPPORTED_EXTENSIONS = {
     ".py": "python",
@@ -17,7 +23,9 @@ SUPPORTED_EXTENSIONS = {
     ".jsx": "javascript",
     ".ts": "typescript",
     ".tsx": "typescript",
-    ".go": "go"
+    ".go": "go",
+    ".java": "java",
+    ".cs": "csharp"
 }
 
 # Try importing tree_sitter if grammars are available
@@ -30,7 +38,7 @@ except ImportError:
 
 
 class MultiLangASTAnalyzer:
-    """Unified analyzer for Python, JavaScript, TypeScript, and Go files."""
+    """Unified analyzer for Python, JavaScript, TypeScript, Go, Java, and C# files."""
 
     def __init__(self, workspace_dir: Optional[str] = None):
         self.workspace_dir = workspace_dir or os.getcwd()
@@ -40,7 +48,7 @@ class MultiLangASTAnalyzer:
         return SUPPORTED_EXTENSIONS.get(ext)
 
     def analyze_slop(self, filepath: str) -> List[Dict[str, Any]]:
-        """Scans Python, JS/TS, or Go files for dead code, swallowed exceptions, and placeholders."""
+        """Scans Python, JS/TS, Go, Java, or C# files for dead code, swallowed exceptions, and placeholders."""
         lang = self.get_language(filepath)
         if not lang:
             return []
@@ -53,18 +61,19 @@ class MultiLangASTAnalyzer:
             return []
 
         violations = []
-
         if lang == "python":
             violations.extend(self._analyze_slop_python(filepath, rel_path, content))
         elif lang in ("javascript", "typescript"):
             violations.extend(self._analyze_slop_jsts(filepath, rel_path, content))
         elif lang == "go":
             violations.extend(self._analyze_slop_go(filepath, rel_path, content))
+        elif lang in ("java", "csharp"):
+            violations.extend(self._analyze_slop_javacsharp(filepath, rel_path, content, lang))
 
         return violations
 
     def analyze_leaks(self, filepath: str) -> List[Dict[str, Any]]:
-        """Scans Python, JS/TS, or Go files for unclosed resource leaks."""
+        """Scans Python, JS/TS, Go, Java, or C# files for unclosed resource leaks."""
         lang = self.get_language(filepath)
         if not lang:
             return []
@@ -83,11 +92,13 @@ class MultiLangASTAnalyzer:
             violations.extend(self._analyze_leaks_jsts(filepath, rel_path, content))
         elif lang == "go":
             violations.extend(self._analyze_leaks_go(filepath, rel_path, content))
+        elif lang in ("java", "csharp"):
+            violations.extend(self._analyze_leaks_javacsharp(filepath, rel_path, content, lang))
 
         return violations
 
     def analyze_security(self, filepath: str) -> List[Dict[str, Any]]:
-        """Scans Python, JS/TS, or Go files for injection vectors and security hazards."""
+        """Scans Python, JS/TS, Go, Java, or C# files for injection vectors and security hazards."""
         lang = self.get_language(filepath)
         if not lang:
             return []
@@ -106,6 +117,8 @@ class MultiLangASTAnalyzer:
             violations.extend(self._analyze_security_jsts(filepath, rel_path, content))
         elif lang == "go":
             violations.extend(self._analyze_security_go(filepath, rel_path, content))
+        elif lang in ("java", "csharp"):
+            violations.extend(self._analyze_security_javacsharp(filepath, rel_path, content, lang))
 
         return violations
 
@@ -147,15 +160,12 @@ class MultiLangASTAnalyzer:
         except Exception:
             return []
 
-
     # --- JS/TS Analyzers ---
     def _analyze_slop_jsts(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
         lines = content.splitlines()
 
-        # Check for empty catch blocks: catch (e) {} or catch {}
         empty_catch_regex = re.compile(r"catch\s*\([^)]*\)\s*\{\s*\}|catch\s*\{\s*\}")
-        # Check for placeholders
         placeholder_terms = ["todo: implement", "dummy response", "fake fallback", "mock data here"]
 
         for idx, line in enumerate(lines, 1):
@@ -184,7 +194,6 @@ class MultiLangASTAnalyzer:
         violations = []
         lines = content.splitlines()
 
-        # Check unclosed fs.openSync or fs.open without close
         open_regex = re.compile(r"\b(fs\.openSync|fs\.open|net\.connect|tls\.connect)\b")
         close_regex = re.compile(r"\b(fs\.closeSync|fs\.close|\.close\(\)|\.destroy\(\))\b")
 
@@ -243,7 +252,6 @@ class MultiLangASTAnalyzer:
         violations = []
         lines = content.splitlines()
 
-        # Swallowed err: _ = err or empty if err != nil {}
         ignored_err_regex = re.compile(r"_\s*=\s*err\b")
         empty_err_if_regex = re.compile(r"if\s+err\s*!=\s*nil\s*\{\s*\}")
         placeholder_terms = ["todo: implement", "dummy response", "fake fallback", "mock data here"]
@@ -281,7 +289,6 @@ class MultiLangASTAnalyzer:
         violations = []
         lines = content.splitlines()
 
-        # Check http.Get / os.Open / os.OpenFile without defer Body.Close() / defer f.Close()
         open_http_regex = re.compile(r"http\.(Get|Post|Head|Do)\s*\(")
         open_file_regex = re.compile(r"os\.(Open|OpenFile|Create)\s*\(")
         defer_close_regex = re.compile(r"defer\s+.*\.(Close\(\)|Body\.Close\(\))")
@@ -329,6 +336,95 @@ class MultiLangASTAnalyzer:
                     "line": idx,
                     "type": "sql_injection_vector",
                     "message": "Potential SQL injection vector via fmt.Sprintf/string concatenation detected"
+                })
+
+        return violations
+
+    # --- Java & C# Analyzers ---
+    def _analyze_slop_javacsharp(self, filepath: str, rel_path: str, content: str, lang: str) -> List[Dict[str, Any]]:
+        violations = []
+        lines = content.splitlines()
+
+        empty_catch_regex = re.compile(r"catch\s*\([^)]*\)\s*\{\s*\}|catch\s*\{\s*\}")
+        placeholder_terms = ["todo: implement", "dummy response", "fake fallback", "mock data here"]
+
+        for idx, line in enumerate(lines, 1):
+            if empty_catch_regex.search(line):
+                violations.append({
+                    "file": rel_path,
+                    "line": idx,
+                    "type": "silent_exception_swallowing",
+                    "message": f"Empty catch block swallows {lang.title()} exception without logging or re-raising"
+                })
+
+            line_lower = line.lower()
+            for term in placeholder_terms:
+                if term in line_lower:
+                    violations.append({
+                        "file": rel_path,
+                        "line": idx,
+                        "type": "dummy_placeholder_string",
+                        "message": f"Hardcoded placeholder string found: '{term}'"
+                    })
+                    break
+
+        return violations
+
+    def _analyze_leaks_javacsharp(self, filepath: str, rel_path: str, content: str, lang: str) -> List[Dict[str, Any]]:
+        violations = []
+        lines = content.splitlines()
+
+        if lang == "java":
+            open_res_regex = re.compile(r"new\s+(FileInputStream|FileOutputStream|FileReader|FileWriter|Socket|ServerSocket)\s*\(")
+            safe_try_regex = re.compile(r"try\s*\([^)]*(FileInputStream|FileOutputStream|FileReader|FileWriter|Socket|AutoCloseable)[^)]*\)")
+            close_regex = re.compile(r"\.close\(\)")
+        else:  # csharp
+            open_res_regex = re.compile(r"new\s+(FileStream|StreamReader|StreamWriter|TcpClient|DbContext)\s*\(")
+            safe_try_regex = re.compile(r"\busing\s*\([^)]+\)|\busing\s+var\s+")
+            close_regex = re.compile(r"\.(Dispose|Close)\(\)")
+
+        has_open = False
+        open_line = 1
+        for idx, line in enumerate(lines, 1):
+            if open_res_regex.search(line):
+                has_open = True
+                open_line = idx
+
+        if has_open and not (safe_try_regex.search(content) or close_regex.search(content)):
+            violations.append({
+                "file": rel_path,
+                "line": open_line,
+                "type": "unclosed_resource_leak",
+                "message": f"{lang.title()} resource initialized without try-with-resources / using / Dispose() call"
+            })
+
+        return violations
+
+    def _analyze_security_javacsharp(self, filepath: str, rel_path: str, content: str, lang: str) -> List[Dict[str, Any]]:
+        violations = []
+        lines = content.splitlines()
+
+        if lang == "java":
+            exec_regex = re.compile(r"Runtime\.getRuntime\(\)\.exec\s*\(|ProcessBuilder\s*\(")
+        else:  # csharp
+            exec_regex = re.compile(r"Process\.Start\s*\(")
+
+        sql_concat_regex = re.compile(r"SELECT\s+.*\s+FROM\s+.*\s*\+\s*|INSERT\s+INTO\s+.*\s*\+\s*|String\.format\s*\(\s*\"SELECT", re.IGNORECASE)
+
+        for idx, line in enumerate(lines, 1):
+            if exec_regex.search(line):
+                violations.append({
+                    "file": rel_path,
+                    "line": idx,
+                    "type": "shell_command_injection",
+                    "message": f"Unchecked system command execution in {lang.title()} detected"
+                })
+            if sql_concat_regex.search(line):
+                violations.append({
+                    "file": rel_path,
+                    "line": idx,
+                    "type": "sql_injection_vector",
+                    "message": f"Potential SQL injection vector via string concatenation in {lang.title()} detected"
                 })
 
         return violations

@@ -42,7 +42,7 @@ def check_file(filepath: str, workspace_dir: str) -> list:
 
 def main() -> None:
     workspace_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
-    extensions = ['*.py', '*.js', '*.jsx', '*.ts', '*.tsx', '*.go']
+    extensions = ['*.py', '*.js', '*.jsx', '*.ts', '*.tsx', '*.go', '*.java', '*.cs']
     target_files = []
     for ext in extensions:
         target_files.extend(glob.glob(os.path.join(workspace_dir, '**', ext), recursive=True))

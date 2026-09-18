@@ -24,6 +24,7 @@ from tools import check_resource_leaks
 from tools import check_strict_types
 from tools import check_test_integrity
 from tools import check_injection_vectors
+from tools import sarif_aggregator
 from tools import assurance_mcp
 from tools import assess
 
@@ -108,6 +109,10 @@ def main() -> None:
     # Subcommand: sec
     sec_p = subparsers.add_parser("sec", help="Scan Python AST for injection vectors, eval/exec, and shell=True risks")
     sec_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+
+    # Subcommand: sarif
+    sarif_p = subparsers.add_parser("sarif", help="Ingest SARIF 2.1.0 or JSON external linter report")
+    sarif_p.add_argument("target", help="Path to SARIF/JSON report file")
 
     # Subcommand: assess
     assess_p = subparsers.add_parser("assess", help="Assess project against an Assurance Level (AL1-AL4)")
@@ -203,6 +208,9 @@ def main() -> None:
 
     elif args.command == "sec":
         _dispatch_with_argv(["check_injection_vectors.py", args.target], check_injection_vectors.main)
+
+    elif args.command == "sarif":
+        _dispatch_with_argv(["sarif_aggregator.py", args.target], sarif_aggregator.main)
 
     elif args.command == "assess":
         assess_argv = [args.assessment_file]
