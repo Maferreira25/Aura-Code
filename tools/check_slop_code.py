@@ -53,40 +53,22 @@ class SlopASTVisitor(ast.NodeVisitor):
                 })
 
 def check_file(filepath: str, workspace_dir: str) -> list:
-    rel_path = os.path.relpath(filepath, workspace_dir)
-    try:
-        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-            code = f.read()
-        tree = ast.parse(code, filename=filepath)
-        is_self_tool = os.path.basename(filepath) == "check_slop_code.py"
-        visitor = SlopASTVisitor(rel_path, check_placeholders=not is_self_tool)
-        visitor.visit(tree)
-        return visitor.violations
-    except SyntaxError as e:
-        return [{
-            "file": rel_path,
-            "line": e.lineno or 1,
-            "type": "syntax_error",
-            "message": f"Syntax error in file: {e.msg}"
-        }]
-    except Exception as e:
-        return [{
-            "file": rel_path,
-            "line": 1,
-            "type": "unexpected_error",
-            "message": f"Unexpected error while analyzing file: {e}"
-        }]
+    from tools.multilang_ast import MultiLangASTAnalyzer
+    analyzer = MultiLangASTAnalyzer(workspace_dir)
+    return analyzer.analyze_slop(filepath)
 
 def main() -> None:
     workspace_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
-    py_files = glob.glob(os.path.join(workspace_dir, '**', '*.py'), recursive=True)
+    extensions = ['*.py', '*.js', '*.jsx', '*.ts', '*.tsx', '*.go']
+    target_files = []
+    for ext in extensions:
+        target_files.extend(glob.glob(os.path.join(workspace_dir, '**', ext), recursive=True))
+
     ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference', 'tests']
-    py_files = [f for f in py_files if not any(x in f.replace('\\', '/') for x in ignored)]
-
-
+    target_files = [f for f in target_files if not any(x in f.replace('\\', '/') for x in ignored)]
 
     all_violations = []
-    for f in py_files:
+    for f in target_files:
         all_violations.extend(check_file(f, workspace_dir))
 
     status = "FAIL" if len(all_violations) > 0 else "PASS"
@@ -101,3 +83,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

@@ -1,7 +1,7 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 266,
+  "file_count": 268,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -391,6 +391,10 @@
       "sha256": "d24ce4c19ee9a4e351bd86627302f8798239c5237048c9202597934e1e5584ea",
       "bytes": 6917
     },
+    "tests/test_multilang_ast.py": {
+      "sha256": "81af9ce2753c1bd6274be8e3c2347cd2b15b14816d9a99035533248e16e242e0",
+      "bytes": 2674
+    },
     "tests/test_security_boundaries.py": {
       "sha256": "20bf8f4bb259cae8a8c918bd862213717d3551e9d9ad9abf4da48f6a064d8019",
       "bytes": 8407
@@ -424,20 +428,20 @@
       "bytes": 18084
     },
     "tools/check_injection_vectors.py": {
-      "sha256": "fa86a6473dbb1a451844b9ffbeb7dd55ffef6f67bc786621d9757bbbe3e2d556",
-      "bytes": 4602
+      "sha256": "75215d21a8a27a637a79bdebc5b1b9bc50c293542122af116440b7d7c84549ab",
+      "bytes": 3775
     },
     "tools/check_requirements_ambiguity.py": {
       "sha256": "29d5a3d73eebfcb9b9fc91d4668dc7476ca46bae0ba18e93ff901723a34607f9",
       "bytes": 4294
     },
     "tools/check_resource_leaks.py": {
-      "sha256": "dd5be22ed3ee55cd096db062c5576e140101d4a0fb84b61745fb79823c3d1f66",
-      "bytes": 3204
+      "sha256": "a10b2e9a1b2a756b6d4a3cf3e8016ebe1004be6aff00d147f9423b603715a95e",
+      "bytes": 2518
     },
     "tools/check_slop_code.py": {
-      "sha256": "015a421750293eef72d8330b0c1ecfcc47ffe43ab3c0ef278faf9f0eb751dbb9",
-      "bytes": 3977
+      "sha256": "2a88239e37276e474ece0c52aa723bd79c7dde110cff3683538689bb0910a1ec",
+      "bytes": 3402
     },
     "tools/check_strict_types.py": {
       "sha256": "4fbb4a7cc11614e90e9fdeecee0d838a8cea821f652437004e17f6dec33ed9c2",
@@ -450,6 +454,10 @@
     "tools/check_test_integrity.py": {
       "sha256": "ecc92570d1161e531830fead06bf0ccd00fea1e4cf0459f13e52f9898f5c7f47",
       "bytes": 4551
+    },
+    "tools/multilang_ast.py": {
+      "sha256": "ec3ad6255e25118aea30f6168324f6ad0d75062a8fbc3a6c2943c73842f543d3",
+      "bytes": 13176
     },
     "tools/update_manifest.py": {
       "sha256": "71bdbca938a82d87bdef5222f58b68a61b303cf93e5a03a2d392f420293a42cf",

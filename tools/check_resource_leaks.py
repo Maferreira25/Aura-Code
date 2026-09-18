@@ -36,45 +36,22 @@ class ResourceLeakVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 def check_file(filepath: str, workspace_dir: str) -> list:
-    rel_path = os.path.relpath(filepath, workspace_dir)
-    try:
-        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-            code = f.read()
-        tree = ast.parse(code, filename=filepath)
-        visitor = ResourceLeakVisitor(rel_path)
-        visitor.visit(tree)
-        return visitor.leaks
-    except SyntaxError as e:
-        return [{
-            "file": rel_path,
-            "line": e.lineno or 1,
-            "type": "syntax_error",
-            "message": f"Syntax error in file: {e.msg}"
-        }]
-    except (IOError, OSError, UnicodeDecodeError) as e:
-        return [{
-            "file": rel_path,
-            "line": 1,
-            "type": "read_error",
-            "message": f"Failed to read file: {e}"
-        }]
-    except Exception as e:
-        return [{
-            "file": rel_path,
-            "line": 1,
-            "type": "unexpected_error",
-            "message": f"Unexpected error while analyzing file: {e}"
-        }]
+    from tools.multilang_ast import MultiLangASTAnalyzer
+    analyzer = MultiLangASTAnalyzer(workspace_dir)
+    return analyzer.analyze_leaks(filepath)
 
 def main() -> None:
     workspace_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
-    py_files = glob.glob(os.path.join(workspace_dir, '**', '*.py'), recursive=True)
-    ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference']
-    py_files = [f for f in py_files if not any(x in f.replace('\\', '/') for x in ignored)]
+    extensions = ['*.py', '*.js', '*.jsx', '*.ts', '*.tsx', '*.go']
+    target_files = []
+    for ext in extensions:
+        target_files.extend(glob.glob(os.path.join(workspace_dir, '**', ext), recursive=True))
 
+    ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference']
+    target_files = [f for f in target_files if not any(x in f.replace('\\', '/') for x in ignored)]
 
     all_leaks = []
-    for f in py_files:
+    for f in target_files:
         all_leaks.extend(check_file(f, workspace_dir))
 
     status = "FAIL" if len(all_leaks) > 0 else "PASS"
