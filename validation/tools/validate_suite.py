@@ -36,12 +36,12 @@ if len(ids)!=len(set(ids)):
     errors.append("Duplicate scenario IDs")
 
 # Baseline validation: public tests pass, protected tests fail for each automated seeded scenario.
-cp=subprocess.run([sys.executable,str(ROOT/"validation"/"tools"/"harness.py"),"baseline"],
+cp=subprocess.run([sys.executable,str(ROOT/"validation"/"tools"/"harness.py"),"baseline","--isolation","local"],
                   cwd=ROOT,text=True,capture_output=True)
 if cp.returncode!=0:
     errors.append("Baseline seeded-defect validation failed:\n"+cp.stdout+"\n"+cp.stderr)
 
-gold=subprocess.run([sys.executable,str(ROOT/"validation"/"tools"/"harness.py"),"gold"],
+gold=subprocess.run([sys.executable,str(ROOT/"validation"/"tools"/"harness.py"),"gold","--isolation","local"],
                     cwd=ROOT,text=True,capture_output=True,timeout=180)
 if gold.returncode!=0:
     errors.append("Reference-solution validation failed:\n"+gold.stdout+"\n"+gold.stderr)
