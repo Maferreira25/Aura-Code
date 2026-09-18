@@ -392,12 +392,12 @@
       "bytes": 6917
     },
     "tests/test_multilang_ast.py": {
-      "sha256": "81af9ce2753c1bd6274be8e3c2347cd2b15b14816d9a99035533248e16e242e0",
-      "bytes": 2674
+      "sha256": "aa5d9978789afd90f0fc8174758ba12d4556425ba7038dabe65f4160be448500",
+      "bytes": 3194
     },
     "tests/test_sarif_aggregator.py": {
-      "sha256": "9c2560a5a7e67ffec02b5befbd75a5030f7a47ef30802fc3471c9a672c2f84bd",
-      "bytes": 4184
+      "sha256": "f3fd5e29a20b3a52e917a4038477a9c401b56dca74ec77ed442d55b38d29df88",
+      "bytes": 4940
     },
     "tests/test_security_boundaries.py": {
       "sha256": "20bf8f4bb259cae8a8c918bd862213717d3551e9d9ad9abf4da48f6a064d8019",
