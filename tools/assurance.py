@@ -33,6 +33,15 @@ def setup_auracode_environment() -> None:
     for d in dirs:
         os.makedirs(d, exist_ok=True)
 
+def _dispatch_with_argv(argv: list, fn: object) -> None:
+    """Invoke a module's main() with a temporary sys.argv, then restore the original."""
+    original = sys.argv
+    try:
+        sys.argv = argv
+        fn()
+    finally:
+        sys.argv = original
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -77,6 +86,7 @@ def main() -> None:
     # Subcommand: ambiguity (Gate G1)
     amb_p = subparsers.add_parser("ambiguity", help="Evaluate requirement ambiguity & non-technical questions (Gate G1)")
     amb_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    amb_p.add_argument("--include-json", action="store_true", help="Include JSON files in ambiguity scanning")
 
     # Subcommand: slop
     slop_p = subparsers.add_parser("slop", help="Scan Python AST for dead code, unreachable code, and swallowed errors")
@@ -93,6 +103,7 @@ def main() -> None:
     # Subcommand: tests
     tests_p = subparsers.add_parser("tests", help="Scan test suite integrity and detect vacuous tests without assertions")
     tests_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    tests_p.add_argument("--allow-zero-tests", action="store_true", help="Permit zero test files without failing")
 
     # Subcommand: sec
     sec_p = subparsers.add_parser("sec", help="Scan Python AST for injection vectors, eval/exec, and shell=True risks")
@@ -134,64 +145,64 @@ def main() -> None:
         sys.exit(code)
 
     elif args.command == "deps":
-        sys.argv = ["verify_dependencies.py"]
+        argv = ["verify_dependencies.py"]
         if args.package:
-            sys.argv.extend(["--package", args.package])
+            argv.extend(["--package", args.package])
         elif args.target:
-            sys.argv.append(args.target)
+            argv.append(args.target)
         if args.version:
-            sys.argv.extend(["--version", args.version])
+            argv.extend(["--version", args.version])
         if args.offline:
-            sys.argv.append("--offline")
+            argv.append("--offline")
         if args.allow_unverified_network:
-            sys.argv.append("--allow-unverified-network")
+            argv.append("--allow-unverified-network")
         if args.max_file_bytes:
-            sys.argv.extend(["--max-file-bytes", str(args.max_file_bytes)])
+            argv.extend(["--max-file-bytes", str(args.max_file_bytes)])
         if args.max_packages:
-            sys.argv.extend(["--max-packages", str(args.max_packages)])
+            argv.extend(["--max-packages", str(args.max_packages)])
         if args.total_timeout:
-            sys.argv.extend(["--total-timeout", str(args.total_timeout)])
+            argv.extend(["--total-timeout", str(args.total_timeout)])
         if args.json:
-            sys.argv.append("--json")
-        verify_dependencies.main()
+            argv.append("--json")
+        _dispatch_with_argv(argv, verify_dependencies.main)
 
     elif args.command == "diff":
-        sys.argv = ["check_surgical_diff.py", args.target]
+        argv = ["check_surgical_diff.py", args.target]
         if args.scope:
-            sys.argv.extend(["--scope", args.scope])
+            argv.extend(["--scope", args.scope])
         if args.allow_tests:
-            sys.argv.append("--allow-tests")
+            argv.append("--allow-tests")
         if args.max_lines:
-            sys.argv.extend(["--max-lines", str(args.max_lines)])
+            argv.extend(["--max-lines", str(args.max_lines)])
         if args.block_on_churn:
-            sys.argv.append("--block-on-churn")
+            argv.append("--block-on-churn")
         if args.json:
-            sys.argv.append("--json")
-        check_surgical_diff.main()
+            argv.append("--json")
+        _dispatch_with_argv(argv, check_surgical_diff.main)
 
     elif args.command == "ambiguity":
-        sys.argv = ["check_requirements_ambiguity.py", args.target]
-        check_requirements_ambiguity.main()
+        argv = ["check_requirements_ambiguity.py", args.target]
+        if args.include_json:
+            argv.append("--include-json")
+        _dispatch_with_argv(argv, check_requirements_ambiguity.main)
 
     elif args.command == "slop":
-        sys.argv = ["check_slop_code.py", args.target]
-        check_slop_code.main()
+        _dispatch_with_argv(["check_slop_code.py", args.target], check_slop_code.main)
 
     elif args.command == "leaks":
-        sys.argv = ["check_resource_leaks.py", args.target]
-        check_resource_leaks.main()
+        _dispatch_with_argv(["check_resource_leaks.py", args.target], check_resource_leaks.main)
 
     elif args.command == "types":
-        sys.argv = ["check_strict_types.py", args.target]
-        check_strict_types.main()
+        _dispatch_with_argv(["check_strict_types.py", args.target], check_strict_types.main)
 
     elif args.command == "tests":
-        sys.argv = ["check_test_integrity.py", args.target]
-        check_test_integrity.main()
+        argv = ["check_test_integrity.py", args.target]
+        if args.allow_zero_tests:
+            argv.append("--allow-zero-tests")
+        _dispatch_with_argv(argv, check_test_integrity.main)
 
     elif args.command == "sec":
-        sys.argv = ["check_injection_vectors.py", args.target]
-        check_injection_vectors.main()
+        _dispatch_with_argv(["check_injection_vectors.py", args.target], check_injection_vectors.main)
 
     elif args.command == "assess":
         assess_argv = [args.assessment_file]

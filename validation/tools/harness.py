@@ -13,10 +13,10 @@ if str(ROOT) not in sys.path:
 from validation.tools.runner import get_runner, DEFAULT_CONTAINER_IMAGE
 
 def scenarios():
-    out={}
+    out = {}
     for meta in SCROOT.glob("*/scenario.json"):
-        obj=json.loads(meta.read_text(encoding="utf-8"))
-        out[obj["id"]] = (meta.parent,obj)
+        obj = json.loads(meta.read_text(encoding="utf-8"))
+        out[obj["id"]] = (meta.parent, obj)
     return out
 
 def tree_hash(root):
@@ -151,9 +151,12 @@ def evaluate(sid,workspace,arm="A0",run_id="run",pair_id=None,model=None,agent=N
     blockers=meta["blocking_dimensions"]
     bvals=[]
     for b in blockers:
-        if b=="FC": bvals.append(pub_ok is True)
-        elif b=="SR": bvals.append(prot_ok is True)
-        elif b=="EI": bvals.append(integ is True)
+        if b == "FC":
+            bvals.append(pub_ok is True)
+        elif b == "SR":
+            bvals.append(prot_ok is True)
+        elif b == "EI":
+            bvals.append(integ is True)
         else:
             # Advanced dimensions require external/manual scorer; not auto-qualified.
             bvals.append(False)
@@ -220,31 +223,36 @@ def cmd_baseline(args):
         pub_ok,pub=public_tests(ws, runner=runner)
         prot_ok,prot=protected_tests(sdir,ws, runner=runner)
         integ,_=integrity_ok(sdir,meta,ws)
-        seeded=(pub_ok is True and prot_ok is False and integ)
+        seeded = (pub_ok is True and prot_ok is False and integ)
         print(f"{sid}: public={'PASS' if pub_ok else 'FAIL'} protected={'PASS' if prot_ok else 'FAIL'} seeded={'OK' if seeded else 'BAD'}")
-        if not seeded: bad+=1
+        if not seeded:
+            bad += 1
     print(f"\nAutomated scenarios: {count}; valid seeded baselines: {count-bad}; bad: {bad}")
     raise SystemExit(1 if bad else 0)
 
 
 def cmd_gold(args):
-    bad=0; count=0
-    goldroot=ROOT / "validation" / "reference" / "public"
+    bad = 0
+    count = 0
+    goldroot = ROOT / "validation" / "reference" / "public"
     runner = get_runner(mode=getattr(args, "isolation", "auto"), image=getattr(args, "image", DEFAULT_CONTAINER_IMAGE))
-    for sid,(sdir,meta) in sorted(scenarios().items()):
-        if meta["evaluation_mode"]!="automated":
+    for sid, (sdir, meta) in sorted(scenarios().items()):
+        if meta["evaluation_mode"] != "automated":
             continue
-        count+=1
-        ws=goldroot/sid
+        count += 1
+        ws = goldroot / sid
         if not ws.exists():
-            print(f"{sid}: missing reference workspace"); bad+=1; continue
-        pub_ok,_=public_tests(ws, runner=runner)
-        prot_ok,_=protected_tests(sdir,ws, runner=runner)
-        integ,_=integrity_ok(sdir,meta,ws)
-        ok=(pub_ok is True and prot_ok is True and integ)
+            print(f"{sid}: missing reference workspace")
+            bad += 1
+            continue
+        pub_ok, _ = public_tests(ws, runner=runner)
+        prot_ok, _ = protected_tests(sdir, ws, runner=runner)
+        integ, _ = integrity_ok(sdir, meta, ws)
+        ok = (pub_ok is True and prot_ok is True and integ)
         print(f"{sid}: public={'PASS' if pub_ok else 'FAIL'} protected={'PASS' if prot_ok else 'FAIL'} integrity={'PASS' if integ else 'FAIL'} gold={'OK' if ok else 'BAD'}")
-        if not ok: bad+=1
-    print(f"\nAutomated scenarios: {count}; valid reference solutions: {count-bad}; bad: {bad}")
+        if not ok:
+            bad += 1
+    print(f"\nAutomated scenarios: {count}; valid reference solutions: {count - bad}; bad: {bad}")
     raise SystemExit(1 if bad else 0)
 
 def main():

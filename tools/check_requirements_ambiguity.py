@@ -25,16 +25,25 @@ NON_TECHNICAL_QUESTION_TEMPLATES = {
     "unspecified_flow": "Quando o usuário clicar no botão final, para onde ele deve ser redirecionado? Sobrou alguma dúvida sobre esta navegação?"
 }
 
-def analyze_workspace(workspace_dir: str) -> dict:
+def analyze_workspace(workspace_dir: str, include_json: bool = False) -> dict:
     findings = []
     unclear_requirements = []
     suggested_questions = []
 
+    extensions = ['*.md', '*.txt', '*.rst']
+    if include_json:
+        extensions.append('*.json')
+
     doc_files = []
-    for ext in ['*.md', '*.txt', '*.json', '*.rst']:
+    for ext in extensions:
         doc_files.extend(glob.glob(os.path.join(workspace_dir, '**', ext), recursive=True))
 
-    doc_files = [f for f in doc_files if not any(x in f for x in ['.git', 'node_modules', 'venv', '__pycache__', '.agents'])]
+    ignored_dirs = [
+        '.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode',
+        'framework_audit', 'docs/audit', '_reversa_sdd', '_reversa_refactor', '_reversa_bugs',
+        '_reversa_docs', '_reversa_forward', 'schemas', 'validation/schemas'
+    ]
+    doc_files = [f for f in doc_files if not any(x in f.replace('\\', '/') for x in ignored_dirs)]
 
     for filepath in doc_files:
         try:
@@ -78,8 +87,11 @@ def analyze_workspace(workspace_dir: str) -> dict:
     return result
 
 def main() -> None:
-    target_dir = sys.argv[1] if len(sys.argv) > 1 else "."
-    res = analyze_workspace(os.path.abspath(target_dir))
+    args = sys.argv[1:]
+    include_json = "--include-json" in args
+    positional = [a for a in args if not a.startswith("--")]
+    target_dir = positional[0] if positional else "."
+    res = analyze_workspace(os.path.abspath(target_dir), include_json=include_json)
     print(json.dumps(res, indent=2, ensure_ascii=False))
     if res["status"] == "FAIL":
         sys.exit(1)

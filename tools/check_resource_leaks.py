@@ -44,8 +44,27 @@ def check_file(filepath: str, workspace_dir: str) -> list:
         visitor = ResourceLeakVisitor(rel_path)
         visitor.visit(tree)
         return visitor.leaks
-    except Exception:
-        return []
+    except SyntaxError as e:
+        return [{
+            "file": rel_path,
+            "line": e.lineno or 1,
+            "type": "syntax_error",
+            "message": f"Syntax error in file: {e.msg}"
+        }]
+    except (IOError, OSError, UnicodeDecodeError) as e:
+        return [{
+            "file": rel_path,
+            "line": 1,
+            "type": "read_error",
+            "message": f"Failed to read file: {e}"
+        }]
+    except Exception as e:
+        return [{
+            "file": rel_path,
+            "line": 1,
+            "type": "unexpected_error",
+            "message": f"Unexpected error while analyzing file: {e}"
+        }]
 
 def main() -> None:
     workspace_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")

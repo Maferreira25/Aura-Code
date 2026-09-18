@@ -11,8 +11,9 @@ import ast
 import glob
 
 class SlopASTVisitor(ast.NodeVisitor):
-    def __init__(self, filename):
+    def __init__(self, filename: str, check_placeholders: bool = True):
         self.filename = filename
+        self.check_placeholders = check_placeholders
         self.violations = []
 
     def visit_FunctionDef(self, node):
@@ -41,9 +42,7 @@ class SlopASTVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Constant(self, node):
-        if isinstance(node.value, str):
-            if "check_slop_code.py" in self.filename.replace("\\", "/"):
-                return
+        if self.check_placeholders and isinstance(node.value, str):
             val_lower = node.value.lower()
             if any(marker in val_lower for marker in ["todo: implement", "dummy response", "fake fallback", "mock data here"]):
                 self.violations.append({
@@ -59,7 +58,8 @@ def check_file(filepath: str, workspace_dir: str) -> list:
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             code = f.read()
         tree = ast.parse(code, filename=filepath)
-        visitor = SlopASTVisitor(rel_path)
+        is_self_tool = os.path.basename(filepath) == "check_slop_code.py"
+        visitor = SlopASTVisitor(rel_path, check_placeholders=not is_self_tool)
         visitor.visit(tree)
         return visitor.violations
     except SyntaxError as e:
@@ -69,8 +69,13 @@ def check_file(filepath: str, workspace_dir: str) -> list:
             "type": "syntax_error",
             "message": f"Syntax error in file: {e.msg}"
         }]
-    except Exception:
-        return []
+    except Exception as e:
+        return [{
+            "file": rel_path,
+            "line": 1,
+            "type": "unexpected_error",
+            "message": f"Unexpected error while analyzing file: {e}"
+        }]
 
 def main() -> None:
     workspace_dir = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")

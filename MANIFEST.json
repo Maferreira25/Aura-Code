@@ -412,8 +412,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "3281e46e516db1a0d4e017dd3395669fad9006fbfbdd75987dbd94f2da0ac2c8",
-      "bytes": 9997
+      "sha256": "0aefba5abb2d8456148f96480391f955a558a6eb6684567556f7401101f618a9",
+      "bytes": 10665
     },
     "tools/assurance_mcp.py": {
       "sha256": "9ea841134f8f25bd0386946ea3d8a3c4a5a9182e53e344402a444ae6bc0db5ae",
@@ -424,32 +424,32 @@
       "bytes": 18084
     },
     "tools/check_injection_vectors.py": {
-      "sha256": "52fb4c07d40de097fa4be6b5fd0b887d3a8464c676d2a257bbbbe980bb6bfbfa",
-      "bytes": 3878
+      "sha256": "fa86a6473dbb1a451844b9ffbeb7dd55ffef6f67bc786621d9757bbbe3e2d556",
+      "bytes": 4602
     },
     "tools/check_requirements_ambiguity.py": {
-      "sha256": "8f497452dfd4c2f21d7fe56aff8428e99b1f46ae18a29d36561917d510f4bba2",
-      "bytes": 3775
+      "sha256": "29d5a3d73eebfcb9b9fc91d4668dc7476ca46bae0ba18e93ff901723a34607f9",
+      "bytes": 4294
     },
     "tools/check_resource_leaks.py": {
-      "sha256": "5349e196c8ec4c20e6a6daedb98bb3ceb6b9e70d69cb7576bdb5cae3dd851917",
-      "bytes": 2588
+      "sha256": "dd5be22ed3ee55cd096db062c5576e140101d4a0fb84b61745fb79823c3d1f66",
+      "bytes": 3204
     },
     "tools/check_slop_code.py": {
-      "sha256": "4acecb1343dfbb373331f986a154bec465a30cd7dedc9afcc9e3ce56d9d1174b",
-      "bytes": 3665
+      "sha256": "015a421750293eef72d8330b0c1ecfcc47ffe43ab3c0ef278faf9f0eb751dbb9",
+      "bytes": 3977
     },
     "tools/check_strict_types.py": {
-      "sha256": "f5a7c523536bc87e0b661207cae308be3ce93cee245903ba8d0bed55539b508e",
-      "bytes": 3942
+      "sha256": "4fbb4a7cc11614e90e9fdeecee0d838a8cea821f652437004e17f6dec33ed9c2",
+      "bytes": 4558
     },
     "tools/check_surgical_diff.py": {
       "sha256": "f70e08120979c2faa211ba8464ab1c55ddd77b3b87b97e9bc49ca5daacfa982e",
       "bytes": 11959
     },
     "tools/check_test_integrity.py": {
-      "sha256": "73c7ac2face6ca4be37b517dedbd8629a7639dba80662c7bc9bc63065d1af553",
-      "bytes": 3250
+      "sha256": "ecc92570d1161e531830fead06bf0ccd00fea1e4cf0459f13e52f9898f5c7f47",
+      "bytes": 4551
     },
     "tools/update_manifest.py": {
       "sha256": "71bdbca938a82d87bdef5222f58b68a61b303cf93e5a03a2d392f420293a42cf",
@@ -1044,8 +1044,8 @@
       "bytes": 1642
     },
     "validation/tools/harness.py": {
-      "sha256": "edeaafefa6ab2862caf7cabd1d3d88592ad0e172ec6efbbd184eba16545d0d93",
-      "bytes": 12879
+      "sha256": "818562fed7561ce5f308925075e6555d10bb21c6ad0f5c5370bf0c6e8f1d18c0",
+      "bytes": 13015
     },
     "validation/tools/runner.py": {
       "sha256": "f08784e3340f77b28a69faf429b69eab915ad992ad7ac3750efe47acc6ea5ae6",
