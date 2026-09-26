@@ -1,48 +1,31 @@
 # AuraCode — Framework Agêntico de Garantia e Confiabilidade de Software
 
 > **AuraCode** (**A**gentic **U**nified **R**eliability & **A**ssurance for **Code**)  
-> **Status: 0.1.1 (Beta / Prévia da Comunidade) — Motor de Verificação AST & Governança**  
+> **Status: 0.1.1 (Beta / Prévia da Comunidade) — Motor de Verificação AST, Pair Programming com Leigos e Governança**  
 > **Suporte a Linguagens:** Princípios arquiteturais e controles de governança são agnósticos de linguagem. O motor automatizado de análise estática AST (`auracode`) atualmente inspeciona código **Python (3.9+)**.
 
 [![English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](LICENSE)
 
-Um framework neutro e baseado em evidências para construção, auditoria e operação de software profissional desenvolvido com auxílio de modelos de linguagem (LLMs) e agentes de codificação autônomos.
+Um framework neutro e baseado em evidências para construção, auditoria e operação de software profissional desenvolvido com auxílio de modelos de linguagem (LLMs) e agentes de codificação autônomos — especialmente projetado para guiar **pessoas leigas no mundo da tecnologia** a desenvolver um sistema desde o início ou melhorar um existente usando as melhores práticas de engenharia de software.
 
 ---
 
-## 📖 Manifesto: AI Software Assurance for Agentic Development
+## 📖 Manifesto: Garantia de Software e Pair Programming com Leigos
 
-A inteligência artificial transformou profundamente a engenharia de software. Modelos de linguagem e agentes autônomos já interpretam requisitos, refatoram sistemas, operam ferramentas e geram milhares de linhas de código em segundos. Contudo, essa velocidade introduz uma nova classe de riscos que a engenharia tradicional nunca precisou enfrentar de forma tão acelerada: dependências alucinadas, erosão estrutural progressiva, testes superficiais que apenas validam a própria implementação da IA (*oráculos viciados*), manipulação acidental de ferramentas e o chamado *"AI slop"* (código inflado, stubs esquecidos e abstrações desnecessárias).
+A inteligência artificial transformou profundamente a engenharia de software. Modelos de linguagem e agentes autônomos já interpretam requisitos, refatoram sistemas, operam ferramentas e geram milhares de linhas de código em segundos. Contudo, essa velocidade introduz riscos críticos quando pessoas leigas interagem com a IA: dependências alucinadas, presunções silenciosas, erosão arquitetural, testes superficiais (*oráculos viciados*) e o chamado *"AI slop"* (código inflado, stubs esquecidos e abstrações desnecessárias).
 
-Software profissional não é apenas código que compila e funciona no *happy path*. Um sistema comercial precisa resistir a acessos maliciosos, operar sob concorrência, recuperar-se de falhas, proteger dados e continuar sustentável após centenas de iterações.
+O AuraCode resolve essa lacuna através do **Pair Programming Agêntico com Tolerância Zero a Presunções**:
 
-O **AI Software Assurance Framework for Agentic Development** nasce para fechar essa lacuna. Sua proposta não é pedir que engenheiros confiem cegamente na IA, mas estabelecer uma nova premissa:
+> **AI Zero Trust & Zero Presunções:** Não confie na IA apenas porque a resposta parece plausível. A IA está estritamente proibida de presumir ou decidir regras de negócio, telas ou arquiteturas em segredo. Exija evidências empíricas e aprovação humana explícita para cada decisão.
 
-> **AI Zero Trust:** Não confie na IA apenas porque a resposta parece correta. Exija evidências.
+### Princípios Fundamentais do AuraCode
 
-Em vez de depender de prompts frágeis como *"aja como um engenheiro sênior"*, o framework traduz princípios consolidados de engenharia (alinhados a referências como NIST SSDF, OWASP ASVS/Agentic, CISA Secure by Design, OpenSSF e SLSA) em um **sistema de controles determinísticos e verificáveis**, onde toda asserção da IA precisa responder:
-1. *O que precisa ser verdadeiro?*
-2. *Que evidência demonstra isso?*
-3. *Como essa evidência foi verificada de forma independente?*
-4. *Qual condição bloqueia a entrega caso haja falha?*
-
-### Como o AuraCode Opera na Prática
-
-O framework não é uma carta de intenções teórica; é uma **plataforma executável**:
-
-* **Autoridade Humana e Resolução de Ambiguidade (Gate G1):** O usuário mantém a autoridade sobre o *que* o sistema faz; a IA decide *como* implementar. Antes de codificar, qualquer incerteza de negócio, segurança ou custo é apresentada ao usuário em linguagem compreensível — traduzindo complexidade técnica em decisões funcionais (ex.: em vez de perguntar *"SQLite ou Postgres?"*, pergunta *"Os dados ficarão só neste dispositivo ou serão acessados em rede?"*).
-* **Motor de Análise Estática Nativo (AST Linters via CLI `auracode`):** Analisadores sintáticos determinísticos inspecionam o código em busca de vícios típicos de LLMs sem depender de outra IA para julgar: caçam código morto e stubs esquecidos (`auracode slop`), detectam vazamentos de arquivos e conexões (`auracode leaks`), verificam vetores de injeção (`auracode sec`), exigem tipagem estrita e limitam diffs cirúrgicos a menos de 500 linhas para barrar refatorações descontroladas.
-* **Integração em Tempo Real via MCP (Model Context Protocol):** Um servidor nativo (`auracode mcp`) conecta o framework diretamente a agentes e IDEs modernas (como Antigravity IDE, Cursor, Claude Desktop e VS Code), aplicando salvaguardas enquanto o agente escreve o código, e não apenas no CI/CD.
-* **Separação de Papéis com Enxame de Agentes:** A mesma IA que escreve não pode auditar. O ecossistema organiza o trabalho em personas segregadas (*scout* de requisitos, arquiteto, desenvolvedor e auditor de segurança).
-* **Proteção contra Adulteração (*Anti-Tampering*) e Sandboxing:** Execuções e testes ocorrem em sandbox protegido (Docker não-root, sem rede e com cotas de recursos). A integridade do próprio framework é selada criptograficamente via hashes SHA-256 (`MANIFEST.json`), impedindo que agentes autônomos desativem os testes ou adulterem os avaliadores.
-* **Níveis Progressivos de Garantia (AL1 a AL4):** Da automação local de baixo risco (AL1) a plataformas financeiras críticas (AL4), o rigor dos controles e a exigência de testes (adversariais, mutação, fuzzing e SBOM) escalam proporcionalmente à gravidade do impacto de uma falha.
-
-### Verificação Empírica
-
-Fiel ao princípio de que nenhuma afirmação deve ser aceita sem provas, o projeto inclui uma **suíte experimental de validação** com cenários reais. Agentes autônomos são avaliados com e sem a governança do framework, medindo objetivamente correção funcional, robustez contra ataques, integridade dos testes e custo de verificação.
-
-O futuro da programação com IA não consiste em torcer para que o modelo acerte. Consiste em construir sistemas capazes de **demonstrar com evidências quando ele acertou** — e impedir rigorosamente que um erro chegue à produção quando ele errou.
+1. **Diretriz de Tolerância Zero a Presunções:** A IA não pode inferir ou decidir nada silenciosamente. Qualquer incerteza ou lacuna — por menor que seja — gera uma pergunta em linguagem simples ao usuário.
+2. **Paradigma da Planta da Casa (`_auracode_sdd/`):** Tal como a construção de uma casa, nenhuma linha de código de aplicação, pasta ou script é gerado antes que toda a arquitetura teórica (frontend, backend, banco de dados, segurança, APIs, design system e níveis de garantia AL1-AL4) esteja 100% especificada e revisada em 7 documentos markdown no diretório `_auracode_sdd/`.
+3. **Comunicação Didática e Analogias:** Decisões técnicas são traduzidas em comparações cotidianas (ex.: Banco de Dados $\rightarrow$ *"Armário Inteligente"*, Backend $\rightarrow$ *"Cozinha do Restaurante"*, API $\rightarrow$ *"Garçom de Mensagens"*, Frontend $\rightarrow$ *"Balcão e Vitrine"*, Autenticação $\rightarrow$ *"Crachá de Acesso"*). Escolhas técnicas são apresentadas em menus com prós e contras simples.
+4. **Motor de Análise Estática Nativo (`auracode <comando>`):** Analisadores sintáticos determinísticos inspecionam o código em busca de vícios típicos de LLMs: caçam código morto (`auracode slop`), detectam vazamentos de arquivos (`auracode leaks`), verificam injeções (`auracode sec`), exigem tipagem estrita e limitam diffs a menos de 500 linhas.
+5. **Níveis Progressivos de Garantia (AL1 a AL4):** Do protótipo local (AL1) ao sistema crítico (AL4), o rigor dos controles escala proporcionalmente ao impacto de uma falha.
 
 ---
 
@@ -124,24 +107,22 @@ auracode mcp
 
 ---
 
-## 🤖 Times de Agentes AuraCode (`adapters/antigravity/.agents/agents/`)
+## 🤖 Habilidades Ativas e Enxames de Agentes (`.agents/skills/`)
 
-O AuraCode define 12 perfis de agentes com escala de evidência e diálogo não técnico:
+O AuraCode oferece 9 habilidades principais para IDEs com protocolos de comunicação em linguagem simples:
 
-1. **`auracode-scout`**: Indexador de workspace e mapeador de dependências.
-2. **`auracode-archaeologist`**: Analisador de histórico de commits e contratos legados.
-3. **`auracode-architect`**: Guardião da Clean Architecture e aplicador do Gate G1.
-4. **`auracode-writer`**: Agente de implementação sem slop e com tipos estritos.
-5. **`auracode-reviewer`**: QA autônomo executando toda a suíte `auracode`.
-6. **`auracode-clarify`**: Agente anti-presunção gerando perguntas em linguagem leiga com verificação de dúvidas.
-7. **`auracode-brainstorm`**: Agente de ideação pré-desenvolvimento com menus de escolha.
-8. **`auracode-new`**: Agente de inicialização greenfield com estrutura Clean Architecture (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`).
-9. **`auracode-debugger-graph`**: Mapeador de grafos de chamada e rastreio causal.
-10. **`auracode-debugger`**: Investigador empírico que cria testes falhos antes da correção.
-11. **`auracode-debugger-fix`**: Corretor cirúrgico de bugs com diffs mínimos.
-12. **`auracode-refactor`**: Especialista em refatoração segura e qualidade de código.
+1. **`auracode`**: Ponto de entrada do framework e menu de navegação.
+2. **`auracode-new`**: Fluxo de novos projetos conduzindo briefing não-técnico e gerando a Planta Teórica de 7 partes em `_auracode_sdd/`.
+3. **`auracode-clarify`**: Agente anti-presunção gerando perguntas em linguagem simples com menus de comparação cotidianos.
+4. **`auracode-brainstorm`**: Ideação e definição de escopo traduzindo conceitos do usuário em menus de funcionalidades.
+5. **`auracode-forward`**: Execução orientada a especificação implementando Clean Architecture (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`) estritamente a partir da planta aprovada.
+6. **`auracode-audit`**: QA autônomo executando a suíte de 12 verificações estáticas `auracode`.
+7. **`auracode-debugger`**: Investigador de defeitos que gera testes falhos antes da correção cirúrgica.
+8. **`auracode-refactor`**: Especialista em eliminação de slop e otimização sem alterar comportamento de negócio.
+9. **`auracode-agents-help`**: Catálogo explicativo dos agentes com analogias didáticas.
 
 ---
 
 ## 📜 Licença
 Licenciado sob a Licença MIT.
+

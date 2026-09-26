@@ -1,48 +1,31 @@
 # AuraCode — Agentic Unified Reliability & Assurance Framework
 
 > **AuraCode** (**A**gentic **U**nified **R**eliability & **A**ssurance for **Code**)  
-> **Status: 0.1.1 (Beta / Community Preview) — AST Verification Engine & Governance Framework**  
+> **Status: 0.1.1 (Beta / Community Preview) — AST Verification Engine, Lay-User AI Pair Programming & Governance Framework**  
 > **Language Support:** Architectural principles and governance controls are language-agnostic. The automated AST inspection engine (`auracode`) currently targets **Python (3.9+)**.
 
 [![Português](https://img.shields.io/badge/Language-Portugu%C3%AAs-blue.svg)](README.pt-BR.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A vendor-neutral, evidence-gated framework and active governance toolkit for building, auditing, and operating professional software developed with substantial assistance from large language models (LLMs) and autonomous coding agents.
+A vendor-neutral, evidence-gated framework and active governance toolkit for building, auditing, and operating professional software developed with substantial assistance from large language models (LLMs) and autonomous coding agents—specifically designed to guide **lay/non-technical users** through building software from scratch or improving existing systems using academic software engineering best practices.
 
 ---
 
-## 📖 Manifesto: AI Software Assurance for Agentic Development
+## 📖 Manifesto: AI Software Assurance & Lay-User Pair Programming
 
-Artificial intelligence has fundamentally transformed software engineering. Large Language Models (LLMs) and autonomous coding agents can now interpret requirements, refactor systems, invoke tools, and generate thousands of lines of code in seconds. However, this velocity introduces a new class of risks that traditional software engineering never had to face at such speed: hallucinated dependencies, progressive architectural erosion, superficial test suites that merely confirm the AI's own implementation (*vitiated oracles*), unintentional tool misuse, and *"AI slop"* (bloated code, forgotten stubs, and unnecessary abstractions).
+Artificial intelligence has fundamentally transformed software engineering. Large Language Models (LLMs) and autonomous coding agents can now interpret requirements, refactor systems, invoke tools, and generate thousands of lines of code in seconds. However, this velocity introduces critical risks when non-technical users interact with AI: hallucinated dependencies, silent assumptions, architectural erosion, superficial test suites (*vitiated oracles*), and *"AI slop"* (bloated code, forgotten stubs, and unnecessary abstractions).
 
-Professional software is not just code that compiles and passes the happy path. A commercial system must resist malicious inputs, operate reliably under concurrency, recover from partial failures, safeguard data, and remain maintainable after hundreds of iterations.
+AuraCode bridges this gap through **Zero-Trust AI Pair Programming for Non-Technical Users**:
 
-The **AI Software Assurance Framework for Agentic Development** bridges this critical gap. Its objective is not to ask engineers to blindly trust AI, but to establish a new foundational premise:
+> **AI Zero Trust & Zero Presumption:** Do not trust AI simply because the output looks plausible. AI must never silently guess requirements, interfaces, or technical trade-offs. Demand empirical evidence and explicit human authorization for every decision.
 
-> **AI Zero Trust:** Do not trust AI simply because the output looks plausible. Demand empirical evidence.
+### Core Principles of AuraCode
 
-Instead of relying on fragile prompts like *"act as a senior software engineer"*, the framework translates established engineering principles (aligned with NIST SSDF, OWASP ASVS/Agentic Security, CISA Secure by Design, OpenSSF, and SLSA) into an **executable system of deterministic controls**, where every AI assertion must answer four fundamental questions:
-1. *What must be true?*
-2. *What evidence proves this is true?*
-3. *How was this evidence independently verified?*
-4. *What condition halts deployment if verification fails?*
-
-### How AuraCode Operates in Practice
-
-AuraCode is not a theoretical whitepaper; it is an **executable assurance engine**:
-
-* **Human Authority & Ambiguity Resolution (Gate G1):** Humans retain decision authority over *what* the system does; AI decides *how* to implement it. Before coding begins, any ambiguity affecting behavior, security, or cost is presented to the user in plain language—translating technical trade-offs into functional decisions (e.g., instead of asking *"SQLite or PostgreSQL?"*, it asks *"Should data stay on this computer or be accessible across multiple devices?"*).
-* **Native AST Static Analysis Engine (`auracode <command>`):** Deterministic syntax analyzers inspect code for LLM anti-patterns without relying on LLMs to judge LLMs: hunts dead code and stubs (`auracode slop`), prevents resource leaks (`auracode leaks`), catches injection vectors (`auracode sec`), enforces strict type hints, and restricts diffs to under 500 lines to block uncontrolled rewrites.
-* **Real-Time IDE Integration via MCP (Model Context Protocol):** A native stdio MCP server (`auracode mcp`) connects AuraCode directly to AI agents and modern IDEs (Antigravity IDE, Cursor, Claude Desktop, VS Code), enforcing guardrails at generation time, not just in CI/CD pipelines.
-* **Separation of Duties via Agent Swarms:** The agent that writes code cannot be the sole evaluator. The ecosystem organizes work into segregated personas (requirement scout, architect, feature writer, and independent reviewer).
-* **Sandboxed Execution & Anti-Tampering:** Evaluations run inside isolated environments (non-root Docker, zero network, CPU/RAM quotas). The framework's own integrity is cryptographically sealed via SHA-256 hashes (`MANIFEST.json`), preventing autonomous agents from tampering with test oracles or disabling assurance controls.
-* **Progressive Assurance Levels (AL1 to AL4):** From low-risk local utilities (AL1) to mission-critical financial infrastructure (AL4), verification rigor (adversarial testing, mutation testing, fuzzing, SBOM provenance) scales proportionally with the impact of failure.
-
-### Empirical Verification
-
-True to the principle that unverified claims are not evidence, AuraCode includes an **experimental benchmark suite** evaluating agents across real-world development scenarios with and without framework governance—empirically measuring functional correctness, vulnerability prevention, test integrity, and verification overhead.
-
-The future of AI programming is not about hoping the model got it right. It is about building systems that **demonstrate with proof when it succeeded**—and rigorously prevent defects from reaching production when it failed.
+1. **Zero-Presumption Directive (Tolerância Zero a Presunções):** The AI agent is strictly forbidden from inferring or deciding business rules, screen behaviors, data models, or error cases on its own. Every ambiguity—no matter how small—triggers a plain-language question to the user.
+2. **House Blueprint First Paradigm (`_auracode_sdd/`):** Just like constructing a house, no application code, directories, or scripts are generated before the complete theoretical architecture (frontend, backend, database, security, APIs, design system, assurance level AL1-AL4) is fully specified and reviewed in 7 markdown blueprints under `_auracode_sdd/`.
+3. **Plain-Language Dialogue & Analogies:** Complex technical trade-offs are translated into real-world analogies (e.g., Database $\rightarrow$ *"Smart Filing Cabinet"*, Backend $\rightarrow$ *"Restaurant Kitchen"*, API $\rightarrow$ *"Waiter taking orders"*, Frontend $\rightarrow$ *"Storefront counter"*, Authentication $\rightarrow$ *"ID Badge"*). Structured choice menus with simple pros and cons are provided whenever technical options arise.
+4. **Native AST Static Analysis (`auracode <command>`):** Deterministic syntax analyzers inspect code for LLM anti-patterns without relying on LLMs to judge LLMs: hunts dead code and stubs (`auracode slop`), prevents resource leaks (`auracode leaks`), catches injection vectors (`auracode sec`), enforces strict type hints, and restricts diffs to under 500 lines to block uncontrolled rewrites.
+5. **Progressive Assurance Levels (AL1 to AL4):** From low-risk local utilities (AL1) to mission-critical financial infrastructure (AL4), verification rigor scales proportionally with the impact of failure.
 
 ---
 
@@ -124,24 +107,22 @@ auracode mcp
 
 ---
 
-## 🤖 AuraCode Specialized Agent Swarms (`adapters/antigravity/.agents/agents/`)
+## 🤖 AuraCode Active Skills & Persona Swarms (`.agents/skills/`)
 
-AuraCode defines 12 specialized agent profiles enforcing non-technical dialogue protocols and strict evidence scales:
+AuraCode defines 9 primary IDE skills enforcing non-technical dialogue protocols and strict evidence scales:
 
-1. **`auracode-scout`**: Fast workspace indexer & structural dependency mapper.
-2. **`auracode-archaeologist`**: Historical commit log, contract lineage, and evolutionary debt analyzer.
-3. **`auracode-architect`**: Clean Architecture Guardian enforcing layer isolation and Gate G1 interrogation.
-4. **`auracode-writer`**: Production feature implementation agent enforcing zero slop and strict type safety.
-5. **`auracode-reviewer`**: Autonomous QA runner executing the full 11-part `auracode` static analysis suite.
-6. **`auracode-clarify`**: Non-technical requirement dialogue generator with mandatory doubt verification.
-7. **`auracode-brainstorm`**: Pre-development planning agent translating user concepts into plain-language option menus.
-8. **`auracode-new`**: Greenfield project scaffolding agent creating Clean Architecture folder structures (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`).
-9. **`auracode-debugger-graph`**: Call graph topology mapper tracing execution paths.
-10. **`auracode-debugger`**: Bug investigator reproducing failures via failing unit tests first.
-11. **`auracode-debugger-fix`**: Surgical bug fixer applying minimal diffs to make reproducing tests pass.
-12. **`auracode-refactor`**: Quality specialist eliminating slop, unclosed resources, and missing type hints without altering public APIs.
+1. **`auracode`**: Main framework entry point and command navigator.
+2. **`auracode-new`**: Greenfield project workflow conducting plain-language interviews and generating the 7-part House Blueprint in `_auracode_sdd/`.
+3. **`auracode-clarify`**: Non-technical requirement dialogue generator with zero presumptions and analogy menus.
+4. **`auracode-brainstorm`**: Ideation and scope framing agent translating raw user concepts into plain-language feature menus.
+5. **`auracode-forward`**: Spec-driven execution agent implementing Clean Architecture code (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`) strictly from approved blueprints.
+6. **`auracode-audit`**: Autonomous QA runner executing the full 12-part `auracode` static analysis suite.
+7. **`auracode-debugger`**: Bug investigator reproducing failures via failing unit tests first before applying minimal surgical fixes.
+8. **`auracode-refactor`**: Quality specialist eliminating slop, unclosed resources, and missing type hints without altering public APIs.
+9. **`auracode-agents-help`**: Explanatory catalog detailing the specialized agent personas using plain-language analogies.
 
 ---
 
 ## 📜 License & Governance
 Licensed under the MIT License.
+
