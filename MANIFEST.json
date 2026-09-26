@@ -28,8 +28,8 @@
       "bytes": 890
     },
     ".gitignore": {
-      "sha256": "f0bfbcfe4eea2f2731192cb2ae905bf474eb1dafbdb4a5188ffdaa78869464ec",
-      "bytes": 242
+      "sha256": "fe9d7d3d50474fb71b32616a9f421f55f1076432c25eb1badce921c75609ae1d",
+      "bytes": 232
     },
     "adapters/antigravity/.agents/agents/architecture-reviewer/agent.md": {
       "sha256": "138e7742de194258f1be4424912673d574e6edb44cb746d7631793d243102742",
@@ -520,8 +520,8 @@
       "bytes": 13450
     },
     "tests/test_auracode_skills.py": {
-      "sha256": "c009df7d147c7e48a09a3916f70b67b42b1ac33a1ee8b4811aa997aa9ea81e49",
-      "bytes": 1771
+      "sha256": "27f74e818d9d7ec178bd522706ddf48062768fb87bb04b5a69e5951c43d08d87",
+      "bytes": 1892
     },
     "tests/test_cage_config.py": {
       "sha256": "611c6545f3e2ba337fdbaf87e62ccde026acb1efbfb72ee2df64474e3742c620",

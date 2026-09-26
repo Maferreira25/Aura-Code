@@ -10,7 +10,6 @@ validation/workspaces/
 .pytest_cache/
 /.auracode/
 /_auracode_*/
-/.agents/
 .env
 *.log
 .vscode/

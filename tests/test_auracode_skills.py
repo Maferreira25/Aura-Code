@@ -17,6 +17,10 @@ class AuraCodeSkillsTests(unittest.TestCase):
             "auracode-debugger",
             "auracode-refactor",
             "auracode-agents-help",
+            "auracode-guard",
+            "auracode-worktree",
+            "auracode-cage",
+            "auracode-loop",
         ]
         for skill in expected_skills:
             skill_file = SKILLS_DIR / skill / "SKILL.md"

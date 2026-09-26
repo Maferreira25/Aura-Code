@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schemas.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "framework": "AuraCode Guard",
+  "description": "Active PreToolUse and PostToolUse security hooks for agent guardrails.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "name": "aura-guard-pre-command",
+        "description": "Intercepts terminal commands before execution to block destructive actions and secret exfiltration.",
+        "match_tools": [
+          "run_command",
+          "bash",
+          "terminal",
+          "execute_command",
+          "shell"
+        ],
+        "action": "execute",
+        "command": "python tools/pre_tool_guard.py check",
+        "input_field": "CommandLine",
+        "fail_closed": true
+      }
+    ],
+    "PostToolUse": [
+      {
+        "name": "aura-guard-post-audit",
+        "description": "Verifies that surgical diff and repository integrity were preserved after tool execution.",
+        "match_tools": [
+          "write_to_file",
+          "replace_file_content",
+          "multi_replace_file_content"
+        ],
+        "action": "execute",
+        "command": "python -m tools.assurance diff . --max-lines 500",
+        "fail_closed": false
+      }
+    ]
+  }
+}
