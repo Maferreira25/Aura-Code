@@ -20,3 +20,12 @@ jobs:
         run: python3 validation/tools/validate_suite.py
       - name: Unit tests
         run: python3 -m unittest discover -s tests -v
+      - name: Assurance AST quality linters
+        run: |
+          python3 tools/assurance.py arch
+          python3 tools/assurance.py slop
+          python3 tools/assurance.py leaks
+          python3 tools/assurance.py types
+          python3 tools/assurance.py tests
+          python3 tools/assurance.py sec
+          python3 tools/assurance.py ambiguity

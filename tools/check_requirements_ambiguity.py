@@ -11,11 +11,11 @@ import re
 import glob
 
 AMBIGUITY_PATTERNS = [
-    (r"\bTODO\b", "Unresolved TODO item found"),
-    (r"\bFIXME\b", "Unresolved FIXME item found"),
-    (r"\bTBD\b", "To Be Determined (TBD) marker found"),
-    (r"\b(?:maybe|probably|should work|something like|etc\.?)\b", "Vague specification phrasing"),
-    (r"\b(?:as expected|normal behavior|standard way)\b", "Underspecified behavior assumption"),
+    (r"\bTODO\b", "Unresolved TODO item found", False),
+    (r"\bFIXME\b", "Unresolved FIXME item found", False),
+    (r"\bTBD\b", "To Be Determined (TBD) marker found", False),
+    (r"\b(?:maybe|probably|should work|something like|etc\.?)\b", "Vague specification phrasing", True),
+    (r"\b(?:as expected|normal behavior|standard way)\b", "Underspecified behavior assumption", True),
 ]
 
 NON_TECHNICAL_QUESTION_TEMPLATES = {
@@ -51,8 +51,12 @@ def analyze_workspace(workspace_dir: str, include_json: bool = False) -> dict:
                 content = f.read()
                 rel_path = os.path.relpath(filepath, workspace_dir)
 
-                for pattern, desc in AMBIGUITY_PATTERNS:
-                    matches = re.finditer(pattern, content, re.IGNORECASE)
+                for item in AMBIGUITY_PATTERNS:
+                    pattern = item[0]
+                    desc = item[1]
+                    case_insensitive = item[2] if len(item) > 2 else True
+                    flags = re.IGNORECASE if case_insensitive else 0
+                    matches = re.finditer(pattern, content, flags)
                     for match in matches:
                         line_no = content[:match.start()].count('\n') + 1
                         findings.append({

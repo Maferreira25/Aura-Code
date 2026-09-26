@@ -43,8 +43,12 @@ class SlopASTVisitor(ast.NodeVisitor):
 
     def visit_Constant(self, node):
         if self.check_placeholders and isinstance(node.value, str):
+            base = os.path.basename(self.filename)
+            if base in ("check_slop_code.py", "multilang_ast.py"):
+                return
+            from tools.multilang_ast import PLACEHOLDER_TERMS
             val_lower = node.value.lower()
-            if any(marker in val_lower for marker in ["todo: implement", "dummy response", "fake fallback", "mock data here"]):
+            if any(marker in val_lower for marker in PLACEHOLDER_TERMS):
                 self.violations.append({
                     "file": self.filename,
                     "line": node.lineno,

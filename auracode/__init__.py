@@ -17,6 +17,8 @@ from tools.check_test_integrity import TestIntegrityVisitor
 from tools.check_injection_vectors import check_file as check_sec
 from tools.check_requirements_ambiguity import analyze_workspace as check_ambiguity
 from tools.assess import assess_data, assess_file
+from tools.multilang_ast import MultiLangASTAnalyzer
+from tools.sarif_aggregator import SarifAggregator
 
 __all__ = [
     "__version__",
@@ -33,4 +35,6 @@ __all__ = [
     "check_ambiguity",
     "assess_data",
     "assess_file",
+    "MultiLangASTAnalyzer",
+    "SarifAggregator",
 ]

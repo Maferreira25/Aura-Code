@@ -24,8 +24,8 @@
       "bytes": 587
     },
     ".github/workflows/validate.yml": {
-      "sha256": "914af9f36ff85385e3c712001024d87e114ebb6b30ff47d0b8e211fd55b65403",
-      "bytes": 530
+      "sha256": "813c60a771ae8e194831ad5681320105c014dd1d125dbeda0615a9e9466d689b",
+      "bytes": 890
     },
     ".gitignore": {
       "sha256": "f0bfbcfe4eea2f2731192cb2ae905bf474eb1dafbdb4a5188ffdaa78869464ec",
@@ -140,8 +140,8 @@
       "bytes": 1116
     },
     "auracode/__init__.py": {
-      "sha256": "92615211f261768576aafc72209ec6007b9e2aa81ffa3a09408348e949d179b9",
-      "bytes": 1234
+      "sha256": "bd8f9078f0c8552c38f7cbe6a0dc9e90c0eac3b5f6166daca4ebda6afae54f55",
+      "bytes": 1389
     },
     "CHANGELOG.md": {
       "sha256": "6f04f17a4275ea5007c5699ed9553bcd864896104cdd74be2868b58ff2126602",
@@ -468,16 +468,16 @@
       "bytes": 3793
     },
     "tools/check_requirements_ambiguity.py": {
-      "sha256": "29d5a3d73eebfcb9b9fc91d4668dc7476ca46bae0ba18e93ff901723a34607f9",
-      "bytes": 4294
+      "sha256": "a039b7084fbd42c139b37fc4becaf1e08e2da5256984f6da14922dbfa08c4d82",
+      "bytes": 4526
     },
     "tools/check_resource_leaks.py": {
       "sha256": "b6692a6c75b08269b569308173606a31b00c776a2cb7b8c235048f67c40dbd7a",
       "bytes": 2536
     },
     "tools/check_slop_code.py": {
-      "sha256": "2c96d9d1a3a3a57e6d7121c65a344f21a9036494fa73f636dc4f05ba35ec880b",
-      "bytes": 3420
+      "sha256": "bd2a93b77d599eb88cf3eec34ff34221da4861cbefa0a71bc165050a875e5366",
+      "bytes": 3568
     },
     "tools/check_strict_types.py": {
       "sha256": "4fbb4a7cc11614e90e9fdeecee0d838a8cea821f652437004e17f6dec33ed9c2",
@@ -492,8 +492,8 @@
       "bytes": 4551
     },
     "tools/multilang_ast.py": {
-      "sha256": "4889a3927f88e1020d2e5d74943da7d5363e997da27d276f32e77665d1d6b44d",
-      "bytes": 17357
+      "sha256": "22260c252f7f76bb7b2a73906c69598ba23dc6256e0d2ad99b35758a153d2668",
+      "bytes": 18933
     },
     "tools/sarif_aggregator.py": {
       "sha256": "ac903a2fce047cf02b3f5237113f9b59851f0965e4a195270226ff486d862755",

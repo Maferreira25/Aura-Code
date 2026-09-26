@@ -36,6 +36,13 @@ try:
 except ImportError:
     HAS_TREE_SITTER = False
 
+PLACEHOLDER_TERMS = [
+    "todo: implement",
+    "dummy response",
+    "fake fallback",
+    "mock data here"
+]
+
 
 class MultiLangASTAnalyzer:
     """Unified analyzer for Python, JavaScript, TypeScript, Go, Java, and C# files."""
@@ -57,8 +64,13 @@ class MultiLangASTAnalyzer:
         try:
             with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
-        except Exception:
-            return []
+        except (IOError, OSError) as e:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "file_read_error",
+                "message": f"Failed to read file: {str(e)}"
+            }]
 
         violations = []
         if lang == "python":
@@ -82,8 +94,13 @@ class MultiLangASTAnalyzer:
         try:
             with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
-        except Exception:
-            return []
+        except (IOError, OSError) as e:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "file_read_error",
+                "message": f"Failed to read file: {str(e)}"
+            }]
 
         violations = []
         if lang == "python":
@@ -107,8 +124,13 @@ class MultiLangASTAnalyzer:
         try:
             with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read()
-        except Exception:
-            return []
+        except (IOError, OSError) as e:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "file_read_error",
+                "message": f"Failed to read file: {str(e)}"
+            }]
 
         violations = []
         if lang == "python":
@@ -137,8 +159,13 @@ class MultiLangASTAnalyzer:
                 "type": "syntax_error",
                 "message": f"Python syntax error: {str(e)}"
             }]
-        except Exception:
-            return []
+        except Exception as e:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "parse_error",
+                "message": f"Failed to parse Python file: {str(e)}"
+            }]
 
     def _analyze_leaks_python(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
         from tools.check_resource_leaks import ResourceLeakVisitor
@@ -147,8 +174,20 @@ class MultiLangASTAnalyzer:
             visitor = ResourceLeakVisitor(rel_path)
             visitor.visit(tree)
             return visitor.leaks
-        except Exception:
-            return []
+        except SyntaxError as e:
+            return [{
+                "file": rel_path,
+                "line": e.lineno or 1,
+                "type": "syntax_error",
+                "message": f"Python syntax error: {str(e)}"
+            }]
+        except Exception as e:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "parse_error",
+                "message": f"Failed to parse Python file: {str(e)}"
+            }]
 
     def _analyze_security_python(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
         from tools.check_injection_vectors import SecurityASTVisitor
@@ -157,8 +196,20 @@ class MultiLangASTAnalyzer:
             visitor = SecurityASTVisitor(rel_path)
             visitor.visit(tree)
             return visitor.findings
-        except Exception:
-            return []
+        except SyntaxError as e:
+            return [{
+                "file": rel_path,
+                "line": e.lineno or 1,
+                "type": "syntax_error",
+                "message": f"Python syntax error: {str(e)}"
+            }]
+        except Exception as e:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "parse_error",
+                "message": f"Failed to parse Python file: {str(e)}"
+            }]
 
     # --- JS/TS Analyzers ---
     def _analyze_slop_jsts(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
@@ -166,7 +217,7 @@ class MultiLangASTAnalyzer:
         lines = content.splitlines()
 
         empty_catch_regex = re.compile(r"catch\s*\([^)]*\)\s*\{\s*\}|catch\s*\{\s*\}")
-        placeholder_terms = ["todo: implement", "dummy response", "fake fallback", "mock data here"]
+        placeholder_terms = PLACEHOLDER_TERMS
 
         for idx, line in enumerate(lines, 1):
             if empty_catch_regex.search(line):
@@ -254,7 +305,7 @@ class MultiLangASTAnalyzer:
 
         ignored_err_regex = re.compile(r"_\s*=\s*err\b")
         empty_err_if_regex = re.compile(r"if\s+err\s*!=\s*nil\s*\{\s*\}")
-        placeholder_terms = ["todo: implement", "dummy response", "fake fallback", "mock data here"]
+        placeholder_terms = PLACEHOLDER_TERMS
 
         for idx, line in enumerate(lines, 1):
             if ignored_err_regex.search(line):
@@ -346,7 +397,7 @@ class MultiLangASTAnalyzer:
         lines = content.splitlines()
 
         empty_catch_regex = re.compile(r"catch\s*\([^)]*\)\s*\{\s*\}|catch\s*\{\s*\}")
-        placeholder_terms = ["todo: implement", "dummy response", "fake fallback", "mock data here"]
+        placeholder_terms = PLACEHOLDER_TERMS
 
         for idx, line in enumerate(lines, 1):
             if empty_catch_regex.search(line):
