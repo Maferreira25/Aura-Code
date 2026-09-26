@@ -604,8 +604,8 @@
       "bytes": 3391
     },
     "tests/test_mutation_engine.py": {
-      "sha256": "4429b6c42cec72dba5dcbabd23f671c7588922288a80a8f828da84c02a1d0fe5",
-      "bytes": 4379
+      "sha256": "3360a753c34167fc9c4921a0972f2b625d7469070e299f21ce1fa32e36340171",
+      "bytes": 5168
     },
     "tests/test_pre_tool_guard.py": {
       "sha256": "fe5c302799cb3759c9a99cfa247e75e6e0d9bb7c7ecf288360fdea501f5d8523",
@@ -652,8 +652,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "a124dc19014578f9c3e802e7caf8a8bf93246140ce56c50663941b436dac8c12",
-      "bytes": 25155
+      "sha256": "2cfbeac80d226e173d02c0829594e7bdf9655402fa7d5214c935ac7abe221b61",
+      "bytes": 25561
     },
     "tools/assurance_mcp.py": {
       "sha256": "9ea841134f8f25bd0386946ea3d8a3c4a5a9182e53e344402a444ae6bc0db5ae",
@@ -688,8 +688,8 @@
       "bytes": 11959
     },
     "tools/check_test_integrity.py": {
-      "sha256": "ecc92570d1161e531830fead06bf0ccd00fea1e4cf0459f13e52f9898f5c7f47",
-      "bytes": 4551
+      "sha256": "cd17e0a8f5ba4ce250cfd4cf39697cbbd7d4f70b60b5121254419b7a1a974915",
+      "bytes": 5292
     },
     "tools/loop_runner.py": {
       "sha256": "dae0d09d8350615154ef6e9bc7dc7b217b7304cde87d9a4bbe752de1a15be1d5",
@@ -712,8 +712,8 @@
       "bytes": 4165
     },
     "tools/mutation_engine.py": {
-      "sha256": "957a47be2ce1624ce3cffe4d0306596228eb1a64ab0a273de9343f928c582554",
-      "bytes": 11212
+      "sha256": "b708b583281daaa684c138fef178bc1559dfbb05b6e9a3fb3fb9c52f8ef9a164",
+      "bytes": 21416
     },
     "tools/pre_tool_guard.py": {
       "sha256": "937e8130159041bac320cf472443b8a0d7ea7a49e27241d829f5f9c7d803e0b7",

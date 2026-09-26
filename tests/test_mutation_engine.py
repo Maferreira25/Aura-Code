@@ -13,6 +13,7 @@ from pathlib import Path
 from tools.mutation_engine import (
     generate_mutants_for_source,
     execute_mutation_analysis,
+    format_prescriptive_report,
 )
 
 
@@ -109,6 +110,21 @@ class TestMutationEngine(unittest.TestCase):
         self.assertEqual(res["status"], "WARN")
         self.assertTrue(res["vitiated_oracles_detected"])
         self.assertGreater(res["survived"], 0)
+        self.assertIn("remediations", res)
+        self.assertGreater(len(res["remediations"]), 0)
+
+        first_rem = res["remediations"][0]
+        self.assertIn("diagnosis", first_rem)
+        self.assertIn("missing_scenario", first_rem)
+        self.assertIn("plain_language_analogy", first_rem)
+        self.assertIn("suggested_test_snippet", first_rem)
+        self.assertIn("def test_", first_rem["suggested_test_snippet"])
+
+        # Test prescriptive report formatting
+        report_str = format_prescriptive_report(res)
+        self.assertIn("AUDITORIA DE MUTAÇÃO AST & PRESCRIÇÃO DE CORREÇÃO", report_str)
+        self.assertIn("PRESCRIÇÃO DE CORREÇÃO #", report_str)
+        self.assertIn("Sugestão de Teste Unitário", report_str)
 
 
 if __name__ == "__main__":

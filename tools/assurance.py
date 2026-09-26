@@ -141,6 +141,8 @@ def main() -> None:
     tests_p.add_argument("--mutate", action="store_true", help="Execute lightweight AST mutation analysis to detect vitiated oracles")
     tests_p.add_argument("--source", "-s", type=str, default=None, help="Target production source file to mutate (used with --mutate)")
     tests_p.add_argument("--test-target", "-t", type=str, default=None, help="Test file or directory to execute (used with --mutate)")
+    tests_p.add_argument("--json", action="store_true", help="Output findings in JSON format")
+    tests_p.add_argument("--suggest", action="store_true", help="Generate prescriptive test snippets and plain-language solutions for survived mutants")
 
     # Subcommand: sec
     sec_p = subparsers.add_parser("sec", help="Scan Python AST for injection vectors, eval/exec, and shell=True risks")
@@ -325,7 +327,10 @@ def main() -> None:
                 if py_files:
                     src = py_files[0]
             res = mutation_engine.execute_mutation_analysis(src, test_target)
-            print(json.dumps(res, indent=2))
+            if getattr(args, "json", False):
+                print(json.dumps(res, indent=2, ensure_ascii=False))
+            else:
+                print(mutation_engine.format_prescriptive_report(res))
             if res.get("status") not in ("PASS", "WARN"):
                 sys.exit(1)
         else:

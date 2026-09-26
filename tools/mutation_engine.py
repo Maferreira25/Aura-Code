@@ -189,6 +189,148 @@ def generate_mutants_for_source(source_code: str, max_mutants: int = 25) -> List
     return mutants
 
 
+def find_enclosing_function_name(tree: Optional[ast.AST], target_line: int) -> Optional[str]:
+    """Find the function or method enclosing a given line number."""
+    if not tree:
+        return None
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            start = getattr(node, "lineno", 0)
+            end = getattr(node, "end_lineno", start + 100)
+            if start <= target_line <= end:
+                return node.name
+    return None
+
+
+def generate_remediation_prescription(
+    mutant: Mutant,
+    source_line: str,
+    enclosing_func: Optional[str] = None
+) -> Dict[str, Any]:
+    """Generate prescriptive plain-language diagnosis, analogy, and test snippet."""
+    m_type = mutant.mutation_type
+    func_target = enclosing_func if enclosing_func else "target_function"
+    clean_src = source_line.strip()
+
+    if m_type == "RELATIONAL":
+        diagnosis = (
+            f"O teste atual não valida o caminho alternativo da condição na linha {mutant.line_number}. "
+            f"A inversão do operador '{mutant.original_op}' para '{mutant.mutated_op}' continuou passando verde."
+        )
+        missing_scenario = (
+            f"Falta um teste com entrada que force a condição '{clean_src}' a avaliar para o resultado oposto "
+            f"(cenário de contorno ou negação da regra)."
+        )
+        analogy = (
+            "É como testar uma catraca de metrô passando apenas com o cartão válido, "
+            "sem testar se a catraca realmente bloqueia quem tenta passar sem pagar."
+        )
+        test_snippet = (
+            f"def test_{func_target}_boundary_condition(self):\n"
+            f"    # Cenário de contorno para matar mutante na linha {mutant.line_number}\n"
+            f"    # Valide o comportamento quando a condição for invertida ({clean_src}):\n"
+            f"    result = {func_target}(...)\n"
+            f"    self.assertNotEqual(result, unexpected_value)"
+        )
+
+    elif m_type == "ARITHMETIC":
+        diagnosis = (
+            f"A operação aritmética na linha {mutant.line_number} foi alterada de '{mutant.original_op}' para '{mutant.mutated_op}' "
+            f"e a asserção do teste não percebeu a alteração numérica."
+        )
+        missing_scenario = (
+            "O teste provavelmente usa valores triviais (como 0 ou 1) onde operações diferentes produzem o mesmo resultado, "
+            "ou não realiza asserção sobre o valor exato calculado."
+        )
+        analogy = (
+            "É como uma balança comercial que aceita qualquer peso porque o fiscal só verifica se tem algo em cima do prato, "
+            "mas não confere se o valor em gramas está exato."
+        )
+        test_snippet = (
+            f"def test_{func_target}_exact_arithmetic_value(self):\n"
+            f"    # Valide o cálculo com valores não-triviais para matar mutante na linha {mutant.line_number}\n"
+            f"    result = {func_target}(...)\n"
+            f"    self.assertEqual(result, expected_exact_value)"
+        )
+
+    elif m_type == "BOOLEAN_CONSTANT":
+        diagnosis = (
+            f"A constante booleana na linha {mutant.line_number} foi invertida de '{mutant.original_op}' para '{mutant.mutated_op}' "
+            f"sem que nenhum teste quebrasse."
+        )
+        missing_scenario = (
+            f"Falta uma asserção semântica que verifique diretamente o efeito do sinalizador booleano ({mutant.original_op}) "
+            f"no resultado final."
+        )
+        analogy = (
+            "É como um disjuntor de segurança desligado na parede, mas a lâmpada continua ligada em outro fio "
+            "e ninguém nota que o dispositivo de proteção está inoperante."
+        )
+        test_snippet = (
+            f"def test_{func_target}_boolean_flag_effect(self):\n"
+            f"    # Assegure que a flag '{mutant.original_op}' altera o comportamento do sistema\n"
+            f"    result = {func_target}(...)\n"
+            f"    self.assertTrue(result.flag_is_effective)"
+        )
+
+    elif m_type == "LOGICAL":
+        diagnosis = (
+            f"O operador lógico na linha {mutant.line_number} foi alterado de '{mutant.original_op}' para '{mutant.mutated_op}'. "
+            f"As condições compostas não estão sendo testadas isoladamente."
+        )
+        missing_scenario = (
+            "Falta um teste em tabela-verdade: teste o caso onde uma condição é Verdadeira e a outra é Falsa, "
+            "e vice-versa."
+        )
+        analogy = (
+            "É como uma porta de cofre que exige duas chaves simultâneas (A E B), mas ninguém testou se ela abre "
+            "quando só uma das chaves é girada."
+        )
+        test_snippet = (
+            f"def test_{func_target}_compound_logic_branches(self):\n"
+            f"    # Teste os ramos intermediários da lógica '{mutant.original_op}'\n"
+            f"    result = {func_target}(cond_a=True, cond_b=False)\n"
+            f"    self.assertFalse(result.is_authorized)"
+        )
+
+    elif m_type == "RETURN_NULLIFICATION":
+        diagnosis = (
+            f"O comando 'return' na linha {mutant.line_number} foi substituído por 'return None' e o teste não falhou! "
+            f"Seus testes chamam a função mas não conferem o valor retornado."
+        )
+        missing_scenario = (
+            f"O teste invoca '{func_target}', mas não tem nenhuma asserção sobre o retorno "
+            f"(apenas verifica que não deu erro ou exceção)."
+        )
+        analogy = (
+            "É como pedir um prato no restaurante, o garçom voltar com a bandeja vazia e você pagar a conta "
+            "sem reclamar porque 'ele não quebrou a louça'."
+        )
+        test_snippet = (
+            f"def test_{func_target}_returns_valid_payload(self):\n"
+            f"    # Assegure que o retorno não é nulo e contém os dados esperados\n"
+            f"    result = {func_target}(...)\n"
+            f"    self.assertIsNotNone(result)\n"
+            f"    self.assertEqual(result, expected_payload)"
+        )
+    else:
+        diagnosis = f"Mutante sobreviveu na linha {mutant.line_number} ({m_type})."
+        missing_scenario = "Falta asserção semântica cobrindo esta instrução."
+        analogy = "O teste atual é um oráculo superficial."
+        test_snippet = (
+            f"def test_{func_target}_assert_behavior(self):\n"
+            f"    result = {func_target}(...)\n"
+            f"    self.assertIsNotNone(result)"
+        )
+
+    return {
+        "diagnosis": diagnosis,
+        "missing_scenario": missing_scenario,
+        "plain_language_analogy": analogy,
+        "suggested_test_snippet": test_snippet
+    }
+
+
 def execute_mutation_analysis(
     target_file: Path,
     test_file_or_dir: Path,
@@ -261,6 +403,14 @@ def execute_mutation_analysis(
     killed = 0
     survived = 0
     mutants_report = []
+    remediations = []
+
+    code_lines = original_code.splitlines()
+    tree = None
+    try:
+        tree = ast.parse(original_code, filename=str(target_file))
+    except Exception:
+        pass
 
     # Run tests against each mutant by safe swap in place with try/finally restore
     try:
@@ -290,14 +440,31 @@ def execute_mutation_analysis(
                 m.status = "KILLED"
                 killed += 1
 
-            mutants_report.append({
+            mutant_dict: Dict[str, Any] = {
                 "mutant_id": m.mutant_id,
                 "line": m.line_number,
                 "type": m.mutation_type,
                 "original": m.original_op,
                 "mutated": m.mutated_op,
                 "status": m.status
-            })
+            }
+
+            if m.status == "SURVIVED":
+                src_line = code_lines[m.line_number - 1].strip() if 1 <= m.line_number <= len(code_lines) else ""
+                enc_func = find_enclosing_function_name(tree, m.line_number)
+                remediation = generate_remediation_prescription(m, src_line, enc_func)
+                mutant_dict["remediation"] = remediation
+                remediations.append({
+                    "mutant_id": m.mutant_id,
+                    "line": m.line_number,
+                    "source_line": src_line,
+                    "mutation_type": m.mutation_type,
+                    "original_op": m.original_op,
+                    "mutated_op": m.mutated_op,
+                    **remediation
+                })
+
+            mutants_report.append(mutant_dict)
     finally:
         # Always guarantee original code is restored
         target_file.write_text(original_code, encoding="utf-8")
@@ -314,22 +481,73 @@ def execute_mutation_analysis(
         "survived": survived,
         "mutation_score": round(score, 1),
         "vitiated_oracles_detected": survived > 0,
-        "mutants": mutants_report
+        "mutants": mutants_report,
+        "remediations": remediations
     }
+
+
+def format_prescriptive_report(res: Dict[str, Any]) -> str:
+    """Format an actionable, plain-language prescriptive report for terminal display."""
+    target = res.get("target_file", "unknown")
+    total = res.get("total_mutants", 0)
+    killed = res.get("killed", 0)
+    survived = res.get("survived", 0)
+    score = res.get("mutation_score", 0.0)
+    remediations = res.get("remediations", [])
+
+    lines = [
+        "=" * 80,
+        "   AURA CODE -- AUDITORIA DE MUTAÇÃO AST & PRESCRIÇÃO DE CORREÇÃO",
+        "=" * 80,
+        f">> Arquivo Analisado: {target}",
+        f">> Mutantes Totais: {total} | Eliminados (Killed): {killed} | Sobreviventes: {survived}",
+        f">> Escore de Mutação: {score}%",
+    ]
+
+    if not remediations:
+        lines.append("\n[STATUS: PASS] Nenhum oráculo viciado detectado! A suíte de testes exerceu as mutações com sucesso.")
+        lines.append("=" * 80)
+        return "\n".join(lines)
+
+    lines.append(f"\n[ALERTA DE SEGURANÇA]: Foram detectados {len(remediations)} ORÁCULOS VICIADOS / FALSOS na suíte!")
+    lines.append("Os testes atuais continuam 'verdes' mesmo quando o código produtivo tem sua lógica invertida.")
+    lines.append("-" * 80)
+
+    for idx, rem in enumerate(remediations, 1):
+        lines.append(f"\n>> PRESCRIÇÃO DE CORREÇÃO #{idx} (Linha {rem.get('line', '?')})")
+        lines.append(f"   Código Original: {rem.get('source_line', '')}")
+        lines.append(f"   Operador Mutado: {rem.get('mutation_type', '')} ({rem.get('original_op', '')} -> {rem.get('mutated_op', '')})")
+        lines.append(f"   Diagnóstico:     {rem.get('diagnosis', '')}")
+        lines.append(f"   Cenário Ausente: {rem.get('missing_scenario', '')}")
+        lines.append(f"   Analogia:        \"{rem.get('plain_language_analogy', '')}\"")
+        lines.append("   Sugestão de Teste Unitário para Matar o Mutante:")
+        snippet = rem.get("suggested_test_snippet", "")
+        for sline in snippet.splitlines():
+            lines.append(f"      {sline}")
+
+    lines.append("\n" + "=" * 80)
+    lines.append(">> AÇÃO RECOMENDADA: Adicione os testes sugeridos acima até o escore atingir 100%.")
+    lines.append("=" * 80)
+    return "\n".join(lines)
 
 
 def main() -> None:
     args = sys.argv[1:]
     if not args or "--help" in args or "-h" in args:
-        print("Usage: auracode tests --mutate <target_source_file> <test_file_or_dir>")
+        print("Usage: auracode tests --mutate <target_source_file> <test_file_or_dir> [--json]")
         sys.exit(0)
 
-    target_src = Path(args[0])
-    test_target = Path(args[1]) if len(args) > 1 else Path("tests")
+    use_json = "--json" in args
+    clean_args = [a for a in args if not a.startswith("--")]
+    target_src = Path(clean_args[0])
+    test_target = Path(clean_args[1]) if len(clean_args) > 1 else Path("tests")
 
     res = execute_mutation_analysis(target_src, test_target)
-    print(json.dumps(res, indent=2))
-    sys.exit(0 if res.get("status") == "PASS" else 1)
+    if use_json:
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+    else:
+        print(format_prescriptive_report(res))
+    sys.exit(0 if res.get("status") in ("PASS", "WARN") else 1)
 
 
 if __name__ == "__main__":

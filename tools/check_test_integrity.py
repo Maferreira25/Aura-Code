@@ -38,7 +38,13 @@ class TestIntegrityVisitor(ast.NodeVisitor):
                     "file": self.filename,
                     "line": node.lineno,
                     "function": node.name,
-                    "issue": f"Test function '{node.name}' has no assertions (vacuous test)"
+                    "issue": f"Test function '{node.name}' has no assertions (vacuous test)",
+                    "remediation": {
+                        "diagnosis": f"A função de teste '{node.name}' executa o código mas não contém nenhuma asserção (`assert` ou `self.assert*`), agindo como um oráculo falso.",
+                        "missing_scenario": f"Falta validar o resultado ou o estado das chamadas realizadas dentro de '{node.name}'.",
+                        "plain_language_analogy": "É como um sensor de alarme ligado na tomada, mas sem sirene conectada para apitar se alguém abrir a porta.",
+                        "suggested_solution": "Adicione pelo menos uma asserção semântica verificando o estado resultante: self.assertEqual(resultado, esperado) ou self.assertTrue(sucesso)."
+                    }
                 })
         self.generic_visit(node)
 
