@@ -6,7 +6,7 @@
 
 [![English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](LICENSE)
-[![Testes: 144 Aprovados](https://img.shields.io/badge/Testes-144%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
+[![Testes: 149 Aprovados](https://img.shields.io/badge/Testes-149%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
 [![Violações AST: 0](https://img.shields.io/badge/Viola%C3%A7%C3%B5es%20AST-0-success.svg)](tools/)
 
 Um framework neutro e baseado em evidências para construção, auditoria e operação de software profissional desenvolvido com auxílio de modelos de linguagem (LLMs) e agentes de codificação autônomos — especialmente projetado para guiar **pessoas leigas no mundo da tecnologia** a desenvolver um sistema desde o início ou modernizar um existente usando as melhores práticas de engenharia de software de nível sênior.
@@ -245,11 +245,11 @@ Agora que o AuraCode está instalado, escolha o que você deseja fazer:
    ```bash
    cd pasta-do-seu-projeto
    ```
-2. Instale o **Guardião de Segurança da IA (Aura Guard)**:
+2. Instale o **Guardião de Segurança da IA (Aura Guard)** e o **Git Pre-Push Hook**:
    ```bash
    auracode guard install .
    ```
-   *Isso ativa a barreira de proteção em `.agents/hooks.json`, impedindo que agentes de IA apaguem arquivos acidentalmente ou executem comandos perigosos no seu sistema.*
+   *Isso ativa a barreira de proteção em `.agents/hooks.json` E configura o hook `.git/hooks/pre-push`, impedindo comandos perigosos e bloqueando commits com erros silenciosos antes mesmo de saírem do seu computador para o GitHub.*
 3. Execute o **Raio-X Completo do Sistema**:
    ```bash
    auracode audit .
@@ -266,9 +266,9 @@ Agora que o AuraCode está instalado, escolha o que você deseja fazer:
 
 ---
 
-## 🛠️ Catálogo Completo dos 20 Comandos CLI (`auracode <comando>`)
+## 🛠️ Catálogo Completo dos 21 Comandos CLI (`auracode <comando>`)
 
-O AuraCode oferece 20 comandos nativos de verificação estática, contenção, mutação de testes, escaneamento multi-linguagem, wizard interativo e governança:
+O AuraCode oferece 21 comandos nativos de verificação estática, contenção, mutação de testes, escaneamento multi-linguagem, wizard interativo, preflight local espelho de CI/CD e governança:
 
 ```bash
 # 1. Inicializar diretórios de governança e cadernos SDD (perfil: micro, lite, standard, enterprise)
@@ -339,6 +339,9 @@ auracode loop reset
 
 # 20. Debate agêntico adversarial estruturado em 3 fases com contenção (Party Mode Seguro)
 auracode debate "Sistema de Armazenamento de Arquivos"
+
+# 21. Verificação Preflight Local e Espelho do CI/CD (Executa todos os 10 gates localmente antes do push)
+auracode preflight
 ```
 
 ---

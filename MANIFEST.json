@@ -1,7 +1,7 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 335,
+  "file_count": 337,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -296,12 +296,12 @@
       "bytes": 1842
     },
     "README.md": {
-      "sha256": "c933c452e6dc9223d018fd7385fc610577e1d4d7829d5201e8e033a04261fa92",
-      "bytes": 28846
+      "sha256": "b6600641712be91d00538477d525fee7f6a30a5fb0235402e764ddce22b8748e",
+      "bytes": 29103
     },
     "README.pt-BR.md": {
-      "sha256": "f980384a23396ca0a8e4947d735b6f6fc782af679d58d2f8e663a2ff7ee3b765",
-      "bytes": 29657
+      "sha256": "d5cd0d7184a70caee611b01ad5d62503954390da31b905d028281abaf30cebe2",
+      "bytes": 29907
     },
     "RESUMO_ENGENHARIA_SOFTWARE_AGENTES_INTELIGENTES.md": {
       "sha256": "1c931873872bbebcfd64acd68f96894c3e5694044bb328f3d6b563a313e0bf6c",
@@ -611,6 +611,10 @@
       "sha256": "fe5c302799cb3759c9a99cfa247e75e6e0d9bb7c7ecf288360fdea501f5d8523",
       "bytes": 6704
     },
+    "tests/test_preflight.py": {
+      "sha256": "9f6a5484219894f0fd875d08bd9023f74b03213413c223de587743e700865725",
+      "bytes": 4242
+    },
     "tests/test_sarif_aggregator.py": {
       "sha256": "f3fd5e29a20b3a52e917a4038477a9c401b56dca74ec77ed442d55b38d29df88",
       "bytes": 4940
@@ -652,8 +656,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "2cfbeac80d226e173d02c0829594e7bdf9655402fa7d5214c935ac7abe221b61",
-      "bytes": 25561
+      "sha256": "e6e4b262e3b0ce83a7e24a48c72b7eca7947a840ec316100bf743663d6de8dd7",
+      "bytes": 26346
     },
     "tools/assurance_mcp.py": {
       "sha256": "9ea841134f8f25bd0386946ea3d8a3c4a5a9182e53e344402a444ae6bc0db5ae",
@@ -716,8 +720,12 @@
       "bytes": 21423
     },
     "tools/pre_tool_guard.py": {
-      "sha256": "937e8130159041bac320cf472443b8a0d7ea7a49e27241d829f5f9c7d803e0b7",
-      "bytes": 18126
+      "sha256": "47602d8c37a92ccf14bcac735839c686d57507b36cf24f6ea53b2ae4576b2f64",
+      "bytes": 20904
+    },
+    "tools/preflight.py": {
+      "sha256": "f04828c04917cf72d2a65baa1e517db941d238287ca39f0aa971634f40bf992d",
+      "bytes": 9645
     },
     "tools/sarif_aggregator.py": {
       "sha256": "ac903a2fce047cf02b3f5237113f9b59851f0965e4a195270226ff486d862755",

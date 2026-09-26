@@ -36,6 +36,7 @@ from tools import mutation_engine
 from tools import wizard
 from tools import multilang_runner
 from tools import adversarial_debate
+from tools import preflight
 
 
 def setup_auracode_environment(profile: str = "standard", copy_templates: bool = True, target_dir: Optional[Path] = None) -> None:
@@ -238,6 +239,12 @@ def main() -> None:
     debate_p = subparsers.add_parser("debate", help="Orchestrate structured 3-phase adversarial assurance debate")
     debate_p.add_argument("topic", nargs="?", default="Arquitetura e Limites de Segurança", help="Topic, architecture proposal, or SDD feature to debate")
     debate_p.add_argument("--json", action="store_true", help="Output debate findings in JSON format")
+
+    # Subcommand: preflight
+    preflight_p = subparsers.add_parser("preflight", help="Execute complete local preflight checks mirroring CI/CD")
+    preflight_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
+    preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
 
     args = parser.parse_args()
 
@@ -473,6 +480,16 @@ def main() -> None:
                 print(f"     Impacto: {opt['tradeoff']}")
             print(f"\n>> {d['phase_3_arbiter']['human_authority_reminder']}")
         sys.exit(0)
+
+    elif args.command == "preflight":
+        argv = ["preflight.py"]
+        if args.target:
+            argv.append(args.target)
+        if args.quiet:
+            argv.append("--quiet")
+        if args.json:
+            argv.append("--json")
+        _dispatch_with_argv(argv, preflight.main)
 
 
 if __name__ == "__main__":

@@ -418,6 +418,68 @@ def generate_hooks_config(workspace_root: Path) -> Dict[str, Any]:
     }
 
 
+def install_git_pre_push_hook(workspace_root: Path) -> Optional[Path]:
+    """Installs or updates the .git/hooks/pre-push hook in the target git repository."""
+    git_dir = workspace_root / ".git"
+    if not git_dir.exists() or not git_dir.is_dir():
+        return None
+
+    hooks_dir = git_dir / "hooks"
+    hooks_dir.mkdir(parents=True, exist_ok=True)
+    pre_push_file = hooks_dir / "pre-push"
+
+    script_content = (
+        "#!/bin/sh\n"
+        "# AuraCode Git Pre-Push Guardrail Hook\n"
+        "# Deterministically enforces local CI preflight gates before push.\n\n"
+        "echo \"================================================================================\"\n"
+        "echo \"   AURA CODE -- GIT PRE-PUSH ASSURANCE GUARD\"\n"
+        "echo \"================================================================================\"\n"
+        "PY_BIN=\"\"\n"
+        "for cand in python python3 py; do\n"
+        "    if command -v \"$cand\" >/dev/null 2>&1; then\n"
+        "        if \"$cand\" -c \"import sys; sys.exit(0)\" >/dev/null 2>&1; then\n"
+        "            PY_BIN=\"$cand\"\n"
+        "            break\n"
+        "        fi\n"
+        "    fi\n"
+        "done\n\n"
+        "if [ -z \"$PY_BIN\" ]; then\n"
+        "    echo \"[ERRO] Interpretador Python funcional nao encontrado no PATH.\"\n"
+        "    exit 1\n"
+        "fi\n\n"
+        "if [ -f \"tools/assurance.py\" ]; then\n"
+        "    \"$PY_BIN\" tools/assurance.py preflight\n"
+        "    STATUS=$?\n"
+        "elif command -v auracode >/dev/null 2>&1; then\n"
+        "    auracode preflight\n"
+        "    STATUS=$?\n"
+        "else\n"
+        "    echo \"[AVISO] Aura Code CLI nao encontrado; prosseguindo sem preflight.\"\n"
+        "    exit 0\n"
+        "fi\n\n"
+        "if [ $STATUS -ne 0 ]; then\n"
+        "    echo \"\"\n"
+        "    echo \"[BLOQUEIO DE PUSH] O envio foi cancelado pelo Aura Code Preflight.\"\n"
+        "    echo \"Corrija os problemas apontados acima antes de tentar 'git push' novamente.\"\n"
+        "    echo \"================================================================================\"\n"
+        "    exit 1\n"
+        "fi\n\n"
+        "exit 0\n"
+    )
+
+    with open(pre_push_file, "w", encoding="utf-8", newline="\n") as f:
+        f.write(script_content)
+
+    try:
+        current_mode = pre_push_file.stat().st_mode
+        pre_push_file.chmod(current_mode | 0o755)
+    except (OSError, PermissionError):
+        return pre_push_file
+
+    return pre_push_file
+
+
 def install_hooks(workspace_root: Path) -> Path:
     """Installs or updates the .agents/hooks.json file in the target workspace."""
     agents_dir = workspace_root / ".agents"
@@ -428,6 +490,10 @@ def install_hooks(workspace_root: Path) -> Path:
     with open(hooks_file, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
         f.write("\n")
+
+    # Install Git pre-push hook if inside a git repository
+    install_git_pre_push_hook(workspace_root)
+
     return hooks_file
 
 
@@ -480,7 +546,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.guard_action == "install":
         root_dir = Path(args.target).resolve()
         hooks_path = install_hooks(root_dir)
+        git_hook = root_dir / ".git" / "hooks" / "pre-push"
         print(f"[AURA GUARD] Hooks installed successfully at: {hooks_path}")
+        if git_hook.exists():
+            print(f"[AURA GUARD] Git Pre-Push Hook active at: {git_hook}")
         return 0
 
     return 0

@@ -6,7 +6,7 @@
 
 [![Português](https://img.shields.io/badge/Language-Portugu%C3%AAs-blue.svg)](README.pt-BR.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests: 144 Passed](https://img.shields.io/badge/Tests-144%20Passed%20(100%25)-brightgreen.svg)](tests/)
+[![Tests: 149 Passed](https://img.shields.io/badge/Tests-149%20Passed%20(100%25)-brightgreen.svg)](tests/)
 [![AST Violations: 0](https://img.shields.io/badge/AST%20Violations-0-success.svg)](tools/)
 
 A vendor-neutral, evidence-gated framework and active governance toolkit for building, auditing, and operating professional software developed with substantial assistance from large language models (LLMs) and autonomous coding agents—specifically designed to guide **lay and non-technical users** through building software from scratch or modernizing existing systems using senior software engineering best practices.
@@ -247,11 +247,11 @@ Now that AuraCode is installed, choose what you want to do:
    ```bash
    cd path/to/your/project
    ```
-2. Install the **Real-Time Safety Guardrail (Aura Guard)**:
+2. Install the **Real-Time Safety Guardrail (Aura Guard)** and **Git Pre-Push Hook**:
    ```bash
    auracode guard install .
    ```
-   *This activates active pre-tool hooks in `.agents/hooks.json`, preventing AI coding agents from deleting files or executing destructive commands on your OS.*
+   *This activates active pre-tool hooks in `.agents/hooks.json` AND configures `.git/hooks/pre-push`, preventing AI agents from executing destructive commands and blocking broken code or silent errors from being pushed to remote repositories.*
 3. Run a **Comprehensive Health Audit**:
    ```bash
    auracode audit .
@@ -268,9 +268,9 @@ Now that AuraCode is installed, choose what you want to do:
 
 ---
 
-## 🛠️ Complete 20-Command CLI Reference (`auracode <command>`)
+## 🛠️ Complete 21-Command CLI Reference (`auracode <command>`)
 
-AuraCode provides 20 unified static AST, containment, mutation testing, multi-language, TUI briefing, and governance commands:
+AuraCode provides 21 unified static AST, containment, mutation testing, multi-language, TUI briefing, local preflight CI-mirror, and governance commands:
 
 ```bash
 # 1. Initialize workspace directories and SDD blueprints (profile: micro, lite, standard, enterprise)
@@ -341,6 +341,9 @@ auracode loop reset
 
 # 20. Structured 3-Phase Adversarial Agentic Debate (Party Mode with Containment)
 auracode debate "Sistema de Armazenamento de Arquivos"
+
+# 21. Local Preflight & CI/CD Pipeline Mirror (Executes all 10 assurance gates locally before push)
+auracode preflight
 ```
 
 ---
