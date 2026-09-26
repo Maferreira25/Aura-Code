@@ -10,6 +10,10 @@ Use o fluxo adequado no chat:
 - `auracode-clarify` — realizar briefing interativo e eliminar dúvidas/ambiguidades com analogias
 - `auracode-forward` — implementar a aplicação estritamente a partir da planta teórica aprovada em `_auracode_sdd/`
 - `auracode-audit` — executar a suíte estática de garantia AST (slop, leaks, sec, types, arch, tests)
+- `auracode-guard` — proteção ativa em tempo de execução via hooks contra comandos destrutivos e vazamentos (`auracode guard`)
+- `auracode-worktree` — isolamento físico de branches em pastas temporárias para agentes (`auracode worktree`)
+- `auracode-cage` — sandbox DevContainer com firewall Default-Deny para modo YOLO seguro (`auracode cage`)
+- `auracode-loop` — runner autônomo baseado na Arquitetura Ralph com anti-dumb-zone e anti-reward-hacking (`auracode loop`)
 - `auracode-debugger` — registrar e triar problemas com testes que reproduzem a falha
 - `auracode-refactor` — melhorar a qualidade e arquitetura do código sem alterar regras de negócio
 - `auracode-agents-help` — consultar o catálogo completo de agentes e habilidades
@@ -50,4 +54,11 @@ Use o fluxo adequado no chat:
 Por padrão, artefatos de garantia e especificações devem residir nas pastas gerenciadas do framework:
 `_auracode_sdd/`, `_auracode_bugs/`, `_auracode_docs/`, `_auracode_refactor/`, `_auracode_forward/`.
 Em projetos novos (greenfield) liberados pelo usuário, o código da aplicação será scaffolded sob Clean Architecture (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`).
+
+### 6. Contenção Ativa, Isolamento Físico e Autonomia Controlada
+- **Aura Guard (`auracode guard`):** Intercepta comandos de terminal e ferramentas via `.agents/hooks.json` antes do despacho ao sistema operacional (*fail-closed* contra comandos destrutivos e vazamentos).
+- **Aura Worktree (`auracode worktree`):** Isola experimentos e implementações do agente em pastas físicas paralelas para que arquivos intermediários nunca sujem a branch ativa do desenvolvedor.
+- **Aura Cage (`auracode cage`):** Constrói e audita DevContainers herméticos com firewall *Default-Deny* (bloqueia 100% de conexões externas não autorizadas, neutralizando ataques de exfiltração por prompt injection indireto em modo YOLO).
+- **Aura Loop (`auracode loop`):** Executa iterações autônomas sob a Arquitetura Ralph (Geoffrey Huntley): execuções *stateless* sem degradação de contexto ("Dumb Zone" >100k tokens), verificadas continuamente pelos 5 níveis de garantias AST e protegidas por freio de emergência contra *Reward Hacking*.
+
 

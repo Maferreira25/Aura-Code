@@ -1,0 +1,13 @@
+# Aura Cage: Pre-approved Outbound Domains
+# Only traffic to these domains will be permitted by the Default-Deny firewall.
+github.com
+api.github.com
+codeload.github.com
+objects.githubusercontent.com
+pypi.org
+files.pythonhosted.org
+python.org
+registry.npmjs.org
+api.anthropic.com
+generativelanguage.googleapis.com
+api.openai.com

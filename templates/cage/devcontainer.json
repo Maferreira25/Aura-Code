@@ -1,0 +1,27 @@
+{
+  "name": "Aura Code Cage (Sandboxed YOLO)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "capAdd": [
+    "NET_ADMIN",
+    "NET_RAW"
+  ],
+  "remoteUser": "vscode",
+  "mounts": [
+    {
+      "source": "${localEnv:HOME}/.aura-keys",
+      "target": "/keys",
+      "type": "bind",
+      "readonly": true
+    }
+  ],
+  "postCreateCommand": "chmod +x .devcontainer/init-firewall.sh && sudo .devcontainer/init-firewall.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python"
+      ]
+    }
+  }
+}

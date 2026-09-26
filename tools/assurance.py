@@ -10,6 +10,7 @@ import argparse
 import sys
 import os
 from pathlib import Path
+from typing import Optional
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -27,12 +28,30 @@ from tools import check_injection_vectors
 from tools import sarif_aggregator
 from tools import assurance_mcp
 from tools import assess
+from tools import pre_tool_guard
+from tools import manage_worktree
+from tools import manage_cage
+from tools import loop_runner
 
 
-def setup_auracode_environment() -> None:
+def setup_auracode_environment(profile: str = "basic", copy_templates: bool = True, target_dir: Optional[Path] = None) -> None:
+    root = target_dir if target_dir else Path.cwd()
     dirs = ['.auracode', '_auracode_sdd', '_auracode_forward', '_auracode_bugs', '_auracode_refactor', '_auracode_docs']
     for d in dirs:
-        os.makedirs(d, exist_ok=True)
+        (root / d).mkdir(parents=True, exist_ok=True)
+
+    if copy_templates:
+        import shutil
+        templates_dir = ROOT_DIR / "templates" / "sdd" / profile
+        if not templates_dir.exists():
+            templates_dir = ROOT_DIR / "templates" / "sdd" / "basic"
+
+        target_sdd = root / "_auracode_sdd"
+        if templates_dir.exists():
+            for tpl in sorted(templates_dir.glob("*.md")):
+                dest = target_sdd / tpl.name
+                if not dest.exists():
+                    shutil.copy2(tpl, dest)
 
 def _dispatch_with_argv(argv: list, fn: object) -> None:
     """Invoke a module's main() with a temporary sys.argv, then restore the original."""
@@ -53,6 +72,8 @@ def main() -> None:
 
     # Subcommand: init
     init_p = subparsers.add_parser("init", help="Initialize workspace assurance environment directories")
+    init_p.add_argument("--profile", "-p", choices=["basic", "enterprise"], default="basic", help="SDD specification template profile (basic: 7 specs, enterprise: 15 specs)")
+    init_p.add_argument("--no-templates", action="store_true", help="Do not copy SDD template files into _auracode_sdd")
 
 
     # Subcommand: arch
@@ -124,6 +145,68 @@ def main() -> None:
     mcp_p.add_argument("--allowed-root", type=str, default=None, help="Root directory for allowed tool operations")
     mcp_p.add_argument("--max-message-bytes", type=int, default=1000000, help="Maximum incoming JSON-RPC frame size")
 
+    # Subcommand: guard
+    guard_p = subparsers.add_parser("guard", help="Real-time Pre-Tool Execution Safety Guardrail (Aura Guard)")
+    guard_sub = guard_p.add_subparsers(dest="guard_action", help="Guard action to execute")
+    guard_check_p = guard_sub.add_parser("check", help="Check command safety before execution")
+    guard_check_p.add_argument("command_str", nargs="?", default="", help="Command line string to evaluate")
+    guard_check_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+    guard_install_p = guard_sub.add_parser("install", help="Install .agents/hooks.json in target workspace")
+    guard_install_p.add_argument("target", nargs="?", default=".", help="Workspace root directory")
+
+    # Subcommand: worktree
+    wt_p = subparsers.add_parser("worktree", help="Physical Directory Isolation for AI Agents (Git Worktrees)")
+    wt_sub = wt_p.add_subparsers(dest="worktree_action", help="Worktree action to perform")
+    
+    wt_create_p = wt_sub.add_parser("create", help="Create an isolated worktree for an agent task")
+    wt_create_p.add_argument("task_name", help="Task name or identifier")
+    wt_create_p.add_argument("--base-branch", "-b", type=str, default=None, help="Base branch to fork from")
+    wt_create_p.add_argument("--dir", "-d", type=str, default=None, help="Custom target directory for the worktree")
+    wt_create_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    wt_list_p = wt_sub.add_parser("list", help="List all active worktrees")
+    wt_list_p.add_argument("--json", action="store_true", help="Output list in JSON format")
+
+    wt_clean_p = wt_sub.add_parser("clean", help="Remove an agent worktree and prune tracking")
+    wt_clean_p.add_argument("task_name", help="Task name or identifier to clean")
+    wt_clean_p.add_argument("--delete-branch", action="store_true", help="Delete the agent branch as well")
+    wt_clean_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    wt_merge_p = wt_sub.add_parser("merge", help="Merge an approved agent worktree branch and clean up")
+    wt_merge_p.add_argument("task_name", help="Task name or identifier to merge")
+    wt_merge_p.add_argument("--target-branch", "-t", type=str, default=None, help="Target branch (default: current)")
+    wt_merge_p.add_argument("--keep-branch", action="store_true", help="Do not delete the agent branch after merge")
+    wt_merge_p.add_argument("--no-clean", action="store_true", help="Do not remove the worktree folder after merge")
+    wt_merge_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: cage
+    cage_p = subparsers.add_parser("cage", help="DevContainer Sandbox & Default-Deny Firewall Manager (Aura Cage)")
+    cage_sub = cage_p.add_subparsers(dest="cage_action", help="Cage action to perform")
+
+    cage_init_p = cage_sub.add_parser("init", help="Initialize .devcontainer with Default-Deny firewall in workspace")
+    cage_init_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    cage_init_p.add_argument("--force", "-f", action="store_true", help="Overwrite existing cage files")
+    cage_init_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    cage_verify_p = cage_sub.add_parser("verify", help="Check whether the current environment is sandboxed")
+    cage_verify_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: loop
+    loop_p = subparsers.add_parser("loop", help="Autonomous Loop Runner based on Ralph Architecture (Aura Loop)")
+    loop_sub = loop_p.add_subparsers(dest="loop_action", help="Loop action to perform")
+
+    loop_run_p = loop_sub.add_parser("run", help="Start or resume autonomous loop runner")
+    loop_run_p.add_argument("--max-iterations", "-n", type=int, default=10, help="Maximum iterations before pausing (default: 10)")
+    loop_run_p.add_argument("--tasks-file", "-t", type=str, default=None, help="Path to custom tasks JSON backlog")
+    loop_run_p.add_argument("--dry-run", action="store_true", help="Simulate loop execution without running full suites")
+    loop_run_p.add_argument("--continue-on-fail", action="store_true", help="Do not stop loop on verification failure")
+    loop_run_p.add_argument("--json", action="store_true", help="Output summary in JSON format")
+
+    loop_status_p = loop_sub.add_parser("status", help="Display telemetry and current progress of the loop")
+    loop_status_p.add_argument("--json", action="store_true", help="Output status in JSON format")
+
+    loop_reset_p = loop_sub.add_parser("reset", help="Reset loop state and failure counters")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -131,8 +214,10 @@ def main() -> None:
         sys.exit(0)
 
     if args.command == "init":
-        setup_auracode_environment()
-        print("Initialized AuraCode workspace directories (.auracode, _auracode_*).")
+        profile = getattr(args, "profile", "basic")
+        copy_tpl = not getattr(args, "no_templates", False)
+        setup_auracode_environment(profile=profile, copy_templates=copy_tpl)
+        print(f"Initialized AuraCode workspace directories (.auracode, _auracode_* [profile: {profile}]).")
         sys.exit(0)
 
     elif args.command == "arch":
@@ -229,6 +314,68 @@ def main() -> None:
             root_p = Path.cwd().resolve()
             unrestricted = False
         assurance_mcp.run_stdio_server(max_message_bytes=args.max_message_bytes, allowed_root=root_p, permit_unrestricted=unrestricted)
+ 
+    elif args.command == "guard":
+        guard_argv = []
+        if getattr(args, "guard_action", None):
+            guard_argv.append(args.guard_action)
+        if getattr(args, "json", False):
+            guard_argv.append("--json")
+        if getattr(args, "command_str", ""):
+            guard_argv.append(args.command_str)
+        if getattr(args, "target", "") and args.guard_action == "install":
+            guard_argv.append(args.target)
+        sys.exit(pre_tool_guard.main(guard_argv))
+
+    elif args.command == "worktree":
+        wt_argv = []
+        if getattr(args, "worktree_action", None):
+            wt_argv.append(args.worktree_action)
+        if getattr(args, "task_name", None):
+            wt_argv.append(args.task_name)
+        if getattr(args, "base_branch", None):
+            wt_argv.extend(["--base-branch", args.base_branch])
+        if getattr(args, "dir", None):
+            wt_argv.extend(["--dir", args.dir])
+        if getattr(args, "target_branch", None):
+            wt_argv.extend(["--target-branch", args.target_branch])
+        if getattr(args, "delete_branch", False):
+            wt_argv.append("--delete-branch")
+        if getattr(args, "keep_branch", False):
+            wt_argv.append("--keep-branch")
+        if getattr(args, "no_clean", False):
+            wt_argv.append("--no-clean")
+        if getattr(args, "json", False):
+            wt_argv.append("--json")
+        sys.exit(manage_worktree.main(wt_argv))
+
+    elif args.command == "cage":
+        cage_argv = []
+        if getattr(args, "cage_action", None):
+            cage_argv.append(args.cage_action)
+        if getattr(args, "target", None) and args.cage_action == "init":
+            cage_argv.append(args.target)
+        if getattr(args, "force", False):
+            cage_argv.append("--force")
+        if getattr(args, "json", False):
+            cage_argv.append("--json")
+        sys.exit(manage_cage.main(cage_argv))
+
+    elif args.command == "loop":
+        loop_argv = []
+        if getattr(args, "loop_action", None):
+            loop_argv.append(args.loop_action)
+        if getattr(args, "max_iterations", None) and args.loop_action == "run":
+            loop_argv.extend(["--max-iterations", str(args.max_iterations)])
+        if getattr(args, "tasks_file", None):
+            loop_argv.extend(["--tasks-file", args.tasks_file])
+        if getattr(args, "dry_run", False):
+            loop_argv.append("--dry-run")
+        if getattr(args, "continue_on_fail", False):
+            loop_argv.append("--continue-on-fail")
+        if getattr(args, "json", False):
+            loop_argv.append("--json")
+        sys.exit(loop_runner.main(loop_argv))
 
 
 if __name__ == "__main__":
