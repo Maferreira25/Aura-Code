@@ -179,40 +179,90 @@ A implementação do código executável (`auracode-forward`) é restrita e moni
 
 ---
 
-## 🚀 Instalação e Início Rápido
+## 🚀 Como Instalar e Usar no Seu Projeto (Guia Simples para Pessoas Leigas)
 
-### Opção 1: Execução Instantânea via `uvx` (Sem necessidade de instalação, estilo `npx`)
+Você não precisa ser especialista em tecnologia ou programação para usar o AuraCode. O framework foi desenhado exatamente para guiar quem está começando ou quem gerencia projetos de software com IAs.
 
-Execute qualquer comando do AuraCode diretamente em um ambiente temporário isolado, sem precisar clonar o repositório ou configurar ambientes virtuais:
+Siga os passos simples abaixo:
+
+---
+
+### Passo 0: O Único Pré-Requisito (Verificar o Python)
+O AuraCode precisa apenas do **Python** instalado no seu computador (versão 3.9 ou superior).
+
+Para testar, abra o terminal (Prompt de Comando, PowerShell ou Terminal do macOS/Linux) e digite:
+```bash
+python --version
+```
+- Se aparecer `Python 3.9` (ou qualquer versão superior, como 3.10, 3.11, 3.12 ou 3.13), você já está pronto!
+- Se não estiver instalado ou aparecer erro, baixe gratuitamente o instalador oficial em: **[python.org/downloads](https://www.python.org/downloads/)** *(no Windows, lembre-se de marcar a caixinha "Add Python to PATH" durante a instalação)*.
+
+---
+
+### Passo 1: Instalar o AuraCode no seu Computador (1 Comando Único)
+Abra o terminal em qualquer pasta e digite o comando abaixo para instalar o AuraCode no seu computador:
 
 ```bash
-# Inicializar workspace com os 15 cadernos do perfil Enterprise
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode init --profile enterprise
-
-# Escanear projeto atual para AI slop e exceções silenciadas
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode slop .
-
-# Escanear vulnerabilidades de injeção e riscos com shell=True
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode sec .
-
-# Iniciar o servidor MCP para Antigravity IDE / Cursor / Claude Desktop
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode mcp
+pip install git+https://github.com/Maferreira25/Aura-Code.git
 ```
 
-### Opção 2: Instalação Local via `pip`
-
-Clone e instale o pacote no seu ambiente Python:
-
-```bash
-git clone https://github.com/Maferreira25/Aura-Code.git
-cd Aura-Code
-pip install -e .
-```
-
-Verifique a instalação:
+Para conferir se deu tudo certo:
 ```bash
 auracode --help
 ```
+*Pronto! O comando `auracode` agora está disponível globalmente em qualquer pasta da sua máquina.*
+
+> 💡 **Dica para Usuários Avançados (Execução Instantânea sem Instalação):**  
+> Se você já utiliza o gerenciador `uv`, pode executar qualquer comando diretamente sem instalar nada:  
+> `uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode <comando>`
+
+---
+
+### Passo 2: Escolha o seu Cenário de Uso
+
+Agora que o AuraCode está instalado, escolha o que você deseja fazer:
+
+#### 🟢 Cenário A: Quero começar um Projeto Novo do Zero
+*(Você tem uma ideia de aplicativo, site ou sistema e quer construí-lo com segurança máxima)*
+
+1. Crie uma pasta vazia para o seu projeto e entre nela:
+   ```bash
+   mkdir meu-novo-projeto
+   cd meu-novo-projeto
+   ```
+2. Inicie o **Assistente Interativo de Briefing**:
+   ```bash
+   auracode wizard
+   ```
+   *O assistente fará 5 perguntas simples em português, usando analogias do mundo físico (sem jargões técnicos).*
+3. Ao final da conversa, o AuraCode gera automaticamente a **Planta da Casa** na pasta `_auracode_sdd/` e instala o guardião de segurança.
+4. Agora você pode abrir o projeto na sua IDE favorita (Cursor, Antigravity, VS Code) e pedir para a IA construir o código estritamente a partir da planta aprovada!
+
+#### 🟡 Cenário B: Já tenho um Projeto Existente e quero Auditar / Proteger
+*(Você já tem um código rodando em produção ou em desenvolvimento e quer achar falhas, erros silenciosos e débitos técnicos)*
+
+1. Abra o terminal **dentro da pasta do seu projeto existente**:
+   ```bash
+   cd pasta-do-seu-projeto
+   ```
+2. Instale o **Guardião de Segurança da IA (Aura Guard)**:
+   ```bash
+   auracode guard install .
+   ```
+   *Isso ativa a barreira de proteção em `.agents/hooks.json`, impedindo que agentes de IA apaguem arquivos acidentalmente ou executem comandos perigosos no seu sistema.*
+3. Execute o **Raio-X Completo do Sistema**:
+   ```bash
+   auracode audit .
+   ```
+   *Se o seu projeto for em várias linguagens (Python, TypeScript, JavaScript, Go, Java, C#), use:*
+   ```bash
+   auracode multilang .
+   ```
+4. Verifique se os seus testes são verdadeiros ou se possuem **oráculos viciados**:
+   ```bash
+   auracode tests --mutate
+   ```
+   *O AuraCode apontará as falhas e prescreverá os testes unitários prontos para você adicionar.*
 
 ---
 

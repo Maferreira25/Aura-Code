@@ -180,40 +180,91 @@ Implementation (`auracode-forward`) is strictly governed by deterministic AST li
 
 ---
 
-## 🚀 Quick Start & Installation
+## 🚀 How to Install and Use in Your Project (Beginner & Lay-User Friendly Guide)
 
-### Option 1: Instant Execution via `uvx` (No installation needed, like `npx`)
+You do not need to be a software developer or terminal expert to use AuraCode. The framework was specifically engineered to guide founders, product owners, and non-technical creators to build software using senior-level engineering practices with AI pair programmers.
 
-Run any AuraCode command directly in an isolated environment without manual setup or cloning:
+Follow the simple steps below:
+
+---
+
+### Step 0: The Only Prerequisite (Check Python)
+AuraCode only requires **Python** (version 3.9 or higher).
+
+To check if Python is installed on your machine, open your terminal (Command Prompt, PowerShell, or macOS/Linux Terminal) and type:
+```bash
+python --version
+```
+- If it returns `Python 3.9` or higher (3.10, 3.11, 3.12, 3.13), you are ready!
+- If it is not installed or returns an error, download the official installer for free at: **[python.org/downloads](https://www.python.org/downloads/)** *(on Windows, make sure to check the box "Add Python to PATH" during installation)*.
+
+---
+
+### Step 1: Install AuraCode on Your Computer (Single Command)
+Open your terminal anywhere and run the command below to install AuraCode globally:
 
 ```bash
-# Initialize workspace with Enterprise 15-spec blueprints
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode init --profile enterprise
-
-# Scan current project for AI slop and swallowed exceptions
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode slop .
-
-# Scan for injection vulnerabilities and shell risks
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode sec .
-
-# Start the stdio MCP server for Antigravity IDE / Cursor / Claude Desktop
-uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode mcp
+pip install git+https://github.com/Maferreira25/Aura-Code.git
 ```
 
-### Option 2: Local Installation via `pip`
-
-Install AuraCode into your Python environment:
-
-```bash
-git clone https://github.com/Maferreira25/Aura-Code.git
-cd Aura-Code
-pip install -e .
-```
-
-Verify installation:
+Verify that it works:
 ```bash
 auracode --help
 ```
+*Done! The `auracode` command is now available across every folder on your computer.*
+
+> 💡 **Tip for Advanced Users (Instant Execution via `uvx`):**  
+> If you already use Astral's `uv`, you can execute any AuraCode command directly without prior installation:  
+> `uvx --from git+https://github.com/Maferreira25/Aura-Code.git auracode <command>`
+
+---
+
+### Step 2: Choose Your Scenario
+
+Now that AuraCode is installed, choose what you want to do:
+
+#### 🟢 Scenario A: Starting a Brand-New Project from Scratch
+*(You have an idea for an app, website, or backend and want to build it with maximum reliability)*
+
+1. Create a clean folder for your project and enter it:
+   ```bash
+   mkdir my-new-project
+   cd my-new-project
+   ```
+2. Launch the **Interactive Requirements Wizard**:
+   ```bash
+   auracode wizard
+   # (alias: auracode interview)
+   ```
+   *The wizard will ask you 5 plain-language questions using everyday physical world analogies (no technical jargon).*
+3. At the end of the conversation, AuraCode automatically scaffolds your tailored **House Blueprint** in `_auracode_sdd/` and installs active agent safety guardrails.
+4. Now open the project in your favorite AI IDE (Cursor, Antigravity, VS Code, Claude Code) and instruct the AI to construct the application strictly adhering to the approved blueprints!
+
+#### 🟡 Scenario B: Auditing and Protecting an Existing (Production) Project
+*(You already have a codebase and want to discover hidden bugs, silent errors, resource leaks, and architectural technical debt)*
+
+1. Open your terminal **inside your existing project folder**:
+   ```bash
+   cd path/to/your/project
+   ```
+2. Install the **Real-Time Safety Guardrail (Aura Guard)**:
+   ```bash
+   auracode guard install .
+   ```
+   *This activates active pre-tool hooks in `.agents/hooks.json`, preventing AI coding agents from deleting files or executing destructive commands on your OS.*
+3. Run a **Comprehensive Health Audit**:
+   ```bash
+   auracode audit .
+   ```
+   *If your project is multi-language (Python, TypeScript, JavaScript, Go, Java, C#), run:*
+   ```bash
+   auracode multilang .
+   ```
+4. Verify if your test suite has **vitiated test oracles** (fake/tautological assertions):
+   ```bash
+   auracode tests --mutate
+   ```
+   *AuraCode will pinpoint gaps and generate prescriptive unit test code snippets ready to plug into your test suite.*
 
 ---
 
