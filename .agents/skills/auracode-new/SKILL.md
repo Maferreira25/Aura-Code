@@ -17,7 +17,7 @@ O `auracode-new` guia a criação de um sistema do zero ou uma nova funcionalida
 
 2. **Paradigma da Planta da Casa (House Blueprint Paradigm)**:
    - Nenhuma pasta de aplicação ou código de programação (Python, JS, HTML, SQL) pode ser gerado nesta etapa.
-   - O resultado desta etapa é **estritamente o conjunto de 7 especificações teóricas** no diretório `_auracode_sdd/`.
+   - O resultado desta etapa é **estritamente o conjunto de cadernos de especificação teórica** no diretório `_auracode_sdd/`, dimensionado conforme o perfil acordado (`micro` [1 doc], `lite` [3 docs], `standard` [7 docs] ou `enterprise` [15 docs]).
 
 3. **Protocolo de Comunicação Didática**:
    - Use apenas linguagem cotidiana. Evite jargões como "REST API", "PostgreSQL", "JWT", "ORM", "Docker", "Middleware" sem explicá-los através de analogias simples do dia a dia.
@@ -39,7 +39,7 @@ Se restar QUALQUER dúvida, faça mais rodadas até obter 100% de clareza.
 ---
 
 ### Etapa 2: Gerar a Planta Teórica Completa (`_auracode_sdd/`)
-Assim que todas as respostas forem consolidadas, crie os 7 documentos de especificação no diretório `_auracode_sdd/`:
+Assim que todas as respostas forem consolidadas, gere os documentos de especificação no diretório `_auracode_sdd/` conforme o perfil escolhido (ex: perfil `standard` com 7 cadernos):
 
 1. `_auracode_sdd/01_visao_geral_e_negocio.md`:
    - Propósito do produto, público-alvo, regras de negócio e critérios de sucesso sem termos técnicos.

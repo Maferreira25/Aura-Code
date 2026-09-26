@@ -26,6 +26,9 @@ import tools.check_strict_types as check_strict_types
 import tools.check_test_integrity as check_test_integrity
 import tools.check_injection_vectors as check_injection_vectors
 import tools.check_requirements_ambiguity as check_requirements_ambiguity
+from tools.audit import audit_workspace
+from tools.preflight import run_preflight_checks
+from tools.multilang_runner import scan_multilang_workspace
 
 
 SERVER_NAME = "auracode-mcp"
@@ -195,6 +198,49 @@ TOOLS_MANIFEST = [
                 }
             }
         }
+    },
+    {
+        "name": "run_audit",
+        "description": "Executive software assurance & health audit with 0-100 score, AST findings, and plain language physical analogies.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "target_directory": {
+                    "type": "string",
+                    "description": "Target workspace directory"
+                }
+            }
+        }
+    },
+    {
+        "name": "run_preflight",
+        "description": "Execute complete local preflight checks mirroring CI/CD 10 gates.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "target_directory": {
+                    "type": "string",
+                    "description": "Target workspace directory"
+                }
+            }
+        }
+    },
+    {
+        "name": "scan_multilang",
+        "description": "Scan multi-language codebase across Python, TypeScript, JavaScript, Go, Java, C#.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "target_directory": {
+                    "type": "string",
+                    "description": "Target workspace directory"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Optional language filter (python, typescript, javascript, go, java, csharp)"
+                }
+            }
+        }
     }
 ]
 
@@ -311,7 +357,7 @@ def handle_tools_call(req_id: Union[str, int, None], params: Dict[str, object], 
             if not ok:
                 raise PermissionError(err)
             py_files = list(target.rglob("*.py")) if target.is_dir() else [target]
-            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference']
+            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', 'validation/scenarios', 'validation/reference']
             py_files = [str(f) for f in py_files if not any(x in str(f).replace('\\', '/') for x in ignored)]
             violations = [v for f in py_files for v in check_slop_code.check_file(f, str(target))]
             res = {"status": "FAIL" if violations else "PASS", "violations_count": len(violations), "violations": violations}
@@ -321,7 +367,7 @@ def handle_tools_call(req_id: Union[str, int, None], params: Dict[str, object], 
             if not ok:
                 raise PermissionError(err)
             py_files = list(target.rglob("*.py")) if target.is_dir() else [target]
-            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference']
+            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', 'validation/scenarios', 'validation/reference']
             py_files = [str(f) for f in py_files if not any(x in str(f).replace('\\', '/') for x in ignored)]
             leaks = [l for f in py_files for l in check_resource_leaks.check_file(f, str(target))]
             res = {"status": "FAIL" if leaks else "PASS", "leaks_count": len(leaks), "leaks": leaks}
@@ -331,7 +377,7 @@ def handle_tools_call(req_id: Union[str, int, None], params: Dict[str, object], 
             if not ok:
                 raise PermissionError(err)
             py_files = list(target.rglob("*.py")) if target.is_dir() else [target]
-            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'tests', 'validation']
+            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', 'tests', 'validation']
             py_files = [str(f) for f in py_files if not any(x in str(f).replace('\\', '/') for x in ignored)]
             all_v = [v for f in py_files for v in check_strict_types.check_file(f, str(target))]
             missing = [v for v in all_v if v["type"] != "forbidden_any_type"]
@@ -362,7 +408,7 @@ def handle_tools_call(req_id: Union[str, int, None], params: Dict[str, object], 
             if not ok:
                 raise PermissionError(err)
             py_files = list(target.rglob("*.py")) if target.is_dir() else [target]
-            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode', 'validation/scenarios', 'validation/reference']
+            ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', 'validation/scenarios', 'validation/reference']
             py_files = [str(f) for f in py_files if not any(x in str(f).replace('\\', '/') for x in ignored)]
             findings = [fd for f in py_files for fd in check_injection_vectors.check_file(f, str(target))]
             res = {"status": "FAIL" if findings else "PASS", "critical_vulnerabilities_count": len(findings), "findings": findings}
@@ -372,6 +418,25 @@ def handle_tools_call(req_id: Union[str, int, None], params: Dict[str, object], 
             if not ok:
                 raise PermissionError(err)
             res = check_requirements_ambiguity.analyze_workspace(str(target))
+        elif name == "run_audit":
+            target = Path(args.get("target_directory", ".")).resolve()
+            ok, err = validate_path_in_root(target, allowed_root)
+            if not ok:
+                raise PermissionError(err)
+            res = audit_workspace(target)
+        elif name == "run_preflight":
+            target = Path(args.get("target_directory", ".")).resolve()
+            ok, err = validate_path_in_root(target, allowed_root)
+            if not ok:
+                raise PermissionError(err)
+            res = run_preflight_checks(target, quiet=True)
+        elif name == "scan_multilang":
+            target = Path(args.get("target_directory", ".")).resolve()
+            ok, err = validate_path_in_root(target, allowed_root)
+            if not ok:
+                raise PermissionError(err)
+            lang = args.get("language")
+            res = scan_multilang_workspace(target, target_lang=lang)
         else:
             return {
                 "jsonrpc": "2.0",

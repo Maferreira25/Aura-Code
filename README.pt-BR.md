@@ -6,7 +6,7 @@
 
 [![English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](LICENSE)
-[![Testes: 149 Aprovados](https://img.shields.io/badge/Testes-149%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
+[![Testes: 153 Aprovados](https://img.shields.io/badge/Testes-153%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
 [![Violações AST: 0](https://img.shields.io/badge/Viola%C3%A7%C3%B5es%20AST-0-success.svg)](tools/)
 
 Um framework neutro e baseado em evidências para construção, auditoria e operação de software profissional desenvolvido com auxílio de modelos de linguagem (LLMs) e agentes de codificação autônomos — especialmente projetado para guiar **pessoas leigas no mundo da tecnologia** a desenvolver um sistema desde o início ou modernizar um existente usando as melhores práticas de engenharia de software de nível sênior.
@@ -266,9 +266,9 @@ Agora que o AuraCode está instalado, escolha o que você deseja fazer:
 
 ---
 
-## 🛠️ Catálogo Completo dos 21 Comandos CLI (`auracode <comando>`)
+## 🛠️ Catálogo Completo dos 22 Comandos CLI (`auracode <comando>`)
 
-O AuraCode oferece 21 comandos nativos de verificação estática, contenção, mutação de testes, escaneamento multi-linguagem, wizard interativo, preflight local espelho de CI/CD e governança:
+O AuraCode oferece 22 comandos nativos de verificação estática, contenção, mutação de testes, escaneamento multi-linguagem, wizard interativo, preflight local espelho de CI/CD, laudo mestre de auditoria e governança:
 
 ```bash
 # 1. Inicializar diretórios de governança e cadernos SDD (perfil: micro, lite, standard, enterprise)
@@ -342,6 +342,11 @@ auracode debate "Sistema de Armazenamento de Arquivos"
 
 # 21. Verificação Preflight Local e Espelho do CI/CD (Executa todos os 10 gates localmente antes do push)
 auracode preflight
+
+# 22. Laudo Executivo de Saúde e Auditoria do Software com Score (0-100)
+auracode audit .
+auracode audit . --output laudo_auditoria.txt
+auracode audit . --json
 ```
 
 ---

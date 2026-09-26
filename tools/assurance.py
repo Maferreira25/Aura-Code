@@ -37,6 +37,7 @@ from tools import wizard
 from tools import multilang_runner
 from tools import adversarial_debate
 from tools import preflight
+from tools import audit
 
 
 def setup_auracode_environment(profile: str = "standard", copy_templates: bool = True, target_dir: Optional[Path] = None) -> None:
@@ -60,6 +61,14 @@ def setup_auracode_environment(profile: str = "standard", copy_templates: bool =
                 dest = target_sdd / tpl.name
                 if not dest.exists():
                     shutil.copy2(tpl, dest)
+
+        # Initialize contracts.json from template in .auracode/ if neither exists
+        auracode_contracts = root / ".auracode" / "contracts.json"
+        root_contracts = root / "contracts.json"
+        if not auracode_contracts.exists() and not root_contracts.exists():
+            tpl_contracts = ROOT_DIR / "templates" / "contracts.template.json"
+            if tpl_contracts.is_file():
+                shutil.copy2(tpl_contracts, auracode_contracts)
 
 def _dispatch_with_argv(argv: list, fn: object) -> None:
     """Invoke a module's main() with a temporary sys.argv, then restore the original."""
@@ -245,6 +254,13 @@ def main() -> None:
     preflight_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+
+    # Subcommand: audit
+    audit_p = subparsers.add_parser("audit", help="Executive Software Assurance & Health Audit with Score (0-100)")
+    audit_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    audit_p.add_argument("--contracts", "-c", type=str, default=None, help="Path to contracts.json specification file")
+    audit_p.add_argument("--output", "-o", type=str, default=None, help="Save audit report to file")
+    audit_p.add_argument("--json", action="store_true", help="Output audit findings in JSON format")
 
     args = parser.parse_args()
 
@@ -490,6 +506,16 @@ def main() -> None:
         if args.json:
             argv.append("--json")
         _dispatch_with_argv(argv, preflight.main)
+
+    elif args.command == "audit":
+        audit_argv = ["audit.py", args.target]
+        if args.contracts:
+            audit_argv.extend(["--contracts", args.contracts])
+        if args.output:
+            audit_argv.extend(["--output", args.output])
+        if args.json:
+            audit_argv.append("--json")
+        _dispatch_with_argv(audit_argv, audit.main)
 
 
 if __name__ == "__main__":

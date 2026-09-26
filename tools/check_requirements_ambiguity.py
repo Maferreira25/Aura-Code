@@ -39,7 +39,7 @@ def analyze_workspace(workspace_dir: str, include_json: bool = False) -> dict:
         doc_files.extend(glob.glob(os.path.join(workspace_dir, '**', ext), recursive=True))
 
     ignored_dirs = [
-        '.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode',
+        '.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode',
         'framework_audit', 'docs/audit', '_reversa_sdd', '_reversa_refactor', '_reversa_bugs',
         '_reversa_docs', '_reversa_forward', 'schemas', 'validation/schemas'
     ]

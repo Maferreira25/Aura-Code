@@ -12,10 +12,14 @@ O `auracode-forward` traz o sistema à vida (subir paredes, encanamento e fiaç�
 ## 🔒 Pré-Requisitos Rígidos de Execução
 
 Antes de criar qualquer pasta de código ou arquivo de programação, verifique:
-1. O diretório `_auracode_sdd/` contém os 7 arquivos de especificações teóricas?
+1. O diretório `_auracode_sdd/` existe e contém as especificações teóricas aprovadas conforme o perfil do projeto?
+   - **Perfil `micro` (AL1):** 1 especificação (`01_especificacao_unificada.md` ou `01_task_spec.md`).
+   - **Perfil `lite` (AL2):** 3 cadernos essenciais (visão/regras, arquitetura/dados, testes/aceite).
+   - **Perfil `standard` (AL3):** 7 cadernos arquiteturais completos.
+   - **Perfil `enterprise` (AL4):** 15 cadernos corporativos com ameaças e conformidade estrita.
 2. A Planta Teórica foi explicitamente apresentada e autorizada pelo usuário?
 
-Se qualquer um desses itens falhar: **Interrompa a execução**, avise o usuário e redirecione para o `/auracode-new`.
+Se qualquer um desses itens falhar: **Interrompa a execução**, avise o usuário e redirecione para o `/auracode-new` ou `/auracode-clarify`.
 
 ---
 

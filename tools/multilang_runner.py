@@ -84,13 +84,19 @@ def main() -> None:
     target_lang = None
     is_json = False
 
-    for a in args:
+    i = 0
+    while i < len(args):
+        a = args[i]
         if a == "--json":
             is_json = True
         elif a.startswith("--lang="):
             target_lang = a.split("=", 1)[1]
+        elif a in ("--lang", "-l") and i + 1 < len(args):
+            i += 1
+            target_lang = args[i]
         elif not a.startswith("-"):
             target = a
+        i += 1
 
     res = scan_multilang_workspace(Path(target), target_lang=target_lang)
     if is_json:

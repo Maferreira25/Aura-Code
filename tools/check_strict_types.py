@@ -98,7 +98,7 @@ def main() -> None:
     else:
         py_files = glob.glob(os.path.join(workspace_dir, '**', '*.py'), recursive=True)
 
-    ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode', '_auracode']
+    ignored = ['.git', 'node_modules', 'venv', '__pycache__', '.agents', '.auracode']
     if not include_tests:
         ignored.extend(['tests', 'validation'])
     py_files = [f for f in py_files if not any(x in f.replace('\\', '/') for x in ignored)]

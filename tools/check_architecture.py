@@ -254,6 +254,7 @@ def check_architecture(
         if contracts_path is None:
             candidates = [
                 target_dir / "contracts.json",
+                target_dir / ".auracode" / "contracts.json",
                 target_dir / ".assurance" / "contracts.json",
                 target_dir / "architecture.json",
             ]

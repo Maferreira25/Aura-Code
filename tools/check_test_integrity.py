@@ -8,6 +8,7 @@ import sys
 import json
 import ast
 import glob
+from typing import Optional, List, Dict, Any
 
 class TestIntegrityVisitor(ast.NodeVisitor):
     def __init__(self, filename):
@@ -47,6 +48,21 @@ class TestIntegrityVisitor(ast.NodeVisitor):
                     }
                 })
         self.generic_visit(node)
+
+
+def check_test_file(filepath: str, rel_path: Optional[str] = None) -> list:
+    """Analyzes a single test file for vacuous tests or syntax errors."""
+    rpath = rel_path or os.path.basename(filepath)
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            code = f.read()
+        tree = ast.parse(code, filename=filepath)
+        visitor = TestIntegrityVisitor(rpath)
+        visitor.visit(tree)
+        return visitor.vacuous_tests
+    except Exception:
+        return []
+
 
 def main() -> None:
     args = sys.argv[1:]

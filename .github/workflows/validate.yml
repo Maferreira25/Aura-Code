@@ -14,18 +14,6 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Validate framework
-        run: python3 tools/validate_framework.py
-      - name: Validate empirical suite
-        run: python3 validation/tools/validate_suite.py
-      - name: Unit tests
-        run: python3 -m unittest discover -s tests -v
-      - name: Assurance AST quality linters
-        run: |
-          python3 tools/assurance.py arch
-          python3 tools/assurance.py slop
-          python3 tools/assurance.py leaks
-          python3 tools/assurance.py types
-          python3 tools/assurance.py tests
-          python3 tools/assurance.py sec
-          python3 tools/assurance.py ambiguity
+      - name: Run Complete AuraCode Preflight Battery (10 Gates)
+        run: python3 tools/assurance.py preflight
+
