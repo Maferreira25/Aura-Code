@@ -16,7 +16,7 @@ class SlopASTVisitor(ast.NodeVisitor):
         self.check_placeholders = check_placeholders
         self.violations = []
 
-    def visit_FunctionDef(self, node):
+    def _check_unreachable(self, node: ast.AST) -> None:
         has_returned = False
         for stmt in node.body:
             if has_returned:
@@ -29,6 +29,12 @@ class SlopASTVisitor(ast.NodeVisitor):
             if isinstance(stmt, (ast.Return, ast.Raise, ast.Break, ast.Continue)):
                 has_returned = True
         self.generic_visit(node)
+
+    def visit_FunctionDef(self, node):
+        self._check_unreachable(node)
+
+    def visit_AsyncFunctionDef(self, node):
+        self._check_unreachable(node)
 
     def visit_ExceptHandler(self, node):
         if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):

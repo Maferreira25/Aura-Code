@@ -360,7 +360,8 @@ def main() -> None:
             print(json.dumps(res, indent=2))
         else:
             print(f"[{res['status']}] {res['message']}")
-        sys.exit(0 if res["status"] in ("VERIFIED", "STDLIB_COLLISION") else 1)
+        valid_statuses = ("VERIFIED", "STDLIB_COLLISION", "OFFLINE_SKIPPED") if args.offline else ("VERIFIED", "STDLIB_COLLISION")
+        sys.exit(0 if res["status"] in valid_statuses else 1)
 
     if args.target:
         target_path = Path(args.target).resolve()

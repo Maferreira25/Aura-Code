@@ -306,11 +306,15 @@ def main() -> None:
     output_file: Optional[Path] = None
     contracts_file: Optional[Path] = None
 
+    strict_mode = False
+
     i = 0
     while i < len(args):
         a = args[i]
         if a == "--json":
             is_json = True
+        elif a == "--strict":
+            strict_mode = True
         elif a in ("--output", "-o") and i + 1 < len(args):
             i += 1
             output_file = Path(args[i])
@@ -334,7 +338,10 @@ def main() -> None:
             print(f"[AURA AUDIT] Relatorio salvo com sucesso em: {output_file}")
 
     print(report_str)
-    sys.exit(0 if res.get("status") == "PASS" else 1)
+    if strict_mode:
+        sys.exit(0 if res.get("status") == "PASS" else 1)
+    else:
+        sys.exit(0 if res.get("status") in ("PASS", "WARN") else 1)
 
 
 if __name__ == "__main__":

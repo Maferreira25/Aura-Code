@@ -52,6 +52,19 @@ class TestSlopCodeDetector(unittest.TestCase):
             types = [v["type"] for v in violations]
             self.assertIn("unreachable_code", types)
 
+    def test_unreachable_code_detected_in_async_def(self):
+        code = (
+            "async def async_broken():\n"
+            "    return 42\n"
+            "    print('Dead async code')\n"
+        )
+        with tempfile.TemporaryDirectory() as td:
+            fpath = Path(td) / "async_unreachable.py"
+            fpath.write_text(code, encoding="utf-8")
+            violations = slop_engine.check_file(str(fpath), td)
+            types = [v["type"] for v in violations]
+            self.assertIn("unreachable_code", types)
+
     def test_silent_exception_swallowing_detected(self):
         code = (
             "def risky_operation():\n"
@@ -152,6 +165,19 @@ class TestStrictTypesDetector(unittest.TestCase):
             any_violations = [v for v in violations if v["type"] == "forbidden_any_type"]
             self.assertGreater(len(any_violations), 0)
 
+    def test_missing_annotations_in_async_def(self):
+        code = (
+            "async def async_fetch(resource_id):\n"
+            "    return {'id': resource_id}\n"
+        )
+        with tempfile.TemporaryDirectory() as td:
+            fpath = Path(td) / "async_service.py"
+            fpath.write_text(code, encoding="utf-8")
+            violations = types_engine.check_file(str(fpath), td)
+            types = [v["type"] for v in violations]
+            self.assertIn("missing_return_annotation", types)
+            self.assertIn("missing_arg_annotation", types)
+
 
 class TestTestIntegrityDetector(unittest.TestCase):
     """Unit tests for tools.check_test_integrity."""
@@ -193,6 +219,38 @@ class TestTestIntegrityDetector(unittest.TestCase):
             visitor.visit(tree)
             self.assertEqual(len(visitor.vacuous_tests), 1)
             self.assertEqual(visitor.vacuous_tests[0]["function"], "test_doing_nothing")
+
+    def test_pytest_raises_accepted_as_assertion(self):
+        code = (
+            "import pytest\n"
+            "def test_handles_invalid_input():\n"
+            "    with pytest.raises(ValueError):\n"
+            "        int('not-a-number')\n"
+        )
+        with tempfile.TemporaryDirectory() as td:
+            fpath = Path(td) / "test_raises.py"
+            fpath.write_text(code, encoding="utf-8")
+            import ast
+            tree = ast.parse(code, filename=str(fpath))
+            visitor = integrity_engine.TestIntegrityVisitor(str(fpath))
+            visitor.visit(tree)
+            self.assertEqual(len(visitor.vacuous_tests), 0)
+            self.assertEqual(visitor.test_functions, 1)
+
+    def test_async_vacuous_test_detected(self):
+        code = (
+            "async def test_async_empty():\n"
+            "    data = await fetch_async()\n"
+        )
+        with tempfile.TemporaryDirectory() as td:
+            fpath = Path(td) / "test_async_vacuous.py"
+            fpath.write_text(code, encoding="utf-8")
+            import ast
+            tree = ast.parse(code, filename=str(fpath))
+            visitor = integrity_engine.TestIntegrityVisitor(str(fpath))
+            visitor.visit(tree)
+            self.assertEqual(len(visitor.vacuous_tests), 1)
+            self.assertEqual(visitor.vacuous_tests[0]["function"], "test_async_empty")
 
 
 class TestInjectionVectorsDetector(unittest.TestCase):
@@ -302,9 +360,17 @@ class TestCLIEntrypoint(unittest.TestCase):
             with patch.object(sys, "argv", test_args):
                 with patch("sys.exit") as mock_exit:
                     cli_main()
-                    # Exit should not be called with 1 since the file is clean
                     if mock_exit.called:
                         self.assertEqual(mock_exit.call_args[0][0], 0)
+
+    def test_cli_deps_offline_package(self):
+        from unittest.mock import patch
+        test_args = ["auracode", "deps", "--package", "pytest", "--offline"]
+        with patch.object(sys, "argv", test_args):
+            with patch("sys.exit") as mock_exit:
+                cli_main()
+                if mock_exit.called:
+                    self.assertEqual(mock_exit.call_args[0][0], 0)
 
 
 class TestProgrammaticAPI(unittest.TestCase):

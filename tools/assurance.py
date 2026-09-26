@@ -242,6 +242,7 @@ def main() -> None:
     mlang_p = subparsers.add_parser("multilang", help="Scan multi-language codebase (Python, TS, JS, Go, Java, C#)")
     mlang_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     mlang_p.add_argument("--lang", type=str, default=None, help="Filter by specific language (python, typescript, javascript, go, java, csharp)")
+    mlang_p.add_argument("--include-tests", action="store_true", help="Include test files in multi-language AST scanning")
     mlang_p.add_argument("--json", action="store_true", help="Output results in JSON format")
 
     # Subcommand: debate
@@ -260,6 +261,7 @@ def main() -> None:
     audit_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     audit_p.add_argument("--contracts", "-c", type=str, default=None, help="Path to contracts.json specification file")
     audit_p.add_argument("--output", "-o", type=str, default=None, help="Save audit report to file")
+    audit_p.add_argument("--strict", action="store_true", help="Fail (exit 1) on warnings (WARN); require PASS (score >= 90 and zero warnings)")
     audit_p.add_argument("--json", action="store_true", help="Output audit findings in JSON format")
 
     args = parser.parse_args()
@@ -454,7 +456,11 @@ def main() -> None:
         sys.exit(0 if res.get("success") else 1)
 
     elif args.command == "multilang":
-        res = multilang_runner.scan_multilang_workspace(Path(args.target), target_lang=args.lang)
+        res = multilang_runner.scan_multilang_workspace(
+            Path(args.target),
+            target_lang=args.lang,
+            include_tests=getattr(args, "include_tests", False)
+        )
         if args.json:
             import json
             print(json.dumps(res, indent=2))
@@ -513,6 +519,8 @@ def main() -> None:
             audit_argv.extend(["--contracts", args.contracts])
         if args.output:
             audit_argv.extend(["--output", args.output])
+        if getattr(args, "strict", False):
+            audit_argv.append("--strict")
         if args.json:
             audit_argv.append("--json")
         _dispatch_with_argv(audit_argv, audit.main)

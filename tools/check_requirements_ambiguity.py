@@ -90,6 +90,8 @@ def analyze_workspace(workspace_dir: str, include_json: bool = False) -> dict:
     }
     return result
 
+evaluate_workspace_ambiguity = analyze_workspace
+
 def main() -> None:
     args = sys.argv[1:]
     include_json = "--include-json" in args

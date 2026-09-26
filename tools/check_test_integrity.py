@@ -16,7 +16,7 @@ class TestIntegrityVisitor(ast.NodeVisitor):
         self.test_functions = 0
         self.vacuous_tests = []
 
-    def visit_FunctionDef(self, node):
+    def _check_test_function(self, node: ast.AST) -> None:
         if node.name.startswith("test_") or node.name.endswith("_test"):
             self.test_functions += 1
             has_assert = False
@@ -30,7 +30,7 @@ class TestIntegrityVisitor(ast.NodeVisitor):
                         func_str = child.func.attr
                     elif isinstance(child.func, ast.Name):
                         func_str = child.func.id
-                    if func_str.startswith("assert"):
+                    if func_str.startswith("assert") or func_str in ("raises", "warns", "fail", "deprecated_call"):
                         has_assert = True
                         break
 
@@ -48,6 +48,12 @@ class TestIntegrityVisitor(ast.NodeVisitor):
                     }
                 })
         self.generic_visit(node)
+
+    def visit_FunctionDef(self, node):
+        self._check_test_function(node)
+
+    def visit_AsyncFunctionDef(self, node):
+        self._check_test_function(node)
 
 
 def check_test_file(filepath: str, rel_path: Optional[str] = None) -> list:
@@ -73,7 +79,8 @@ def main() -> None:
 
     test_files = glob.glob(os.path.join(workspace_dir, '**', 'test_*.py'), recursive=True) + \
                  glob.glob(os.path.join(workspace_dir, '**', '*_test.py'), recursive=True)
-    test_files = [f for f in test_files if not any(x in f for x in ['.git', 'node_modules', 'venv', '__pycache__', '.agents'])]
+    ignored = ['.git', 'node_modules', 'venv', '.venv', '__pycache__', '.agents', '.auracode', 'build', 'dist']
+    test_files = [f for f in test_files if not any(x in f.replace('\\', '/') for x in ignored)]
 
     total_tests = 0
     all_vacuous = []

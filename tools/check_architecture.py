@@ -351,7 +351,7 @@ def check_architecture(
 
     # Detect uncontracted Python files in target_dir (REM-025)
     uncontracted_files = []
-    ignored_dirs = {".git", "__pycache__", "graphify-out", "dist", "build", ".venv", ".pytest_cache"}
+    ignored_dirs = {".git", "__pycache__", "graphify-out", "dist", "build", "venv", ".venv", ".auracode", ".pytest_cache"}
     for py_file in target_dir.rglob("*.py"):
         if not py_file.is_file():
             continue

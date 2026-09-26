@@ -15,7 +15,7 @@ class TypeAnnotationVisitor(ast.NodeVisitor):
         self.violations = []
         self.any_count = 0
 
-    def visit_FunctionDef(self, node):
+    def _check_function_node(self, node: ast.AST) -> None:
         if node.name.startswith("__") and node.name.endswith("__"):
             self.generic_visit(node)
             return
@@ -41,6 +41,12 @@ class TypeAnnotationVisitor(ast.NodeVisitor):
                 })
 
         self.generic_visit(node)
+
+    def visit_FunctionDef(self, node):
+        self._check_function_node(node)
+
+    def visit_AsyncFunctionDef(self, node):
+        self._check_function_node(node)
 
     def visit_Name(self, node):
         if node.id == "Any":

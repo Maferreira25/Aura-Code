@@ -6,7 +6,7 @@
 
 [![English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](LICENSE)
-[![Testes: 153 Aprovados](https://img.shields.io/badge/Testes-153%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
+[![Testes: 158 Aprovados](https://img.shields.io/badge/Testes-158%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
 [![Violações AST: 0](https://img.shields.io/badge/Viola%C3%A7%C3%B5es%20AST-0-success.svg)](tools/)
 
 Um framework neutro e baseado em evidências para construção, auditoria e operação de software profissional desenvolvido com auxílio de modelos de linguagem (LLMs) e agentes de codificação autônomos — especialmente projetado para guiar **pessoas leigas no mundo da tecnologia** a desenvolver um sistema desde o início ou modernizar um existente usando as melhores práticas de engenharia de software de nível sênior.

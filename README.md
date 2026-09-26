@@ -6,7 +6,7 @@
 
 [![Português](https://img.shields.io/badge/Language-Portugu%C3%AAs-blue.svg)](README.pt-BR.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests: 153 Passed](https://img.shields.io/badge/Tests-153%20Passed%20(100%25)-brightgreen.svg)](tests/)
+[![Tests: 158 Passed](https://img.shields.io/badge/Tests-158%20Passed%20(100%25)-brightgreen.svg)](tests/)
 [![AST Violations: 0](https://img.shields.io/badge/AST%20Violations-0-success.svg)](tools/)
 
 A vendor-neutral, evidence-gated framework and active governance toolkit for building, auditing, and operating professional software developed with substantial assistance from large language models (LLMs) and autonomous coding agents—specifically designed to guide **lay and non-technical users** through building software from scratch or modernizing existing systems using senior software engineering best practices.

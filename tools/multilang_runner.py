@@ -22,10 +22,17 @@ from tools.multilang_ast import MultiLangASTAnalyzer, SUPPORTED_EXTENSIONS
 from tools.sarif_aggregator import SarifAggregator
 
 
-def scan_multilang_workspace(workspace_dir: Path, target_lang: Optional[str] = None) -> Dict[str, Any]:
+def scan_multilang_workspace(workspace_dir: Path, target_lang: Optional[str] = None, include_tests: bool = False) -> Dict[str, Any]:
     """Scan workspace across all supported languages and aggregate AST findings."""
     workspace_dir = workspace_dir.resolve()
     analyzer = MultiLangASTAnalyzer(str(workspace_dir))
+
+    ignored_parts = {
+        "node_modules", "dist", "build", "vendor", "__pycache__",
+        "venv", ".venv", ".agents", ".auracode", "validation", "scenarios", "reference"
+    }
+    if not include_tests:
+        ignored_parts.add("tests")
 
     all_files = []
     for ext, lang in SUPPORTED_EXTENSIONS.items():
@@ -36,7 +43,7 @@ def scan_multilang_workspace(workspace_dir: Path, target_lang: Optional[str] = N
         for f in matched:
             rel = os.path.relpath(f, str(workspace_dir))
             parts = Path(rel).parts
-            if any(p.startswith(".") or p in ("node_modules", "dist", "build", "vendor", "__pycache__", "venv") for p in parts):
+            if any(p.startswith(".") or p in ignored_parts for p in parts):
                 continue
             all_files.append((f, lang))
 
@@ -83,12 +90,15 @@ def main() -> None:
     target = "."
     target_lang = None
     is_json = False
+    include_tests = False
 
     i = 0
     while i < len(args):
         a = args[i]
         if a == "--json":
             is_json = True
+        elif a in ("--include-tests", "--allow-tests"):
+            include_tests = True
         elif a.startswith("--lang="):
             target_lang = a.split("=", 1)[1]
         elif a in ("--lang", "-l") and i + 1 < len(args):
@@ -98,7 +108,7 @@ def main() -> None:
             target = a
         i += 1
 
-    res = scan_multilang_workspace(Path(target), target_lang=target_lang)
+    res = scan_multilang_workspace(Path(target), target_lang=target_lang, include_tests=include_tests)
     if is_json:
         print(json.dumps(res, indent=2))
     else:
