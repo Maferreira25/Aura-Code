@@ -410,7 +410,7 @@ def execute_mutation_analysis(
     try:
         tree = ast.parse(original_code, filename=str(target_file))
     except Exception:
-        pass
+        tree = None
 
     # Run tests against each mutant by safe swap in place with try/finally restore
     try:
