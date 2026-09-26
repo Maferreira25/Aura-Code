@@ -29,6 +29,72 @@ O AuraCode resolve essa lacuna através do **Pair Programming Agêntico com Tole
 
 ---
 
+## 🏛️ Da Ideia à Produção: O Escopo de Trabalho de Nível Sênior
+
+O Aura Code transforma a interação com agentes de IA (que costuma ser desordenada e cheia de presunções silenciosas — o chamado *Vibe Coding*) em um processo disciplinado de **Engenharia de Software de Nível Sênior**. Qualquer pessoa — mesmo sem experiência prévia em programação — é guiada do zero até a entrega de um sistema web ou aplicação profissional pronta para produção.
+
+```mermaid
+graph TD
+    A["💡 Ideia Bruta (Pessoa Leiga / Fundador)"] --> B["1. Entrevista & Clarificação Sem Presunções<br>(auracode-new / auracode-clarify)"]
+    B --> C["2. Planta Teórica da Casa (7 Specs SDD)<br>_auracode_sdd/ (Linguagem Simples)"]
+    C -->|Aprovação Explícita do Usuário| D["3. Fundação & Clean Architecture<br>(contracts.json / domain, usecases, adapters)"]
+    D --> E["4. Construção Vigiada por Linters AST<br>(auracode-forward + arch, slop, leaks, sec)"]
+    E --> F["5. Certificação & Prontidão de Produção<br>(SARIF v2.1.0 / Perfis AL1–AL4)"]
+    F --> G["🚀 Software Enterprise Pronto para Produção"]
+```
+
+### 1. A Analogia: O "Engenheiro-Chefe Sênior" vs. O "Pedreiro Apressado"
+* **A IA Convencional (*Vibe Coding*):** Age como um pedreiro apressado que começa a assentar tijolos no chão de terra sem fundação ou planta hidráulica. O resultado parece bonito à primeira vista, mas racha e quebra no primeiro teste de carga.
+* **O Aura Code (*Pair Programming Sênior*):** Age como um Engenheiro-Chefe que senta com você, desenha a planta baixa completa em linguagem simples, explica onde ficará cada pilar e **não permite colocar um único tijolo** antes de você entender e assinar a planta. Durante a obra, fiscaliza cada cano e viga com nível a laser (*Linters AST determinísticos*).
+
+---
+
+### 2. O Escopo de Trabalho em 4 Fases Estruturadas
+
+#### 📋 Fase 1: Concepção & Clarificação Sem Jargões
+* **Tolerância Zero a Presunções:** A IA é proibida de adivinhar comportamentos de tela, bancos de dados ou regras de negócio.
+* **Analogias Físicas Cotidianas:** Tradução sistemática de termos difíceis (Banco de Dados $\rightarrow$ *"Armário de Fichas"*, Backend $\rightarrow$ *"Cozinha do Restaurante"*, API $\rightarrow$ *"Garçom de Pedidos"*, Autenticação $\rightarrow$ *"Crachá de Acesso"*).
+* **Gate G1 de Ambiguidade:** O comando `auracode ambiguity` varre os requisitos em busca de termos vagos (*"talvez"*, *"deve funcionar"*, *"comportamento padrão"*), garantindo clareza total.
+
+#### 📐 Fase 2: A Planta da Casa — Os 7 Cadernos Técnicos SDD (`_auracode_sdd/`)
+Nenhuma linha de código é gerada antes da aprovação explícita dos 7 documentos de especificação:
+1. `01_visao_geral_e_negocio.md` — Propósito da aplicação e funcionalidades confirmadas pelo usuário.
+2. `02_arquitetura_e_componentes.md` — As divisões e fluxos internos do sistema (Clean Architecture).
+3. `03_modelo_de_dados_e_armazenamento.md` — O formato exato das informações e histórico.
+4. `04_seguranca_e_permissoes.md` — Quem tem a chave de cada recurso (perfis e acessos).
+5. `05_apis_e_integracoes.md` — As portas de comunicação com o mundo externo.
+6. `06_interface_e_design_system.md` — A vitrine visual, telas e usabilidade.
+7. `07_nivel_de_garantia_e_testes.md` — O rigor dos testes exigido (Níveis AL1 a AL4).
+
+#### 🏗️ Fase 3: Construção Vigiada & Limites Limpos (Clean Architecture)
+A implementação do código executável (`auracode-forward`) é restrita e monitorada pelos verificadores AST:
+* **Fronteiras Herméticas:** Estruturação estrita em camadas (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`), verificadas continuamente por `auracode arch`.
+* **Zero AI Slop:** O comando `auracode slop` barra stubs vazios, código morto e exceções engolidas (`except: pass`).
+* **Proteção contra Vazamentos:** O comando `auracode leaks` exige context managers (`with`) em conexões e arquivos.
+* **Anti-Alucinação:** O comando `auracode deps` cruza pacotes solicitados com o registro oficial antes de permitir a instalação.
+* **Diffs Cirúrgicos:** O comando `auracode diff` restringe alterações a menos de 500 linhas por ciclo e bloqueia adulterações de testes (*anti-reward hacking*).
+
+#### 🛡️ Fase 4: Certificação e Prontidão de Produção
+* **Integração SARIF v2.1.0:** Consolidação de achados compatível com GitHub Advanced Security, SonarQube e VS Code.
+* **Alinhamento com Normas Globais:** Cobertura de controles baseados em NIST SSDF 1.1, OWASP LLM Top 10 e CWE Top 25.
+* **Testes Sem Vacuidade:** O comando `auracode tests` audita o AST da suíte para garantir asserções semânticas reais (zero `assert True`).
+
+---
+
+### 3. Comparativo: IA Convencional (Vibe Coding) vs. Aura Code
+
+| Critério de Engenharia | Desenvolvimento com IA Comum (*Vibe Coding*) | Desenvolvimento com Aura Code (*Senior Pair Programming*) |
+| :--- | :--- | :--- |
+| **Início do Projeto** | Gera código imediatamente sem entender o escopo real | Entrevista em linguagem simples e aprovação da Planta SDD em 7 cadernos |
+| **Regras não informadas** | A IA adivinha e toma decisões arquiteturais silenciosas | **Zero Presunção:** IA pausa e apresenta opções claras com analogias |
+| **Organização do Código** | Código espaguete misturando banco, lógica e tela em 1 arquivo | **Clean Architecture** em camadas isoladas com contratos AST (`contracts.json`) |
+| **Tratamento de Erros** | Erros silenciados com `try { ... } catch {}` vazios | **Fail-Closed:** Linters AST barram código morto e swallows (`auracode slop`) |
+| **Dependências Externas** | Alucinação frequente de bibliotecas inexistentes (*slopsquatting*) | Verificação formal contra registros oficiais (`auracode deps`) |
+| **Integridade dos Testes** | Testes superficiais ou tautológicos (`assert True`) que não testam nada | AST Visitor (`auracode tests`) exige asserções reais e bloqueia adulteração |
+| **Prontidão de Produção** | Dívida técnica severa que exige reescrita por desenvolvedores sêniores | **Enterprise Ready:** Software auditável, modular e certificado (AL1–AL4) |
+
+---
+
 ## 🚀 Instalação e Início Rápido
 
 ### Opção 1: Execução Instantânea via `uvx` (Sem necessidade de instalação, estilo `npx`)
