@@ -1,7 +1,7 @@
 {
   "framework_version": "0.1.1-draft",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 270,
+  "file_count": 278,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -371,6 +371,34 @@
       "sha256": "4918b116980573e71e31932b6782b7903db35658c120523d214799ed94eb1eb3",
       "bytes": 547
     },
+    "templates/sdd/01_visao_geral_e_negocio.md": {
+      "sha256": "b00e33244ef690ae12b074d9070021145903511d58fa65e9e43ac20ae5854e4e",
+      "bytes": 1158
+    },
+    "templates/sdd/02_arquitetura_e_componentes.md": {
+      "sha256": "ccece1bd59b444bf2928378eef8adfdb73448f9a2ded48cb3f8d67eae3bd3224",
+      "bytes": 1276
+    },
+    "templates/sdd/03_modelo_de_dados_e_armazenamento.md": {
+      "sha256": "a6969abe3230f780249acda163274aae6323500e67827ddf02d4bf7946f9c761",
+      "bytes": 1087
+    },
+    "templates/sdd/04_seguranca_e_permissoes.md": {
+      "sha256": "d8872720ea0087c9e0d7f9334f5d5ac2b181156961d1abb5ebc6af9f6062e707",
+      "bytes": 888
+    },
+    "templates/sdd/05_apis_e_integracoes.md": {
+      "sha256": "c48fb5d2b30dff071b0934662d708974d2733c9f2b270dd0c224fd7de3fca9f3",
+      "bytes": 828
+    },
+    "templates/sdd/06_interface_e_design_system.md": {
+      "sha256": "2ece3db9d4a2359acab64d38f43908ab8484f4e3673658daef8ae1736aa099fc",
+      "bytes": 1084
+    },
+    "templates/sdd/07_nivel_de_garantia_e_testes.md": {
+      "sha256": "baae052cb1df0895ff0033861783a1968459fc804e8577dcee0fe3a3674de46b",
+      "bytes": 1154
+    },
     "templates/threat-model.md": {
       "sha256": "bb75b523c9f9d6d13eebd3a9eb3f784dbe5282e439c7df23ec6065eea599657a",
       "bytes": 424
@@ -382,6 +410,10 @@
     "tests/test_ast_engines.py": {
       "sha256": "a7dd6ffe5b0c2d297c09c2ae7910dbe0767241456e6b64d59191a8bd5a83cb99",
       "bytes": 13450
+    },
+    "tests/test_auracode_skills.py": {
+      "sha256": "c009df7d147c7e48a09a3916f70b67b42b1ac33a1ee8b4811aa997aa9ea81e49",
+      "bytes": 1771
     },
     "tests/test_framework.py": {
       "sha256": "0f82a2d72b0321079ea9b26e0174088d647c4a3c344faf3ca09838ab1487b159",

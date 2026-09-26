@@ -1,36 +1,53 @@
-# Reversa
+# Aura Code Framework — AI Software Assurance & Lay-User Pair Programming
 
-> Framework de Engenharia Reversa instalado neste projeto.
+> Framework de Desenvolvimento Orientado a Garantias, Pair Programming com Pessoas Leigas e Engenharia de Software Orientada a Especificação.
 
-## Como usar
+## Como usar o Aura Code
 
 Use o fluxo adequado no chat:
 
-- `reversa` — descobrir e documentar um sistema existente
-- `reversa-new` — criar PRD e specs para um projeto novo
-- `reversa-forward` — implementar ou evoluir código a partir das specs
-- `reversa-migrate` — planejar a migração de um sistema legado
-- `reversa-docs` — gerar o mini-site visual da documentação
-- `reversa-agents-help` — consultar o catálogo completo de agentes
+- `auracode` ou `auracode-new` — iniciar um projeto do zero ou nova funcionalidade através de entrevista em linguagem simples para leigos
+- `auracode-clarify` — realizar briefing interativo e eliminar dúvidas/ambiguidades com analogias
+- `auracode-forward` — implementar a aplicação estritamente a partir da planta teórica aprovada em `_auracode_sdd/`
+- `auracode-audit` — executar a suíte estática de garantia AST (slop, leaks, sec, types, arch, tests)
+- `auracode-debugger` — registrar e triar problemas com testes que reproduzem a falha
+- `auracode-refactor` — melhorar a qualidade e arquitetura do código sem alterar regras de negócio
+- `auracode-agents-help` — consultar o catálogo completo de agentes e habilidades
 
-## Comportamento ao ativar
+---
 
-Quando o usuário digitar `reversa` sozinho em uma mensagem:
+## Regras Fundamentais e Não-Negociáveis do Aura Code
 
-1. Ative o skill `reversa` disponível em `.agents/skills/reversa/SKILL.md`
-2. Leia o SKILL.md na íntegra e siga exatamente as instruções do Reversa
+### 1. Tolerância Zero a Presunções (Zero-Presumption Directive)
+- A IA está **estritamente proibida** de presumir, inferir ou decidir qualquer regra de negócio, comportamento de interface, modelo de dados, permissão ou caso de erro.
+- Todas as decisões devem vir do usuário. Se faltar qualquer informação — por menor ou mais simples que seja —, o sistema DEVE pausar e perguntar ao usuário antes de prosseguir.
+- Quando o usuário não souber responder a termos técnicos, o sistema deve apresentar **opções estruturadas com comparações cotidianas** (ex: *"Opção A: Como uma gaveta destravada... / Opção B: Como um cofre com segredo..."*), permitindo uma decisão informada pelo usuário.
 
-## Regra não-negociável
+### 2. Paradigma da Planta da Casa (House Blueprint First)
+- Nenhuma linha de código de aplicação, pasta de código ou arquivo de programação deve ser gerado antes que a **estrutura teórica completa do software** esteja 100% pronta e revisada.
+- Toda a arquitetura (backend, frontend, modelo de dados, APIs, segurança, design system, requisitos e nível de garantia AL1-AL4) deve ser especificada em arquivos markdown no diretório `_auracode_sdd/`.
+- Apenas após a apresentação do resumo ao usuário e sua **autorização/aprovação explícita** é que a geração de arquivos de código pode ser iniciada.
 
-Por padrão, nunca apague, modifique ou sobrescreva arquivos pré-existentes do projeto legado:
-o Reversa escreve apenas em `.reversa/`, `_reversa_sdd/`, `_reversa_docs/`, `_reversa_forward/`, `_reversa_bugs/` e `_reversa_refactor/`.
-A única exceção é a política configurável abaixo, controlada exclusivamente pelo usuário.
+### 3. Protocolo de Comunicação Não-Técnica para Leigos
+- O sistema DEVE usar linguagem simples, evitando jargões técnicos sem explicação.
+- Use sempre analogias do mundo físico:
+  - *Banco de Dados* $\rightarrow$ *"Armário ou arquivo inteligente de dados"*.
+  - *Backend / Servidor* $\rightarrow$ *"A cozinha do restaurante que prepara os pedidos"*.
+  - *API* $\rightarrow$ *"O garçom que leva o pedido da mesa até a cozinha e traz a resposta"*.
+  - *Frontend / Interface* $\rightarrow$ *"A vitrine e o balcão da loja onde o cliente interage"*.
+  - *Autenticação / Token* $\rightarrow$ *"O crachá ou chave de acesso ao prédio"*.
 
-Antes de criar, modificar ou apagar qualquer arquivo fora das pastas próprias do Reversa, leia `.reversa/reversa-config.json` e obedeça ao resultado:
+### 4. Garantia Estática e Controle de Qualidade (AST Zero Trust)
+- Todo código gerado pelo Aura Code deve cumprir os verificadores estáticos AST da CLI `auracode`:
+  - Zero dead code / stubs (`auracode slop`)
+  - Zero vazamento de recursos/arquivos (`auracode leaks`)
+  - Zero vulnerabilidades de injeção (`auracode sec`)
+  - Type hints estritos (`auracode types`)
+  - Isolamento de camadas Clean Architecture (`auracode arch`)
+  - Diffs cirúrgicos limitados a 500 linhas por iteração (`auracode diff`)
 
-- Arquivo ausente, JSON inválido ou campo com tipo errado: trate como `allowLegacyEdits: false` (falha segura, nenhuma escrita fora das pastas do Reversa).
-- `allowLegacyEdits: false`: recuse a escrita, informando o caminho recusado, o estado atual da config e o que o usuário deve editar para liberar.
-- `allowLegacyEdits: true` com `allowedPaths` não vazio: escreva apenas em caminhos que casem com algum glob da lista (globs relativos à raiz do projeto, com `/`, suportando `*` e `**`).
-- `allowLegacyEdits: true` com `allowedPaths` vazio ou ausente: projeto liberado; avise uma vez por sessão que a liberação é irrestrita.
+### 5. Política de Escrita e Isolamento de Diretórios
+Por padrão, artefatos de garantia e especificações devem residir nas pastas gerenciadas do framework:
+`_auracode_sdd/`, `_auracode_bugs/`, `_auracode_docs/`, `_auracode_refactor/`, `_auracode_forward/`.
+Em projetos novos (greenfield) liberados pelo usuário, o código da aplicação será scaffolded sob Clean Architecture (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`).
 
-Nunca crie nem edite `.reversa/reversa-config.json` por iniciativa própria: pedido na conversa não é liberação implícita, alterações nesse arquivo são ato exclusivo do usuário.
