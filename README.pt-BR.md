@@ -1,12 +1,12 @@
 # AuraCode — Framework Agêntico de Garantia e Confiabilidade de Software
 
 > **AuraCode** (**A**gentic **U**nified **R**eliability & **A**ssurance for **Code**)  
-> **Status: 0.2.0 (Estável / Modernização Enterprise) — Motor de Verificação AST, Isolamento Ativo de Agentes, DevContainers Herméticos, Pair Programming com Leigos e Governança**  
-> **Suporte a Linguagens:** Princípios arquiteturais, isolamento de contêineres e governança são agnósticos de linguagem. O motor automatizado de análise estática AST (`auracode`) atualmente inspeciona código **Python (3.9+)**.
+> **Status: 0.3.0 (Estável / Modernização Estratégica V2.0) — Motor de Verificação AST, Isolamento Ativo de Agentes, DevContainers Herméticos, Perfis Graduados de SDD, Testes de Mutação AST, Scanner Multi-Linguagem, Assistente TUI para Leigos e Debates Agênticos**  
+> **Suporte a Linguagens:** Princípios arquiteturais, isolamento de contêineres e governança são agnósticos de linguagem. O motor unificado de análise sintática (`auracode multilang`) inspeciona nativamente código em **Python, TypeScript, JavaScript, Go, Java e C#**.
 
 [![English](https://img.shields.io/badge/Language-English-blue.svg)](README.md)
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow.svg)](LICENSE)
-[![Testes: 124 Aprovados](https://img.shields.io/badge/Testes-124%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
+[![Testes: 144 Aprovados](https://img.shields.io/badge/Testes-144%20Aprovados%20(100%25)-brightgreen.svg)](tests/)
 [![Violações AST: 0](https://img.shields.io/badge/Viola%C3%A7%C3%B5es%20AST-0-success.svg)](tools/)
 
 Um framework neutro e baseado em evidências para construção, auditoria e operação de software profissional desenvolvido com auxílio de modelos de linguagem (LLMs) e agentes de codificação autônomos — especialmente projetado para guiar **pessoas leigas no mundo da tecnologia** a desenvolver um sistema desde o início ou modernizar um existente usando as melhores práticas de engenharia de software de nível sênior.
@@ -24,10 +24,10 @@ O AuraCode resolve essa lacuna através do **Pair Programming Agêntico com Tole
 ### Princípios Fundamentais do AuraCode
 
 1. **Diretriz de Tolerância Zero a Presunções:** A IA não pode inferir ou decidir nada silenciosamente. Qualquer incerteza ou lacuna — por menor que seja — gera uma pergunta em linguagem simples ao usuário.
-2. **Paradigma da Planta da Casa (`_auracode_sdd/`):** Tal como a construção de uma casa, nenhuma linha de código de aplicação, pasta ou script é gerado antes que toda a arquitetura teórica (frontend, backend, banco de dados, segurança, APIs, design system e níveis de garantia AL1-AL4) esteja 100% especificada e revisada em cadernos markdown no diretório `_auracode_sdd/` (7 cadernos no perfil básico ou 15 no enterprise).
+2. **Paradigma da Planta da Casa (`_auracode_sdd/`):** Tal como a construção de uma casa, nenhuma linha de código de aplicação, pasta ou script é gerado antes que toda a arquitetura teórica (frontend, backend, banco de dados, segurança, APIs, design system e níveis de garantia AL1-AL4) esteja 100% especificada e revisada em cadernos markdown no diretório `_auracode_sdd/` (4 perfis graduados: `micro` [1 spec], `lite` [3 specs], `standard` [7 specs] ou `enterprise` [15 specs]).
 3. **Comunicação Didática e Analogias Físicas:** Decisões técnicas são traduzidas em comparações cotidianas (ex.: Banco de Dados $\rightarrow$ *"Armário Inteligente"*, Backend $\rightarrow$ *"Cozinha do Restaurante"*, API $\rightarrow$ *"Garçom de Mensagens"*, Frontend $\rightarrow$ *"Balcão e Vitrine"*, Autenticação $\rightarrow$ *"Crachá de Acesso"*). Escolhas técnicas são apresentadas em menus estruturados com prós e contras simples.
 4. **Contenção Ativa e Ambientes Isolados:** O agente não pode sujar a branch principal de trabalho do desenvolvedor, disparar comandos operacionais perigosos ou trafegar dados livremente pela internet. O AuraCode impõe isolamento físico com Git Worktrees, interceptação fail-closed de hooks e DevContainers herméticos com firewall Default-Deny.
-5. **Motor de Análise Estática Nativo (`auracode <comando>`):** Analisadores sintáticos determinísticos inspecionam o código em busca de vícios típicos de LLMs: caçam código morto (`auracode slop`), detectam vazamentos de arquivos (`auracode leaks`), verificam injeções (`auracode sec`), exigem tipagem estrita (`auracode types`), isolam camadas Clean Architecture (`auracode arch`), e restringem diffs a menos de 500 linhas bloqueando adulteração de testes (`auracode diff`).
+5. **Motor de Análise Estática Nativo & Testes de Mutação AST (`auracode <comando>`):** Analisadores sintáticos determinísticos inspecionam o código em busca de vícios típicos de LLMs: caçam código morto (`auracode slop`), detectam vazamentos de arquivos (`auracode leaks`), verificam injeções (`auracode sec`), exigem tipagem estrita (`auracode types`), isolam camadas Clean Architecture (`auracode arch`), inspecionam projetos multi-linguagem (`auracode multilang`), executam mutação sintática leve para liquidar testes viciados/falsos (`auracode tests --mutate`), e restringem diffs a menos de 500 linhas bloqueando adulteração de testes (`auracode diff`).
 6. **Níveis Progressivos de Garantia (AL1 a AL4):** Do protótipo local (AL1) ao sistema crítico financeiro (AL4), o rigor dos controles escala proporcionalmente ao impacto de uma falha.
 
 ---
@@ -133,8 +133,10 @@ graph TD
 
 #### 📐 Fase 2: A Planta da Casa — Cadernos Técnicos SDD (`_auracode_sdd/`)
 Nenhuma linha de código é gerada antes da aprovação explícita dos cadernos de especificação:
-* **Perfil Básico (`--profile basic`):** 7 cadernos essenciais para protótipos, MVPs e sistemas médios.
-* **Perfil Enterprise (`--profile enterprise`):** 15 cadernos aprofundados para sistemas corporativos, regulados ou de alta criticidade.
+* **Perfil Micro (`--profile micro`):** 1 especificação concisa (`01_task_spec.md`) para scripts utilitários rápidos e pequenas correções (AL1).
+* **Perfil Lite (`--profile lite`):** 3 cadernos essenciais (Visão & Regras, Arquitetura & Dados, Testes & Critérios) para MVPs e validação (AL2).
+* **Perfil Standard (`--profile standard` ou `--profile basic`):** 7 cadernos arquiteturais completos para sistemas web e corporativos (AL3).
+* **Perfil Enterprise (`--profile enterprise`):** 15 cadernos aprofundados para sistemas de missão crítica, regulados ou de grande escala (AL4).
 
 #### 🔒 Fase 3: Ambiente de Execução Isolado e Seguro
 * **Aura Worktree:** Cria uma pasta isolada para a tarefa do agente (`.auracode/worktrees/<task>`), protegendo os arquivos locais do desenvolvedor.
@@ -214,89 +216,102 @@ auracode --help
 
 ---
 
-## 🛠️ Catálogo Completo dos 17 Comandos CLI (`auracode <comando>`)
+## 🛠️ Catálogo Completo dos 20 Comandos CLI (`auracode <comando>`)
 
-O AuraCode oferece 17 comandos nativos de verificação estática, contenção e governança:
+O AuraCode oferece 20 comandos nativos de verificação estática, contenção, mutação de testes, escaneamento multi-linguagem, wizard interativo e governança:
 
 ```bash
-# 1. Inicializar diretórios de governança e cadernos SDD (perfil: basic ou enterprise)
-auracode init --profile enterprise
+# 1. Inicializar diretórios de governança e cadernos SDD (perfil: micro, lite, standard, enterprise)
+auracode init --profile standard
 
-# 2. Avaliar ambiguidade de requisitos e gerar perguntas não técnicas (Gate G1)
+# 2. Assistente interativo no terminal para pessoas leigas (TUI sem jargões)
+auracode wizard
+# ou sinônimo: auracode interview
+
+# 3. Avaliar ambiguidade de requisitos e gerar perguntas não técnicas (Gate G1)
 auracode ambiguity .
 
-# 3. Escanear AST para dead code, código inalcançável e erros silenciosos
+# 4. Escanear AST para dead code, código inalcançável e erros silenciosos
 auracode slop .
 
-# 4. Escanear AST para vazamento de recursos (arquivos, DBs, sockets sem 'with')
+# 5. Escanear AST para vazamento de recursos (arquivos, DBs, sockets sem 'with')
 auracode leaks .
 
-# 5. Escanear AST para anotações estritas de tipo e proibir uso irrestrito de 'Any'
+# 6. Escanear AST para anotações estritas de tipo e proibir uso irrestrito de 'Any'
 auracode types .
 
-# 6. Avaliar integridade dos testes e detectar testes vazios ou sem asserções
+# 7. Avaliar integridade dos testes e executar testes de mutação AST contra oráculos viciados
 auracode tests .
+auracode tests --mutate -s tools/multilang_runner.py -t tests/test_multilang_runner.py
 
-# 7. Escanear AST para vetores de injeção (eval/exec, shell=True, injeção de SQL)
+# 8. Escanear projetos multi-linguagem (Python, TS, JS, Go, Java, C#) com relatório SARIF
+auracode multilang .
+
+# 9. Escanear AST para vetores de injeção (eval/exec, shell=True, injeção de SQL)
 auracode sec .
 
-# 8. Validar limites de camadas da Clean Architecture via AST
+# 10. Validar limites de camadas da Clean Architecture via AST
 auracode arch .
 
-# 9. Validar dependências contra o registro PyPI para evitar bibliotecas alucinadas
+# 11. Validar dependências contra o registro PyPI para evitar bibliotecas alucinadas
 auracode deps .
 
-# 10. Validar se alterações são cirúrgicas (< 500 linhas) e barrar fraude em testes
+# 12. Validar se alterações são cirúrgicas (< 500 linhas) e barrar fraude em testes
 auracode diff .
 
-# 11. Ingerir relatório SARIF 2.1.0 ou JSON de linters externos
+# 13. Ingerir relatório SARIF 2.1.0 ou JSON de linters externos
 auracode sarif linter-report.json
 
-# 12. Avaliar conformidade do projeto com um Nível de Garantia (AL1-AL4)
+# 14. Avaliar conformidade do projeto com um Nível de Garantia (AL1-AL4)
 auracode assess assessment.json
 
-# 13. Iniciar servidor MCP (Model Context Protocol) via stdio para IDEs
+# 15. Iniciar servidor MCP (Model Context Protocol) via stdio para IDEs
 auracode mcp
 
-# 14. Barreira de segurança em tempo real para execução de ferramentas (Aura Guard)
+# 16. Barreira de segurança em tempo real para execução de ferramentas (Aura Guard)
 auracode guard check --tool run_command --cmd "git status"
 auracode guard install .
 
-# 15. Isolamento físico de branches em diretórios paralelos (Aura Worktree)
+# 17. Isolamento físico de branches em diretórios paralelos (Aura Worktree)
 auracode worktree create --task auth-feature
 auracode worktree list
 auracode worktree merge --task auth-feature
 auracode worktree clean --task auth-feature
 
-# 16. Sandbox DevContainer com Firewall Default-Deny (Aura Cage)
+# 18. Sandbox DevContainer com Firewall Default-Deny (Aura Cage)
 auracode cage init .
 auracode cage verify
 
-# 17. Runner de execução autônoma sob a Arquitetura Ralph (Aura Loop)
+# 19. Runner de execução autônoma sob a Arquitetura Ralph (Aura Loop)
 auracode loop run --max-turns 10
 auracode loop status
 auracode loop reset
+
+# 20. Debate agêntico adversarial estruturado em 3 fases com contenção (Party Mode Seguro)
+auracode debate "Sistema de Armazenamento de Arquivos"
 ```
 
 ---
 
 ## 🤖 Habilidades Ativas e Agentes Especializados (`.agents/skills/`)
 
-O AuraCode disponibiliza 13 habilidades especializadas no diretório `.agents/skills/`:
+O AuraCode disponibiliza 15 habilidades especializadas no diretório `.agents/skills/`:
 
 1. **`auracode`**: Ponto de entrada principal e roteador de comandos.
 2. **`auracode-new`**: Condução de entrevistas em linguagem simples e geração da Planta da Casa em `_auracode_sdd/`.
 3. **`auracode-clarify`**: Agente de perguntas cirúrgicas com analogias e eliminação de ambiguidades.
 4. **`auracode-brainstorm`**: Agente de ideação e menus de funcionalidades a partir de ideias brutas.
 5. **`auracode-forward`**: Construtor guiado por especificação que gera código Clean Architecture a partir dos cadernos aprovados.
-6. **`auracode-guard`**: Barreira de contenção ativa que monitora chamadas de ferramentas e protege o sistema operacional.
-7. **`auracode-worktree`**: Gerenciador de isolamento físico de branches Git para agentes.
-8. **`auracode-cage`**: Arquiteto de sandbox DevContainer com firewall Default-Deny.
-9. **`auracode-loop`**: Executor autônomo baseado na Arquitetura Ralph com 5 níveis de verificação AST.
-10. **`auracode-audit`**: Auditor autônomo de garantia de qualidade executando a suíte estática completa de 17 ferramentas.
-11. **`auracode-debugger`**: Investigador de bugs que reproduz falhas via testes unitários antes de aplicar correções cirúrgicas.
-12. **`auracode-refactor`**: Especialista em eliminação de slop, vazamentos e tipagem sem alterar a API pública.
-13. **`auracode-agents-help`**: Catálogo didático que explica o propósito de cada agente por meio de analogias cotidianas.
+6. **`auracode-adversary`**: Auditor contestador adversarial que aponta riscos, brechas de injeção e oráculos viciados antes do merge.
+7. **`auracode-debate`**: Orquestrador de debates em 3 fases equilibrando propostas de arquitetura com analogias físicas e decisões humanas.
+8. **`auracode-guard`**: Barreira de contenção ativa que monitora chamadas de ferramentas e protege o sistema operacional.
+9. **`auracode-worktree`**: Gerenciador de isolamento físico de branches Git para agentes.
+10. **`auracode-cage`**: Arquiteto de sandbox DevContainer com firewall Default-Deny.
+11. **`auracode-loop`**: Executor autônomo baseado na Arquitetura Ralph com 5 níveis de verificação AST.
+12. **`auracode-audit`**: Auditor autônomo de garantia de qualidade executando a suíte estática completa de 20 ferramentas.
+13. **`auracode-debugger`**: Investigador de bugs que reproduz falhas via testes unitários antes de aplicar correções cirúrgicas.
+14. **`auracode-refactor`**: Especialista em eliminação de slop, vazamentos e tipagem sem alterar a API pública.
+15. **`auracode-agents-help`**: Catálogo didático que explica o propósito de cada agente por meio de analogias cotidianas.
 
 ---
 
@@ -322,7 +337,7 @@ O AuraCode V2.0 fundamenta-se nas teorias e técnicas consolidadas em nosso manu
 O framework possui cobertura completa de testes em todas as ferramentas:
 
 ```bash
-# Executar suíte completa de testes unitários (124 testes)
+# Executar suíte completa de testes unitários (144 testes)
 python -m unittest discover -s tests -p "test_*.py"
 
 # Executar linters AST sobre o próprio código do framework
@@ -332,10 +347,11 @@ auracode leaks .
 auracode sec .
 auracode types .
 auracode tests .
+auracode multilang .
 ```
 
-- **Testes Unitários:** 124 testes aprovados (0 falhas, 0 erros).
-- **Violações AST:** 0 em todos os 7 analisadores sintáticos.
+- **Testes Unitários:** 144 testes aprovados (0 falhas, 0 erros).
+- **Violações AST:** 0 em todos os 8 analisadores sintáticos.
 - **Dependências Externas:** Zero (Python Standard Library puro para as ferramentas de garantia).
 
 ---

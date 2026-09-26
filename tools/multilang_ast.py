@@ -215,19 +215,22 @@ class MultiLangASTAnalyzer:
     def _analyze_slop_jsts(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
         lines = content.splitlines()
-
-        empty_catch_regex = re.compile(r"catch\s*\([^)]*\)\s*\{\s*\}|catch\s*\{\s*\}")
-        placeholder_terms = PLACEHOLDER_TERMS
-
-        for idx, line in enumerate(lines, 1):
-            if empty_catch_regex.search(line):
+        multiline_empty_catch = re.compile(r"catch\s*(?:\([^)]*\))?\s*\{([^{}]*)\}", re.DOTALL)
+        for m in multiline_empty_catch.finditer(content):
+            body = m.group(1)
+            stripped = re.sub(r"//.*|/\*.*?\*/", "", body, flags=re.DOTALL).strip()
+            if not stripped:
+                line_no = content[:m.start()].count("\n") + 1
                 violations.append({
                     "file": rel_path,
-                    "line": idx,
+                    "line": line_no,
                     "type": "silent_exception_swallowing",
                     "message": "Empty 'catch {}' block swallows errors without logging or re-raising"
                 })
 
+        placeholder_terms = PLACEHOLDER_TERMS
+
+        for idx, line in enumerate(lines, 1):
             line_lower = line.lower()
             for term in placeholder_terms:
                 if term in line_lower and ("//" in line or "/*" in line or "'" in line or '"' in line or "`" in line):
@@ -356,7 +359,8 @@ class MultiLangASTAnalyzer:
                 has_file_open = True
                 open_line = idx
 
-        if (has_http_open or has_file_open) and not defer_close_regex.search(content):
+        content_no_comments = re.sub(r"//.*", "", content)
+        if (has_http_open or has_file_open) and not defer_close_regex.search(content_no_comments):
             violations.append({
                 "file": rel_path,
                 "line": open_line,

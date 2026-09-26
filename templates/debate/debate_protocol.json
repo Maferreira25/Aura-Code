@@ -1,0 +1,38 @@
+{
+  "protocol": "AuraCode Adversarial Assurance Debate (Party Mode com Contenção)",
+  "version": "1.0.0",
+  "roles": {
+    "proponent": {
+      "name": "Arquiteto Construtor (auracode-forward)",
+      "goal": "Propor solução técnica elegante seguindo Clean Architecture e especificações SDD."
+    },
+    "adversary": {
+      "name": "Auditor Adversarial (auracode-adversary)",
+      "goal": "Identificar suposições veladas, oráculos viciados, vetores de ataque STRIDE e vazamentos de recursos."
+    },
+    "arbiter": {
+      "name": "Clarificador Didático (auracode-clarify)",
+      "goal": "Sintetizar o embate em linguagem simples e apresentar escolhas estruturadas com analogias físicas para a pessoa usuária."
+    }
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Proposta Técnica Inicial",
+      "actor": "proponent",
+      "output_fields": ["resumo_proposta", "camadas_afetadas", "invariantes_mantidos"]
+    },
+    {
+      "phase": 2,
+      "name": "Contestação e Red-Teaming",
+      "actor": "adversary",
+      "output_fields": ["pontos_vulneraveis", "casos_de_borda_esquecidos", "risco_oraculo_viciado"]
+    },
+    {
+      "phase": 3,
+      "name": "Síntese em Linguagem Simples",
+      "actor": "arbiter",
+      "output_fields": ["analogia_cotidiana", "menu_de_escolhas", "recomendacao_segura"]
+    }
+  ]
+}

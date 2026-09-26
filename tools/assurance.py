@@ -32,9 +32,13 @@ from tools import pre_tool_guard
 from tools import manage_worktree
 from tools import manage_cage
 from tools import loop_runner
+from tools import mutation_engine
+from tools import wizard
+from tools import multilang_runner
+from tools import adversarial_debate
 
 
-def setup_auracode_environment(profile: str = "basic", copy_templates: bool = True, target_dir: Optional[Path] = None) -> None:
+def setup_auracode_environment(profile: str = "standard", copy_templates: bool = True, target_dir: Optional[Path] = None) -> None:
     root = target_dir if target_dir else Path.cwd()
     dirs = ['.auracode', '_auracode_sdd', '_auracode_forward', '_auracode_bugs', '_auracode_refactor', '_auracode_docs']
     for d in dirs:
@@ -42,9 +46,12 @@ def setup_auracode_environment(profile: str = "basic", copy_templates: bool = Tr
 
     if copy_templates:
         import shutil
-        templates_dir = ROOT_DIR / "templates" / "sdd" / profile
-        if not templates_dir.exists():
+        norm_profile = "standard" if profile == "basic" else profile
+        templates_dir = ROOT_DIR / "templates" / "sdd" / norm_profile
+        if not templates_dir.exists() and norm_profile == "standard":
             templates_dir = ROOT_DIR / "templates" / "sdd" / "basic"
+        elif not templates_dir.exists():
+            templates_dir = ROOT_DIR / "templates" / "sdd" / "standard"
 
         target_sdd = root / "_auracode_sdd"
         if templates_dir.exists():
@@ -72,7 +79,12 @@ def main() -> None:
 
     # Subcommand: init
     init_p = subparsers.add_parser("init", help="Initialize workspace assurance environment directories")
-    init_p.add_argument("--profile", "-p", choices=["basic", "enterprise"], default="basic", help="SDD specification template profile (basic: 7 specs, enterprise: 15 specs)")
+    init_p.add_argument(
+        "--profile", "-p",
+        choices=["micro", "lite", "standard", "basic", "enterprise"],
+        default="standard",
+        help="SDD specification template profile (micro: 1 spec, lite: 3 specs, standard: 7 specs, enterprise: 15 specs)"
+    )
     init_p.add_argument("--no-templates", action="store_true", help="Do not copy SDD template files into _auracode_sdd")
 
 
@@ -126,6 +138,9 @@ def main() -> None:
     tests_p = subparsers.add_parser("tests", help="Scan test suite integrity and detect vacuous tests without assertions")
     tests_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     tests_p.add_argument("--allow-zero-tests", action="store_true", help="Permit zero test files without failing")
+    tests_p.add_argument("--mutate", action="store_true", help="Execute lightweight AST mutation analysis to detect vitiated oracles")
+    tests_p.add_argument("--source", "-s", type=str, default=None, help="Target production source file to mutate (used with --mutate)")
+    tests_p.add_argument("--test-target", "-t", type=str, default=None, help="Test file or directory to execute (used with --mutate)")
 
     # Subcommand: sec
     sec_p = subparsers.add_parser("sec", help="Scan Python AST for injection vectors, eval/exec, and shell=True risks")
@@ -207,6 +222,21 @@ def main() -> None:
 
     loop_reset_p = loop_sub.add_parser("reset", help="Reset loop state and failure counters")
 
+    # Subcommand: wizard (alias: interview)
+    wizard_p = subparsers.add_parser("wizard", aliases=["interview"], help="Interactive Requirements Briefing Wizard for lay users")
+    wizard_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+
+    # Subcommand: multilang
+    mlang_p = subparsers.add_parser("multilang", help="Scan multi-language codebase (Python, TS, JS, Go, Java, C#)")
+    mlang_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    mlang_p.add_argument("--lang", type=str, default=None, help="Filter by specific language (python, typescript, javascript, go, java, csharp)")
+    mlang_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+
+    # Subcommand: debate
+    debate_p = subparsers.add_parser("debate", help="Orchestrate structured 3-phase adversarial assurance debate")
+    debate_p.add_argument("topic", nargs="?", default="Arquitetura e Limites de Segurança", help="Topic, architecture proposal, or SDD feature to debate")
+    debate_p.add_argument("--json", action="store_true", help="Output debate findings in JSON format")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -286,10 +316,23 @@ def main() -> None:
         _dispatch_with_argv(["check_strict_types.py", args.target], check_strict_types.main)
 
     elif args.command == "tests":
-        argv = ["check_test_integrity.py", args.target]
-        if args.allow_zero_tests:
-            argv.append("--allow-zero-tests")
-        _dispatch_with_argv(argv, check_test_integrity.main)
+        if getattr(args, "mutate", False):
+            import json
+            src = Path(args.source) if args.source else Path(args.target)
+            test_target = Path(args.test_target) if getattr(args, "test_target", None) else Path("tests")
+            if src.is_dir():
+                py_files = [f for f in src.rglob("*.py") if "test" not in f.name and not any(p.startswith(".") for p in f.parts)]
+                if py_files:
+                    src = py_files[0]
+            res = mutation_engine.execute_mutation_analysis(src, test_target)
+            print(json.dumps(res, indent=2))
+            if res.get("status") not in ("PASS", "WARN"):
+                sys.exit(1)
+        else:
+            argv = ["check_test_integrity.py", args.target]
+            if args.allow_zero_tests:
+                argv.append("--allow-zero-tests")
+            _dispatch_with_argv(argv, check_test_integrity.main)
 
     elif args.command == "sec":
         _dispatch_with_argv(["check_injection_vectors.py", args.target], check_injection_vectors.main)
@@ -376,6 +419,55 @@ def main() -> None:
         if getattr(args, "json", False):
             loop_argv.append("--json")
         sys.exit(loop_runner.main(loop_argv))
+
+    elif args.command in ("wizard", "interview"):
+        wiz = wizard.AuraWizard(workspace_dir=Path(args.target).resolve())
+        res = wiz.run()
+        sys.exit(0 if res.get("success") else 1)
+
+    elif args.command == "multilang":
+        res = multilang_runner.scan_multilang_workspace(Path(args.target), target_lang=args.lang)
+        if args.json:
+            import json
+            print(json.dumps(res, indent=2))
+        else:
+            print(f"AuraCode Multi-Language Assurance Scan: {res['status']}")
+            print(f"Files scanned: {res['total_files_scanned']} across {len(res['languages_detected'])} languages")
+            for lang, count in res["languages_detected"].items():
+                print(f" - {lang}: {count} files")
+            print(f"Total violations: {res['violations_count']}")
+            if res["violations_count"] > 0:
+                print(f" - Slop / Swallowed Errors: {res['slop_violations_count']}")
+                print(f" - Unclosed Resource Leaks: {res['leaks_violations_count']}")
+                print(f" - Injection / Security Hazards: {res['security_violations_count']}")
+        sys.exit(0 if res["status"] == "PASS" else 1)
+
+    elif args.command == "debate":
+        runner = adversarial_debate.AdversarialDebateRunner(workspace_dir=Path.cwd())
+        res = runner.run_debate(args.topic)
+        if args.json:
+            import json
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print("================================================================================")
+            print("   AURA CODE -- DEBATE AGÊNTICO COM CONTENÇÃO (PARTY MODE SEGURO)")
+            print("================================================================================")
+            print(f">> Tema: {res['topic']}\n")
+            d = res["debate"]
+            print(f"[FASE 1 - PROPOSTA]: {d['phase_1_proponent']['role']}")
+            print(f"  {d['phase_1_proponent']['argument']}\n")
+            print(f"[FASE 2 - RED-TEAM / CONTESTAÇÃO]: {d['phase_2_adversary']['role']}")
+            for obj in d['phase_2_adversary']['objections']:
+                print(f"  * {obj}")
+            print()
+            print(f"[FASE 3 - SÍNTESE EM LINGUAGEM SIMPLES]: {d['phase_3_arbiter']['role']}")
+            print(f"  Analogia do Mundo Físico:\n  \"{d['phase_3_arbiter']['physical_analogy']}\"\n")
+            print("  Menu de Escolhas para Decisão Humana:")
+            for opt in d['phase_3_arbiter']['decision_menu']:
+                print(f"   - {opt['option']}: {opt['description']}")
+                print(f"     Impacto: {opt['tradeoff']}")
+            print(f"\n>> {d['phase_3_arbiter']['human_authority_reminder']}")
+        sys.exit(0)
 
 
 if __name__ == "__main__":

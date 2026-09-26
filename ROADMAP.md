@@ -17,19 +17,20 @@
 - 17 unified CLI commands (`auracode <command>`);
 - 124 passing unit tests (100% pass rate).
 
-## 0.3 — Tool & Language Profiles (In Progress)
-- Python/web (FastAPI, Django, Flask);
-- TypeScript/Node & Next.js AST linters;
-- JVM (Java/Kotlin);
-- Go/Rust assurance profiles;
-- Cloud & Infrastructure-as-Code (Terraform, Pulumi, Kubernetes).
+## 0.3 — Strategic Usability & Multi-Language Assurance (Completed)
+- Graduated SDD profiles (`micro`, `lite`, `standard`, `enterprise`);
+- AST Mutation Testing engine to kill vitiated test oracles (`auracode tests --mutate`);
+- Interactive lay-user Terminal Briefing Wizard with physical analogies (`auracode wizard`);
+- Polyglot static analyzer for Python, TypeScript/JavaScript, Go, Java, and C# (`auracode multilang`);
+- Structured 3-phase Adversarial Agentic Debate (`auracode debate`);
+- Expanded test suite to 144 unit tests (100% passing) and 20 unified CLI commands.
 
-## 0.4 — Continuous Assurance Automation (Completed / Evolving)
-- Evidence manifest synchronization (`tools/update_manifest.py`);
-- GitHub Actions CI/CD workflows (`.github/workflows/`);
-- OASIS SARIF v2.1.0 report ingestion and export;
-- Anti-reward-hacking and non-vacuous assertion validation (`auracode tests`);
-- Surgical diff bounds checking (`auracode diff`).
+## 0.4 — Framework Profiles & Ecosystem Adapters (In Progress)
+- Framework-specific contracts (FastAPI, Django, Next.js, Spring Boot);
+- Advanced mutation operators for multi-language ASTs;
+- Cloud & Infrastructure-as-Code assurance (Terraform, Pulumi, Kubernetes manifests);
+- Visual dashboard for Assurance Level audit certificates;
+- Real-time SARIF streaming and continuous CI/CD integration.
 
 ## 0.5 — Long-horizon Empirical Validation
 - Repeated multi-agent feature-evolution benchmark;

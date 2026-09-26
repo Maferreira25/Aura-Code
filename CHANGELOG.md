@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.3.0 — 2026-09-26
+
+Strategic Enhancement Release — Graduated SDD profiles, AST mutation testing, non-technical TUI briefing wizard, polyglot static scanning, and adversarial agentic debate:
+
+### Added
+- **Graduated SDD Profiles (`templates/sdd/` & `auracode init --profile <name>`):**
+  - Introduced 4 graduated specification profiles tailored to project scale and assurance level:
+    - `micro` (AL1): Single-document task spec (`01_task_spec.md`) for quick scripts and surgical fixes.
+    - `lite` (AL2): 3 core blueprints (Vision & Rules, Architecture & Data, Tests & Acceptance) for MVPs and idea validation.
+    - `standard` / `basic` (AL3): 7 core architectural blueprints for production web and backend systems.
+    - `enterprise` (AL4): 15 comprehensive blueprints for mission-critical, regulated, and high-scale systems.
+  - Supported via `auracode init --profile {micro,lite,standard,basic,enterprise}`.
+- **AST Mutation Engine (`tools/mutation_engine.py` & `auracode tests --mutate`):**
+  - Lightweight syntax mutation testing to detect vitiated test oracles and tautological assertions (`assert True`).
+  - AST mutators invert relational comparisons (`==` to `!=`, `<` to `>=`), arithmetic operators (`+` to `-`), boolean constants (`True` to `False`), and nullify return statements (`return expr` to `return None`).
+  - Safe in-place file mutation with guaranteed `try/finally` restoration and timeout handling.
+- **Interactive Terminal Briefing Wizard (`tools/wizard.py` & `auracode wizard` / `interview`):**
+  - Non-technical, zero-jargon interactive TUI guiding lay users through 5 structured briefing stages.
+  - Translates technical decisions into physical world analogies (smart filing cabinets, storefronts, ID badges).
+  - Automatically initializes appropriate SDD blueprints and computes the Gate G1 requirement clarity score directly from the terminal.
+- **Polyglot Multi-Language Scanner (`tools/multilang_runner.py` & `auracode multilang`):**
+  - Unified syntax inspection for Python, TypeScript, JavaScript, Go, Java, and C# codebases.
+  - Catches empty exception handling / swallowed errors, unclosed stream/file leaks, and unsafe code execution across all supported languages without requiring language-specific compilation dependencies.
+  - Ingests and outputs findings in standard SARIF v2.1.0 and JSON formats.
+- **Adversarial Agentic Debate with Containment (`tools/adversarial_debate.py`, `auracode debate`, `.agents/skills/auracode-debate`, `.agents/skills/auracode-adversary`):**
+  - Safe 3-phase structured debate protocol preventing LLM sycophancy without context explosion.
+  - Phase 1 (Builder / Proponent) proposes architecture $\rightarrow$ Phase 2 (Adversary Red-Team) challenges security/scale risks $\rightarrow$ Phase 3 (Lay-User Clarifier) translates findings into everyday physical analogies and structured choices for human decision.
+- **CLI and Test Suite Growth:**
+  - Expanded CLI to 20 native commands.
+  - Expanded unit test suite from 124 to 144 passing tests (100% pass rate).
+  - 15 active agent skills registered in `.agents/skills/`.
+
 ## 0.2.0 — 2026-09-26
 
 V2.0 Modernization Release — Comprehensive agentic containment, physical isolation, enterprise specifications, hermetic DevContainers, and Ralph Architecture autonomous execution based on the engineering manual *Engenharia de Software com Agentes Inteligentes*:
