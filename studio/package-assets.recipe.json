@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "artifact_path": "auracode/studio/assets",
+  "input_paths": ["studio/out", "studio/scripts/package_assets.py"],
+  "command": ["python", "studio/scripts/package_assets.py"],
+  "audit_command": ["python", "studio/scripts/package_assets.py", "--verify"],
+  "generator": "AuraCode-package-assets@1",
+  "working_directory": ".",
+  "timeout": 120
+}

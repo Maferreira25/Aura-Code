@@ -38,6 +38,18 @@ from tools import multilang_runner
 from tools import adversarial_debate
 from tools import preflight
 from tools import audit
+from tools import doctor
+from tools import skill_packages
+from tools import iteration
+from tools import generated_artifact
+from tools import studio_package
+
+
+def _serve_studio(port: int, open_browser: bool) -> None:
+    """Import the Studio runtime lazily to avoid a package/CLI import cycle."""
+    from auracode.studio.server import serve_studio
+
+    serve_studio(port=port, open_browser=open_browser)
 
 
 def setup_auracode_environment(profile: str = "standard", copy_templates: bool = True, target_dir: Optional[Path] = None) -> None:
@@ -122,9 +134,10 @@ def main() -> None:
     diff_p = subparsers.add_parser("diff", help="Verify that repository changes are surgical and bounded")
     diff_p.add_argument("target", nargs="?", default=".", help="Repository directory")
     diff_p.add_argument("--scope", "-s", type=str, help="Comma-separated glob patterns of allowed files")
+    diff_p.add_argument("--only-scope", action="store_true", help="Evaluate only --scope matches and report other dirty files")
     diff_p.add_argument("--allow-tests", action="store_true", help="Permit modifications to test/evaluator files")
     diff_p.add_argument("--max-lines", type=int, default=500, help="Maximum allowed churn (default: 500)")
-    diff_p.add_argument("--block-on-churn", action="store_true", help="Fail verification if change volume exceeds max-lines limit")
+    diff_p.add_argument("--block-on-churn", dest="block_on_churn", action="store_true", default=True, help="Fail when churn exceeds max-lines (default)")
     diff_p.add_argument("--json", action="store_true", help="Output results in JSON format")
 
     # Subcommand: ambiguity (Gate G1)
@@ -257,12 +270,62 @@ def main() -> None:
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
 
     # Subcommand: audit
-    audit_p = subparsers.add_parser("audit", help="Executive Software Assurance & Health Audit with Score (0-100)")
+    audit_p = subparsers.add_parser("audit", help="Evidence-based audit with explicit guarantee states")
     audit_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     audit_p.add_argument("--contracts", "-c", type=str, default=None, help="Path to contracts.json specification file")
     audit_p.add_argument("--output", "-o", type=str, default=None, help="Save audit report to file")
-    audit_p.add_argument("--strict", action="store_true", help="Fail (exit 1) on warnings (WARN); require PASS (score >= 90 and zero warnings)")
+    audit_p.add_argument("--strict", action="store_true", help="Deprecated compatibility flag; every non-PASS result already fails closed")
     audit_p.add_argument("--json", action="store_true", help="Output audit findings in JSON format")
+
+    # Subcommand: doctor
+    doctor_p = subparsers.add_parser("doctor", help="Verify installation and host prerequisites without hiding incomplete components")
+    doctor_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+
+    # Subcommand: skills
+    skills_p = subparsers.add_parser("skills", help="Inspect, verify, or install the packaged official skills")
+    skills_sub = skills_p.add_subparsers(dest="skills_action", required=True)
+    skills_verify_p = skills_sub.add_parser("verify", help="Verify skill contracts, hashes, and core compatibility")
+    skills_verify_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+    skills_list_p = skills_sub.add_parser("list", help="List the packaged official skills")
+    skills_list_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+    skills_install_p = skills_sub.add_parser("install", help="Install packaged skills without overwriting local changes")
+    skills_install_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    skills_install_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+
+    # Subcommand: iteration
+    iteration_p = subparsers.add_parser("iteration", help="Open or verify a temporal, scope-bound build iteration")
+    iteration_sub = iteration_p.add_subparsers(dest="iteration_action", required=True)
+    iteration_begin = iteration_sub.add_parser("begin", help="Capture a hash-only baseline before editing")
+    iteration_begin.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    iteration_begin.add_argument("--id", required=True, help="Stable lowercase iteration identifier")
+    iteration_begin.add_argument("--requirement", required=True, help="Approved requirement identifier")
+    iteration_begin.add_argument("--scope", required=True, help="Comma-separated authorized file patterns")
+    iteration_begin.add_argument("--allow-tests", action="store_true", help="Authorize test/evaluator changes")
+    iteration_begin.add_argument("--max-lines", type=int, default=500, help="Blocking line limit, at most 500")
+    iteration_begin.add_argument("--generated-artifact", action="append", default=[], help="Generated path exempt only with valid reproduction evidence")
+    iteration_begin.add_argument("--json", action="store_true", help="Output results in JSON format")
+    iteration_verify = iteration_sub.add_parser("verify", help="Compare the workspace with the captured baseline")
+    iteration_verify.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    iteration_verify.add_argument("--id", required=True, help="Iteration identifier to verify")
+    iteration_verify.add_argument("--json", action="store_true", help="Output results in JSON format")
+    iteration_integrate = iteration_sub.add_parser("integrate", help="Revalidate and integrate a corrective child iteration")
+    iteration_integrate.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    iteration_integrate.add_argument("--id", required=True, help="Parent iteration identifier")
+    iteration_integrate.add_argument("--child", required=True, help="Corrective child iteration identifier")
+    iteration_integrate.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: artifact
+    artifact_p = subparsers.add_parser("artifact", help="Reproduce and audit deterministic generated artifacts")
+    artifact_sub = artifact_p.add_subparsers(dest="artifact_action", required=True)
+    artifact_reproduce = artifact_sub.add_parser("reproduce", help="Execute a versioned artifact recipe twice in clean directories")
+    artifact_reproduce.add_argument("recipe", help="Recipe path relative to the target workspace")
+    artifact_reproduce.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    artifact_reproduce.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: studio
+    studio_p = subparsers.add_parser("studio", help="Open the packaged Aura Studio on local loopback")
+    studio_p.add_argument("--port", type=int, default=0, help="Loopback port; zero selects a free port")
+    studio_p.add_argument("--no-browser", action="store_true", help="Do not open the system browser")
 
     args = parser.parse_args()
 
@@ -317,12 +380,13 @@ def main() -> None:
         argv = ["check_surgical_diff.py", args.target]
         if args.scope:
             argv.extend(["--scope", args.scope])
+        if args.only_scope:
+            argv.append("--only-scope")
         if args.allow_tests:
             argv.append("--allow-tests")
         if args.max_lines:
             argv.extend(["--max-lines", str(args.max_lines)])
-        if args.block_on_churn:
-            argv.append("--block-on-churn")
+        argv.append("--block-on-churn")
         if args.json:
             argv.append("--json")
         _dispatch_with_argv(argv, check_surgical_diff.main)
@@ -524,6 +588,79 @@ def main() -> None:
         if args.json:
             audit_argv.append("--json")
         _dispatch_with_argv(audit_argv, audit.main)
+
+    elif args.command == "doctor":
+        report = doctor.run_doctor()
+        doctor.print_doctor_report(report, as_json=args.json)
+        sys.exit(0 if report.get("status") == "PASS" else 2)
+
+    elif args.command == "skills":
+        import json
+
+        if args.skills_action == "verify":
+            result = skill_packages.verify_skill_bundle()
+        elif args.skills_action == "install":
+            result = skill_packages.install_bundled_skills(Path(args.target))
+        else:
+            bundle = skill_packages.load_skill_bundle()
+            packaged = bundle.get("skills", [])
+            result = {
+                "status": "PASS",
+                "skills": [item["manifest"] for item in packaged],
+            }
+        if args.json:
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        elif args.skills_action == "list":
+            for manifest in result["skills"]:
+                print(f"{manifest['id']} {manifest['version']} [{manifest['origin']}]")
+        else:
+            print(f"AuraCode skills {args.skills_action}: {result['status']}")
+            for finding in result.get("findings", []):
+                print(f"- {finding}")
+            for conflict in result.get("conflicts", []):
+                print(f"- conflict: {conflict}")
+        sys.exit(0 if result.get("status") == "PASS" else 2)
+
+    elif args.command == "iteration":
+        iteration_argv = ["iteration.py", args.iteration_action, args.target, "--id", args.id]
+        if args.iteration_action == "begin":
+            iteration_argv.extend(["--requirement", args.requirement, "--scope", args.scope])
+            iteration_argv.extend(["--max-lines", str(args.max_lines)])
+            if args.allow_tests:
+                iteration_argv.append("--allow-tests")
+            for artifact_path in args.generated_artifact:
+                iteration_argv.extend(["--generated-artifact", artifact_path])
+        elif args.iteration_action == "integrate":
+            iteration_argv.extend(["--child", args.child])
+        if args.json:
+            iteration_argv.append("--json")
+        _dispatch_with_argv(iteration_argv, iteration.main)
+
+    elif args.command == "artifact":
+        import json
+
+        try:
+            result = generated_artifact.reproduce_from_recipe(Path(args.target), args.recipe)
+        except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
+            result = {"status": "ERROR", "error": str(exc)}
+        if args.json:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode artifact reproduce: {result['status']}")
+            print(result.get("reason", result.get("error", "")))
+        sys.exit(0 if result.get("status") == "PASS" else (2 if result.get("status") == "ERROR" else 1))
+
+    elif args.command == "studio":
+        package_result = studio_package.verify_studio_package(ROOT_DIR)
+        if package_result.get("status") != "PASS":
+            print(f"Aura Studio unavailable: {package_result.get('reason', 'package verification failed')}")
+            sys.exit(2)
+        try:
+            _serve_studio(port=args.port, open_browser=not args.no_browser)
+        except (OSError, ValueError) as exc:
+            print(f"Aura Studio could not start: {exc}")
+            sys.exit(2)
+        sys.exit(0)
 
 
 if __name__ == "__main__":

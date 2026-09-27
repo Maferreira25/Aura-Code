@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""
-AuraCode Requirements Ambiguity and Non-Technical Dialogue Checker (Gate G1)
-Evaluates requirements files, specs, and code for ambiguity markers, unconfirmed assumptions,
-and generates structured non-technical clarification questions for non-technical users.
+"""AuraCode supported-marker ambiguity scanner (Gate G1).
+
+Flags a bounded set of textual markers and proposes clarification questions. A clean
+scan is not a measurement of human understanding or proof that requirements are complete.
 """
 import os
 import sys
@@ -82,7 +82,11 @@ def analyze_workspace(workspace_dir: str, include_json: bool = False) -> dict:
 
     result = {
         "status": status,
-        "ambiguity_score": round(max(0.0, 1.0 - (len(findings) * 0.1)), 2),
+        "coverage": "supported_markers_only",
+        "clarity_status": "NOT_RUN",
+        "clarity_reason": (
+            "Textual marker scanning cannot establish complete requirements or human understanding."
+        ),
         "total_ambiguity_findings": len(findings),
         "unclear_requirements": unclear_requirements,
         "suggested_non_technical_questions": suggested_questions,

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1-draft",
+  "version": "0.3.0.dev0",
   "disclaimer": "High-level objective/domain crosswalk only; not clause-by-clause compliance.",
   "crosswalk": {
     "NIST-SSDF-1.1": [

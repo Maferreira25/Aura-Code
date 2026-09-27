@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1-draft",
+  "version": "0.3.0.dev0",
   "failure_modes": [
     {
       "id": "FM-LLM-001",

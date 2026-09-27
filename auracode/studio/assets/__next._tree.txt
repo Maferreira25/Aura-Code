@@ -1,0 +1,2 @@
+:HL["/_next/static/chunks/0xz-09ztbddg8.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4256,"slots":null}}},"staleTime":300,"buildId":"auracode-studio-0.3.0-dev.0"}

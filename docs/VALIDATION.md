@@ -2,7 +2,7 @@
 
 ## Status
 
-Version 0.1.1-draft is **conceptually and structurally validated**, not empirically certified.
+Version 0.3.0.dev0 is a **development preview under structural and empirical validation**, not a certified release.
 
 Validation is intentionally separated into four layers.
 

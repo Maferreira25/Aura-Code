@@ -1,7 +1,7 @@
 {
   "$schema": "schemas/contracts.schema.json",
   "project": "auracode",
-  "version": "0.1.1",
+  "version": "0.3.0.dev0",
   "assurance_level": "AL2",
   "layers": {
     "auracode": {

@@ -10,8 +10,9 @@ Executes a holistic software assurance audit on an existing or new project:
 - Architectural Boundaries & Contracts (check_architecture)
 - Requirement Ambiguity (check_requirements_ambiguity)
 
-Calculates a unified Health Score (0-100) and formats an executive report
-in plain language with physical-world analogies for lay users.
+Reports each guarantee independently as PASS, FAIL, NOT_RUN,
+NOT_APPLICABLE, or ERROR. It intentionally does not calculate a composite
+score because missing evidence must never look like approval.
 Zero external runtime dependencies (Pure Python Standard Library).
 """
 
@@ -33,13 +34,84 @@ from tools import check_architecture
 from tools import check_requirements_ambiguity
 
 
+GUARANTEE_KEYS = (
+    "security",
+    "resource_leaks",
+    "slop",
+    "strict_types",
+    "test_integrity",
+    "architecture",
+    "requirements",
+)
+
+
+def _guarantee(
+    status: str,
+    method: str,
+    files_scanned: int = 0,
+    findings: int = 0,
+    reason: str = "",
+) -> Dict[str, Any]:
+    """Build one explicit, evidence-oriented guarantee result."""
+    return {
+        "status": status,
+        "method": method,
+        "files_scanned": files_scanned,
+        "findings": findings,
+        "reason": reason,
+    }
+
+
+def _unperformed_guarantees(reason: str) -> Dict[str, Dict[str, Any]]:
+    """Return a complete matrix that cannot be mistaken for approval."""
+    return {
+        key: _guarantee("NOT_RUN", "not_executed", reason=reason)
+        for key in GUARANTEE_KEYS
+    }
+
+
+def _overall_status(guarantees: Dict[str, Dict[str, Any]]) -> str:
+    """Aggregate by severity without averaging guarantees into a score."""
+    statuses = {item["status"] for item in guarantees.values()}
+    if "ERROR" in statuses:
+        return "ERROR"
+    if "FAIL" in statuses:
+        return "FAIL"
+    if "NOT_RUN" in statuses:
+        return "NOT_RUN"
+    return "PASS"
+
+
+def _empty_result(workspace_dir: Path, target_status: str, overall_status: str, reason: str) -> Dict[str, Any]:
+    """Return a stable result for invalid or uninspectable targets."""
+    return {
+        "status": overall_status,
+        "workspace": str(workspace_dir),
+        "target": {"status": target_status, "reason": reason},
+        "total_files_scanned": 0,
+        "languages_detected": {},
+        "guarantees": _unperformed_guarantees(reason),
+        "violations_summary": {
+            "total_violations": 0,
+            "security": 0,
+            "resource_leaks": 0,
+            "slop_and_swallowed_errors": 0,
+            "type_annotations": 0,
+            "test_integrity": 0,
+            "architecture_violations": None,
+            "ambiguity_status": None,
+        },
+        "findings": {key: [] for key in GUARANTEE_KEYS},
+    }
+
+
 def discover_source_files(workspace_dir: Path, include_benchmarks: bool = False) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
     """Discover application files and test files separately in workspace."""
     app_files = []
     test_files = []
     workspace_dir = workspace_dir.resolve()
     ignored_parts = {
-        ".git", "node_modules", "dist", "build", "vendor",
+        ".git", "node_modules", "dist", "build", "vendor", "out",
         "__pycache__", "venv", ".venv", ".agents", ".auracode"
     }
     if not include_benchmarks:
@@ -50,7 +122,12 @@ def discover_source_files(workspace_dir: Path, include_benchmarks: bool = False)
         for f in glob.glob(pattern, recursive=True):
             rel = os.path.relpath(f, str(workspace_dir))
             parts = Path(rel).parts
-            if any(p in ignored_parts for p in parts):
+            if any(
+                p in ignored_parts
+                or p.startswith("_auracode_")
+                or p.startswith("_reversa_")
+                for p in parts
+            ) or ("auracode" in parts and "studio" in parts and "assets" in parts):
                 continue
 
             fname = Path(f).name.lower()
@@ -65,7 +142,20 @@ def discover_source_files(workspace_dir: Path, include_benchmarks: bool = False)
 def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) -> Dict[str, Any]:
     """Execute complete holistic software assurance audit on target workspace."""
     workspace_dir = workspace_dir.resolve()
+
+    if not workspace_dir.exists():
+        return _empty_result(workspace_dir, "MISSING", "ERROR", "Target path does not exist.")
+    if not workspace_dir.is_dir():
+        return _empty_result(workspace_dir, "NOT_DIRECTORY", "ERROR", "Target must be a directory.")
+
     app_files, test_files = discover_source_files(workspace_dir)
+    if not app_files and not test_files:
+        return _empty_result(
+            workspace_dir,
+            "NO_SUPPORTED_FILES",
+            "NOT_RUN",
+            "No supported application or test files were discovered.",
+        )
 
     analyzer = MultiLangASTAnalyzer(str(workspace_dir))
 
@@ -76,9 +166,16 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
     test_violations: List[Dict[str, Any]] = []
 
     languages_detected: Dict[str, int] = {}
+    python_app_files = 0
+    non_python_app_files = 0
+    python_test_files = 0
 
     for fpath, lang in app_files:
         languages_detected[lang] = languages_detected.get(lang, 0) + 1
+        if lang == "python":
+            python_app_files += 1
+        else:
+            non_python_app_files += 1
 
         # 1. Slop & Swallowed Exceptions
         s_v = analyzer.analyze_slop(fpath)
@@ -102,6 +199,7 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
     for fpath, lang in test_files:
         languages_detected[lang] = languages_detected.get(lang, 0) + 1
         if lang == "python":
+            python_test_files += 1
             ti_v = check_test_integrity.check_test_file(fpath)
             test_violations.extend(ti_v)
 
@@ -130,39 +228,101 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
     if not sdd_dir.is_dir() and (workspace_dir / "_reversa_sdd").is_dir():
         sdd_dir = workspace_dir / "_reversa_sdd"
     ambiguity_result: Optional[Dict[str, Any]] = None
-    if sdd_dir.is_dir():
+    if sdd_dir.is_dir() and any(sdd_dir.glob("*.md")):
         ambiguity_result = check_requirements_ambiguity.analyze_workspace(str(sdd_dir))
 
-    # Calculate Deductions & Health Score (0-100)
-    deductions = 0
-    deductions += len(sec_violations) * 10
-    deductions += len(leaks_violations) * 5
-    deductions += len(slop_violations) * 5
-    deductions += len(type_violations) * 2
-    deductions += len(test_violations) * 5
+    source_method = "python_ast"
+    clean_source_status = "PASS"
+    clean_source_reason = "Structural Python AST checks completed."
+    if non_python_app_files:
+        source_method = "python_ast_plus_non_python_heuristics"
+        clean_source_status = "NOT_RUN"
+        clean_source_reason = (
+            "Non-Python checks are heuristic and cannot prove absence of violations. "
+            "A finding still fails the guarantee."
+        )
 
-    if arch_result and not arch_result.get("success", False):
-        deductions += int(arch_result.get("violations_count", 0)) * 5
+    def source_guarantee(findings: List[Dict[str, Any]]) -> Dict[str, Any]:
+        status = "FAIL" if findings else clean_source_status
+        return _guarantee(
+            status,
+            source_method,
+            files_scanned=len(app_files),
+            findings=len(findings),
+            reason=clean_source_reason,
+        )
 
-    if ambiguity_result and ambiguity_result.get("status") == "FAIL":
-        deductions += 15
-    elif ambiguity_result and ambiguity_result.get("status") == "WARN":
-        deductions += 5
+    guarantees: Dict[str, Dict[str, Any]] = {
+        "security": source_guarantee(sec_violations),
+        "resource_leaks": source_guarantee(leaks_violations),
+        "slop": source_guarantee(slop_violations),
+    }
 
-    health_score = max(0, min(100, 100 - deductions))
-
-    if health_score >= 90:
-        grade = "A"
-        grade_desc = "Excelente (Conforme com Engenharia Senior)"
-    elif health_score >= 75:
-        grade = "B"
-        grade_desc = "Bom (Pequenos ajustes recomendados)"
-    elif health_score >= 50:
-        grade = "C"
-        grade_desc = "Regular (Debitos tecnicos e atencao necessaria)"
+    if python_app_files:
+        guarantees["strict_types"] = _guarantee(
+            "FAIL" if type_violations else "PASS",
+            "python_ast",
+            files_scanned=python_app_files,
+            findings=len(type_violations),
+            reason="Strict type signatures checked for Python application files.",
+        )
     else:
-        grade = "F"
-        grade_desc = "Critico (Riscos operacionais ou vulnerabilidades detectadas)"
+        guarantees["strict_types"] = _guarantee(
+            "NOT_APPLICABLE",
+            "python_ast",
+            reason="No Python application files were discovered.",
+        )
+
+    if python_test_files:
+        guarantees["test_integrity"] = _guarantee(
+            "FAIL" if test_violations else "PASS",
+            "python_ast",
+            files_scanned=python_test_files,
+            findings=len(test_violations),
+            reason="Python test assertions were inspected structurally.",
+        )
+    else:
+        guarantees["test_integrity"] = _guarantee(
+            "NOT_RUN",
+            "python_ast",
+            reason="No structurally supported test files were discovered.",
+        )
+
+    if arch_result is None:
+        guarantees["architecture"] = _guarantee(
+            "NOT_RUN",
+            "architecture_contract",
+            reason="No architecture contract was found or supplied.",
+        )
+    else:
+        arch_findings = int(arch_result.get("violations_count", 0))
+        guarantees["architecture"] = _guarantee(
+            "PASS" if arch_result.get("success", False) else "FAIL",
+            "architecture_contract",
+            files_scanned=len(app_files),
+            findings=arch_findings,
+            reason=f"Contract: {resolved_contracts}",
+        )
+
+    if ambiguity_result is None:
+        guarantees["requirements"] = _guarantee(
+            "NOT_RUN",
+            "requirements_supported_marker_scan",
+            reason="No non-empty _auracode_sdd or _reversa_sdd directory was found.",
+        )
+    else:
+        requirements_status = "PASS" if ambiguity_result.get("status") == "PASS" else "FAIL"
+        ambiguity_findings = len(ambiguity_result.get("unclear_requirements", []))
+        guarantees["requirements"] = _guarantee(
+            requirements_status,
+            "requirements_supported_marker_scan",
+            files_scanned=len(list(sdd_dir.glob("*.md"))),
+            findings=ambiguity_findings,
+            reason=(
+                f"Supported ambiguity-marker scan returned {ambiguity_result.get('status')}. "
+                "This does not prove requirements completeness or human clarity."
+            ),
+        )
 
     total_violations = (
         len(slop_violations)
@@ -172,21 +332,16 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
         + len(test_violations)
     )
 
-    if total_violations == 0:
-        status = "PASS"
-    elif health_score >= 75 and len(sec_violations) == 0:
-        status = "WARN"
-    else:
-        status = "FAIL"
+    architecture_violations = arch_result.get("violations_count", 0) if arch_result else None
+    status = _overall_status(guarantees)
 
     return {
         "status": status,
-        "health_score": health_score,
-        "grade": grade,
-        "grade_description": grade_desc,
         "workspace": str(workspace_dir),
+        "target": {"status": "VALID", "reason": "Target exists and supported files were discovered."},
         "total_files_scanned": len(app_files) + len(test_files),
         "languages_detected": languages_detected,
+        "guarantees": guarantees,
         "violations_summary": {
             "total_violations": total_violations,
             "security": len(sec_violations),
@@ -194,7 +349,7 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
             "slop_and_swallowed_errors": len(slop_violations),
             "type_annotations": len(type_violations),
             "test_integrity": len(test_violations),
-            "architecture_violations": arch_result.get("violations_count", 0) if arch_result else None,
+            "architecture_violations": architecture_violations,
             "ambiguity_status": ambiguity_result.get("status") if ambiguity_result else None,
         },
         "findings": {
@@ -204,99 +359,48 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
             "types": type_violations,
             "tests": test_violations,
             "architecture": arch_result.get("violations", []) if arch_result else [],
-            "ambiguity": ambiguity_result.get("unclear_requirements", []) if ambiguity_result else [],
+            "requirements": ambiguity_result.get("unclear_requirements", []) if ambiguity_result else [],
         }
     }
 
 
 def format_executive_report(audit_data: Dict[str, Any]) -> str:
-    """Format an accessible, ASCII-safe executive report with physical analogies."""
-    lines = []
-    lines.append("=" * 80)
-    lines.append("   AURA CODE -- LAUDO MESTRE DE AUDITORIA E SAUDE DO SOFTWARE")
-    lines.append("=" * 80)
-    lines.append(f">> Diretorio Auditado: {audit_data['workspace']}")
-    lines.append(f">> Arquivos Analisados: {audit_data['total_files_scanned']} arquivos")
-    
+    """Format an accessible report without grades or false equivalence claims."""
+    lines = [
+        "=" * 80,
+        "   AURA CODE -- LAUDO MESTRE DE AUDITORIA E SAUDE DO SOFTWARE",
+        "=" * 80,
+        f">> Diretorio Auditado: {audit_data['workspace']}",
+        f">> Estado do Alvo: {audit_data['target']['status']}",
+        f">> Arquivos Analisados: {audit_data['total_files_scanned']} arquivos",
+    ]
     langs = [f"{lang} ({count})" for lang, count in audit_data["languages_detected"].items()]
     lines.append(f">> Linguagens Detectadas: {', '.join(langs) if langs else 'Nenhuma'}")
+    lines.extend(["", f"RESULTADO GERAL: {audit_data['status']}", "", "GARANTIAS VERIFICADAS:"])
+
+    labels = {
+        "security": "Portaria e fechaduras (seguranca)",
+        "resource_leaks": "Instalacao hidraulica (recursos)",
+        "slop": "Alvenaria e limpeza (codigo incompleto)",
+        "strict_types": "Sinalizacao (tipos)",
+        "test_integrity": "Testes de resistencia",
+        "architecture": "Estrutura mestra (arquitetura)",
+        "requirements": "Planta da casa (requisitos)",
+    }
+    for key in GUARANTEE_KEYS:
+        guarantee = audit_data["guarantees"][key]
+        lines.append(
+            f" [{guarantee['status']}] {labels[key]}: "
+            f"{guarantee['findings']} achado(s), {guarantee['files_scanned']} arquivo(s)"
+        )
+        if guarantee["reason"]:
+            lines.append(f"    Metodo: {guarantee['method']} — {guarantee['reason']}")
+
     lines.append("")
-    lines.append("--------------------------------------------------------------------------------")
-    lines.append(f"  PONTUACAO DE SAUDE: {audit_data['health_score']} / 100  [Nota: {audit_data['grade']}]")
-    lines.append(f"  Classificacao: {audit_data['grade_description']}")
-    lines.append("--------------------------------------------------------------------------------")
-    lines.append("")
-    lines.append("AVALIACAO POR ANALOGIAS DO MUNDO FISICO:")
-    
-    v = audit_data["violations_summary"]
-    
-    # 1. Portaria e Seguranca
-    sec_icon = "[OK]" if v["security"] == 0 else "[X]"
-    lines.append(f" 1. Portaria e Fechaduras (Seguranca e Injecoes) .............. {sec_icon} {v['security']} falha(s)")
-    if v["security"] > 0:
-        lines.append("    -> Risco: Portas destrancadas ou entradas sem verificacao (eval, exec, SQL injection).")
-
-    # 2. Instalacao Hidraulica
-    leak_icon = "[OK]" if v["resource_leaks"] == 0 else "[X]"
-    lines.append(f" 2. Instalacao Hidraulica (Vazamento de Recursos e Conexoes) ... {leak_icon} {v['resource_leaks']} falha(s)")
-    if v["resource_leaks"] > 0:
-        lines.append("    -> Risco: Torneiras abertas sem fechar ('with' ausente em arquivos e conexoes de banco).")
-
-    # 3. Alvenaria e Acabamento
-    slop_icon = "[OK]" if v["slop_and_swallowed_errors"] == 0 else "[X]"
-    lines.append(f" 3. Alvenaria e Limpeza (Erros Silenciados e Codigo Morto) ..... {slop_icon} {v['slop_and_swallowed_errors']} falha(s)")
-    if v["slop_and_swallowed_errors"] > 0:
-        lines.append("    -> Risco: Entulho na obra (funcoes esquecidas ou erros escondidos com 'except: pass').")
-
-    # 4. Sinalizacao e Especificacao
-    type_icon = "[OK]" if v["type_annotations"] == 0 else "[X]"
-    lines.append(f" 4. Sinalizacao das Portas (Tipagem Estrita e Assinaturas) ..... {type_icon} {v['type_annotations']} falha(s)")
-    if v["type_annotations"] > 0:
-        lines.append("    -> Risco: Caixas sem etiqueta clara (funcoes sem definicao do que entra e do que sai).")
-
-    # 5. Testes de Carga
-    test_icon = "[OK]" if v["test_integrity"] == 0 else "[X]"
-    lines.append(f" 5. Testes de Resistencia (Integridade das Assercoes) ......... {test_icon} {v['test_integrity']} falha(s)")
-    if v["test_integrity"] > 0:
-        lines.append("    -> Risco: Alarmes de teste sem pilha ou sem assercoes reais.")
-
-    # 6. Estrutura do Edificio
-    if v["architecture_violations"] is not None:
-        arch_icon = "[OK]" if v["architecture_violations"] == 0 else "[X]"
-        lines.append(f" 6. Estrutura Mestra (Fronteiras Clean Architecture) .......... {arch_icon} {v['architecture_violations']} falha(s)")
+    if audit_data["status"] == "PASS":
+        lines.append("[AUDITORIA CONCLUIDA] Todas as garantias obrigatorias aplicaveis foram executadas e aprovadas.")
     else:
-        lines.append(" 6. Estrutura Mestra (Fronteiras Clean Architecture) .......... [-] Sem contratos definidos")
-
-    # 7. Planta da Casa
-    if v["ambiguity_status"] is not None:
-        amb_icon = "[OK]" if v["ambiguity_status"] == "PASS" else "[X]"
-        lines.append(f" 7. Planta da Casa (Clareza das Especificacoes _auracode_sdd) . {amb_icon} Status: {v['ambiguity_status']}")
-
-    lines.append("")
-    lines.append("=" * 80)
-    
-    if audit_data["health_score"] >= 90:
-        lines.append("[SISTEMA APROVADO] Parabens! O codigo atende os mais altos padroes de confiabilidade.")
-    else:
-        lines.append("[ACOES RECOMENDADAS PARA CORRECAO]:")
-        step_num = 1
-        if v["security"] > 0:
-            lines.append(f"   {step_num}. Execute `auracode sec .` para ver a lista de vulnerabilidades de seguranca.")
-            step_num += 1
-        if v["resource_leaks"] > 0:
-            lines.append(f"   {step_num}. Execute `auracode leaks .` para envolver arquivos e conexoes em blocos `with`.")
-            step_num += 1
-        if v["slop_and_swallowed_errors"] > 0:
-            lines.append(f"   {step_num}. Execute `auracode slop .` para remover 'except: pass' e substituir por tratamento real.")
-            step_num += 1
-        if v["type_annotations"] > 0:
-            lines.append(f"   {step_num}. Execute `auracode types .` para adicionar tipagem estrita nas assinaturas.")
-            step_num += 1
-        if v["test_integrity"] > 0:
-            lines.append(f"   {step_num}. Execute `auracode tests --mutate` para detectar testes fracos ou oraculos viciados.")
-            step_num += 1
-        lines.append(f"   {step_num}. Apos corrigir, rode `auracode audit .` novamente para verificar o novo Score.")
-
+        lines.append("[NAO APROVADO] Falhas ou verificacoes ausentes precisam ser resolvidas antes da publicacao.")
     lines.append("=" * 80 + "\n")
     return "\n".join(lines)
 
@@ -341,10 +445,12 @@ def main() -> None:
             print(f"[AURA AUDIT] Relatorio salvo com sucesso em: {output_file}")
 
     print(report_str)
-    if strict_mode:
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-    else:
-        sys.exit(0 if res.get("status") in ("PASS", "WARN") else 1)
+    status = res.get("status")
+    if status == "PASS":
+        sys.exit(0)
+    if status == "FAIL":
+        sys.exit(1)
+    sys.exit(2)
 
 
 if __name__ == "__main__":

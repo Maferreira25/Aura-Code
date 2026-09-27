@@ -17,13 +17,13 @@
 - 17 unified CLI commands (`auracode <command>`);
 - 124 passing unit tests (100% pass rate).
 
-## 0.3 — Strategic Usability & Multi-Language Assurance (Completed)
+## 0.3 — Strategic Usability & Multi-Language Assurance (In Progress)
 - Graduated SDD profiles (`micro`, `lite`, `standard`, `enterprise`);
 - AST Mutation Testing engine to kill vitiated test oracles (`auracode tests --mutate`);
 - Interactive lay-user Terminal Briefing Wizard with physical analogies (`auracode wizard`);
-- Polyglot static analyzer for Python, TypeScript/JavaScript, Go, Java, and C# (`auracode multilang`);
+- Python AST analysis plus heuristic, not-yet-certified checks for TypeScript/JavaScript, Go, Java, and C# (`auracode multilang`);
 - Structured 3-phase Adversarial Agentic Debate (`auracode debate`);
-- Expanded test suite to 144 unit tests (100% passing) and 20 unified CLI commands.
+- Test suite and CLI are active, but counts and release evidence are reported by CI rather than frozen in this roadmap.
 
 ## 0.4 — Framework Profiles & Ecosystem Adapters (In Progress)
 - Framework-specific contracts (FastAPI, Django, Next.js, Spring Boot);

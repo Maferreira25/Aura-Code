@@ -8,9 +8,11 @@ proper template scaffolding across all profiles, and customization of specificat
 import shutil
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
-from tools.wizard import AuraWizard
+from tools.wizard import AuraWizard, BriefingIncompleteError
 
 
 class TestAuraWizard(unittest.TestCase):
@@ -94,6 +96,40 @@ class TestAuraWizard(unittest.TestCase):
         self.assertTrue(spec1.exists())
         content = spec1.read_text(encoding="utf-8")
         self.assertIn("PortalEmpresa", content)
+
+    def test_wizard_creates_draft_without_claiming_clarity_or_approval(self):
+        mock_inputs = [
+            "4",
+            "ProjetoAuditavel",
+            "Organizar trabalho de uma equipe",
+            "Proprietários, membros e visitantes",
+            "B",
+            "Sem cobrança",
+        ]
+        output = StringIO()
+
+        with redirect_stdout(output):
+            result = AuraWizard(workspace_dir=self.temp_dir, inputs=mock_inputs).run()
+
+        rendered = output.getvalue()
+        self.assertTrue(result["success"])
+        self.assertEqual(result["briefing_status"], "DRAFT")
+        self.assertEqual(result["clarity_status"], "NOT_RUN")
+        self.assertFalse(result["approved"])
+        self.assertFalse(result["construction_allowed"])
+        self.assertIn("RASCUNHO", rendered)
+        self.assertIn("NOT_RUN", rendered)
+        self.assertNotIn("100% DE CLAREZA", rendered)
+        self.assertNotIn("especificações prontas e revisadas", rendered)
+        self.assertNotIn("inicie a construção", rendered)
+
+    def test_wizard_never_defaults_a_missing_business_decision(self):
+        wizard = AuraWizard(workspace_dir=self.temp_dir, inputs=[""])
+
+        with self.assertRaises(BriefingIncompleteError):
+            wizard.run()
+
+        self.assertFalse((self.temp_dir / "_auracode_sdd").exists())
 
 
 if __name__ == "__main__":

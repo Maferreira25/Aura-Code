@@ -182,10 +182,40 @@ def check_surgical_diff(
     max_modified_lines: int = 500,
     direct_changes: Optional[List[Dict[str, str]]] = None,
     direct_stats: Optional[Dict[str, object]] = None,
-    block_on_excessive_churn: bool = False,
+    block_on_excessive_churn: bool = True,
+    selected_scope_only: bool = False,
 ) -> Dict[str, object]:
     """Audit repository diff against surgical change and evaluation integrity rules."""
     repo_dir = Path(repo_dir).resolve()
+
+    if selected_scope_only and not allowed_scope:
+        return {
+            "success": False,
+            "error": "selected_scope_only requires at least one allowed scope pattern",
+            "repo_dir": str(repo_dir),
+            "scope_mode": "selected_only",
+            "total_files_changed": 0,
+            "total_lines_added": 0,
+            "total_lines_deleted": 0,
+            "violations_count": 0,
+            "violations": [],
+            "files_changed": [],
+            "ignored_files": [],
+        }
+    if not block_on_excessive_churn:
+        return {
+            "success": False,
+            "error": "advisory churn mode is not permitted; the configured line limit is blocking",
+            "repo_dir": str(repo_dir),
+            "scope_mode": "selected_only" if selected_scope_only else "repository",
+            "total_files_changed": 0,
+            "total_lines_added": 0,
+            "total_lines_deleted": 0,
+            "violations_count": 0,
+            "violations": [],
+            "files_changed": [],
+            "ignored_files": [],
+        }
     
     if direct_changes is not None:
         changes = direct_changes
@@ -208,6 +238,31 @@ def check_surgical_diff(
         }
 
     stats = direct_stats if direct_stats is not None else get_git_diff_stats(repo_dir, changes=changes)
+    ignored_files: List[str] = []
+    scope_mode = "repository"
+
+    if selected_scope_only:
+        scope_mode = "selected_only"
+        ignored_files = [
+            item["file"] for item in changes if not is_path_in_scope(item["file"], allowed_scope or [])
+        ]
+        changes = [
+            item for item in changes if is_path_in_scope(item["file"], allowed_scope or [])
+        ]
+        all_file_stats = stats.get("files", {})
+        if not isinstance(all_file_stats, dict):
+            all_file_stats = {}
+        selected_file_stats = {
+            path: values
+            for path, values in all_file_stats.items()
+            if is_path_in_scope(path, allowed_scope or [])
+        }
+        stats = {
+            "complete": stats.get("complete", True),
+            "files": selected_file_stats,
+            "total_added": sum(int(item.get("added", 0)) for item in selected_file_stats.values()),
+            "total_deleted": sum(int(item.get("deleted", 0)) for item in selected_file_stats.values()),
+        }
     violations: List[Dict[str, object]] = []
 
     if not stats.get("complete", True):
@@ -233,7 +288,7 @@ def check_surgical_diff(
             })
 
         # Check 2: Scope Boundaries
-        if allowed_scope and not is_path_in_scope(fpath, allowed_scope):
+        if allowed_scope and not selected_scope_only and not is_path_in_scope(fpath, allowed_scope):
             violations.append({
                 "file": fpath,
                 "rule": "out_of_scope_change",
@@ -250,7 +305,7 @@ def check_surgical_diff(
         violations.append({
             "file": "*",
             "rule": "excessive_diff_churn",
-            "severity": "error" if block_on_excessive_churn else "warning",
+            "severity": "error",
             "message": f"Total change volume ({total_churn} lines: +{tot_added}/-{tot_del}) exceeds recommended surgical threshold of {max_modified_lines} lines."
         })
 
@@ -258,12 +313,15 @@ def check_surgical_diff(
     return {
         "success": passed,
         "repo_dir": str(repo_dir),
+        "scope_mode": scope_mode,
+        "selected_scope": allowed_scope or [],
         "total_files_changed": len(changes),
         "total_lines_added": tot_added,
         "total_lines_deleted": tot_del,
         "violations_count": len(violations),
         "violations": violations,
-        "files_changed": changes
+        "files_changed": changes,
+        "ignored_files": sorted(ignored_files),
     }
 
 
@@ -278,13 +336,18 @@ def main() -> None:
         "--scope", "-s", type=str, help="Comma-separated glob patterns of allowed files (e.g. 'src/*.py,TASK.md')"
     )
     parser.add_argument(
+        "--only-scope", action="store_true",
+        help="Evaluate only --scope matches and explicitly report other dirty files as ignored"
+    )
+    parser.add_argument(
         "--allow-tests", action="store_true", help="Allow modifications to test files (disabled by default for integrity)"
     )
     parser.add_argument(
         "--max-lines", type=int, default=500, help="Maximum allowed churn before warning (default: 500)"
     )
     parser.add_argument(
-        "--block-on-churn", action="store_true", help="Fail verification if change volume exceeds max-lines limit"
+        "--block-on-churn", dest="block_on_churn", action="store_true", default=True,
+        help="Fail when change volume exceeds max-lines (default)"
     )
     parser.add_argument(
         "--json", action="store_true", help="Output results in machine-readable JSON format"
@@ -300,6 +363,7 @@ def main() -> None:
         allow_test_modifications=args.allow_tests,
         max_modified_lines=args.max_lines,
         block_on_excessive_churn=args.block_on_churn,
+        selected_scope_only=args.only_scope,
     )
 
     if args.json:

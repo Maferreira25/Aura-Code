@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "framework_version": "0.3.0.dev0",
+  "status": "READY",
+  "reason": "The local server and compiled assets are packaged and hash-verified.",
+  "workflow_status": "NOT_RUN",
+  "workflow_reason": "The guided Studio workflows have not been implemented and validated yet.",
+  "entrypoint": "server.py",
+  "locales": [
+    "pt-BR",
+    "en"
+  ],
+  "assets": [
+    {
+      "path": "server.py",
+      "bytes": 2973,
+      "sha256": "326778c78d7183ba3ac641b98c48d4d4bfbd2382223db947873016f432e6bd3d"
+    },
+    {
+      "path": "assets/404.html",
+      "bytes": 7611,
+      "sha256": "63117d91f2ce76e0f6bdc02add876d2d3ef7072329c569bf1505fdc4c4951804"
+    },
+    {
+      "path": "assets/__next.__PAGE__.txt",
+      "bytes": 3380,
+      "sha256": "be2bcbff51a6e07a6614b12493939d938ce36bd20c530c7b3ff8e6535b400be5"
+    },
+    {
+      "path": "assets/__next._full.txt",
+      "bytes": 3886,
+      "sha256": "402a21326fa6632605cc368672734d67deb9fba5e61401a362d8c6bcc7e4ad35"
+    },
+    {
+      "path": "assets/__next._tree.txt",
+      "bytes": 255,
+      "sha256": "41ce08e6d48cb1c3ff3b67d977d691e9424a1f80a61bfeb8214f28356c3ad4f7"
+    },
+    {
+      "path": "assets/_next/static/auracode-studio-0.3.0-dev.0/_buildManifest.js",
+      "bytes": 219,
+      "sha256": "9476e0afd3f9da68a64e6ec58631191fd3eaca62c9f5a377e7517fe9a89e59ea"
+    },
+    {
+      "path": "assets/_next/static/auracode-studio-0.3.0-dev.0/_clientMiddlewareManifest.js",
+      "bytes": 96,
+      "sha256": "5483e3295dc35dfe29ea932efc85341c916f10ff78ff5b0e965e003710893a4a"
+    },
+    {
+      "path": "assets/_next/static/auracode-studio-0.3.0-dev.0/_ssgManifest.js",
+      "bytes": 80,
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "path": "assets/_next/static/chunks/01fa1likq_2vg.js",
+      "bytes": 24365,
+      "sha256": "e2fde4825401f41f79afdfcf185e0063dbb87f87cff245b210c88a89479cd454"
+    },
+    {
+      "path": "assets/_next/static/chunks/0cz1d0mv5g_q7.js",
+      "bytes": 112594,
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "path": "assets/_next/static/chunks/0xz-09ztbddg8.css",
+      "bytes": 8505,
+      "sha256": "9063b959fd28342fe9598fe2923741f0893a8cfc8c729649a491d0bb773e4b92"
+    },
+    {
+      "path": "assets/_next/static/chunks/27t_qfc-3_lzs.js",
+      "bytes": 229156,
+      "sha256": "f71552684e86daa3e94faad9002fb69d4e8d308a997ca88fdde74e54b5191870"
+    },
+    {
+      "path": "assets/_next/static/chunks/3fntmmi971322.js",
+      "bytes": 14377,
+      "sha256": "34ed6abf4c6d0d1bb3dc56d3f133d2a5dbc3a3c89c791deab314e27143ac14ce"
+    },
+    {
+      "path": "assets/_next/static/chunks/3l04zcqx63h3y.js",
+      "bytes": 16797,
+      "sha256": "49cf866bf4d0282119e51835114325403f28e53fd0bccb63dde7ba3114a8e9fb"
+    },
+    {
+      "path": "assets/_next/static/chunks/41qfcvra0dvw4.js",
+      "bytes": 182520,
+      "sha256": "9c7d476b1385af2f579e754e3bc896f0796c47203f93685122243ee9a8e62c27"
+    },
+    {
+      "path": "assets/_next/static/chunks/turbopack-204cpt9buc445.js",
+      "bytes": 9688,
+      "sha256": "421854172ed2c585dc889019af20e47223f76912cff413f776f96c186655043d"
+    },
+    {
+      "path": "assets/_not-found/__next._full.txt",
+      "bytes": 4974,
+      "sha256": "8e7e9ce0e6934393d8ae43d6090cdf39986addba3d44a42d79fede53197c6157"
+    },
+    {
+      "path": "assets/_not-found/__next._not-found/__PAGE__.txt",
+      "bytes": 4078,
+      "sha256": "0197869db7e387866085ce8e96db7b4d9c4316564aac77fbc5567c156fa8c044"
+    },
+    {
+      "path": "assets/_not-found/__next._tree.txt",
+      "bytes": 333,
+      "sha256": "75162ace35512af4cfb4cc577e5e7b3f5450f84895e0b993d7fbe5585812980d"
+    },
+    {
+      "path": "assets/_not-found.html",
+      "bytes": 7611,
+      "sha256": "63117d91f2ce76e0f6bdc02add876d2d3ef7072329c569bf1505fdc4c4951804"
+    },
+    {
+      "path": "assets/_not-found.txt",
+      "bytes": 4974,
+      "sha256": "8e7e9ce0e6934393d8ae43d6090cdf39986addba3d44a42d79fede53197c6157"
+    },
+    {
+      "path": "assets/index.html",
+      "bytes": 8513,
+      "sha256": "6848ded2e1fd58f470cb0ab3d7fd3a821857cfc8890bb2c2f41a9534b1854bea"
+    },
+    {
+      "path": "assets/index.txt",
+      "bytes": 3886,
+      "sha256": "402a21326fa6632605cc368672734d67deb9fba5e61401a362d8c6bcc7e4ad35"
+    }
+  ]
+}

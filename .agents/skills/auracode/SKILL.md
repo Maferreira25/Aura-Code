@@ -46,7 +46,7 @@ Quando acionado, apresente o menu ao usuário e auxilie-o a escolher o fluxo cor
    - Fase de execução: transforma a Planta Teórica aprovada em `_auracode_sdd/` em código real com Clean Architecture.
 
 5. **`/auracode-audit`** (ou `auracode-audit`):
-   - Roda os 12 verificadores estáticos AST da CLI `auracode` (slop, leaks, sec, types, arch, tests, ambiguity, deps).
+   - Executa `auracode audit` e relata separadamente as garantias aplicáveis, o método usado e qualquer parte não executada.
 
 6. **`/auracode-debugger`** (ou `auracode-debugger`):
    - Registro e correção de falhas e bugs via testes que reproduzem o erro antes de alterar qualquer linha.

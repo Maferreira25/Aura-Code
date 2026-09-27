@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "auracode"
-version = "0.1.1"
+version = "0.3.0.dev0"
 description = "AuraCode — Agentic Unified Reliability & Assurance. Active guardrails, architectural contracts, and software assurance for AI-driven development."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -24,7 +24,7 @@ keywords = [
   "llm-security"
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
   "License :: OSI Approved :: MIT License",
@@ -60,8 +60,8 @@ include = ["auracode*", "tools*", "controls*", "profiles*", "schemas*", "templat
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.md", "*.txt", "*.yaml", "*.yml"]
+"auracode.studio" = ["assets/**/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
-

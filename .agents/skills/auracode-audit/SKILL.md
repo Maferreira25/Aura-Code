@@ -1,11 +1,11 @@
 ---
 name: auracode-audit
-description: Executor da suíte de auditoria de qualidade e segurança AST do Aura Code. Avalia o projeto em 12 dimensões determinísticas.
+description: Executor da auditoria baseada em evidências do Aura Code. Relata cada garantia como PASS, FAIL, NOT_RUN, NOT_APPLICABLE ou ERROR, sem nota geral.
 ---
 
 # Aura Code — Auditoria e Garantia de Qualidade (`auracode-audit`)
 
-O `auracode-audit` executa a verificação estática determinística no código do sistema usando a suíte nativa `auracode`.
+O `auracode-audit` executa `auracode audit` e apresenta somente garantias realmente verificadas. Um alvo ausente, vazio ou sem contrato necessário nunca recebe aprovação.
 
 ---
 
@@ -29,7 +29,12 @@ auracode diff .        # Garante que as mudanças foram cirúrgicas (< 500 linha
 
 ## 📊 Relatório Final em Linguagem Simples
 
-Ao término da verificação, o `auracode-audit` gera um resumo acessível para o usuário leigo:
-- **Pontuação de Saúde do Projeto (0 a 100)**
-- **Lista de Aprovações (O que está perfeito)**
-- **Pontos de Atenção (O que precisa de correção antes da entrega)**
+Ao término, apresente uma matriz acessível para o usuário leigo:
+
+- **PASS:** a garantia foi executada e não encontrou violação dentro do escopo declarado.
+- **FAIL:** a garantia encontrou uma violação.
+- **NOT_RUN:** faltou alvo, ferramenta, contrato ou evidência para executar.
+- **NOT_APPLICABLE:** a garantia não se aplica ao alvo e a justificativa está registrada.
+- **ERROR:** a execução falhou e não pode ser tratada como aprovação.
+
+Nunca gere média ou pontuação geral. Mostre método, escopo, quantidade de arquivos e achados de cada garantia.

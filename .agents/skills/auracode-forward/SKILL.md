@@ -45,12 +45,14 @@ Se qualquer um desses itens falhar: **Interrompa a execução**, avise o usuári
 
 3. **Verificação de Qualidade AST Contínua**:
    Após implementar cada componente, roda internamente os motores da CLI:
-   - `auracode slop .` (Garantir zero stubs ou código morto)
-   - `auracode leaks .` (Garantir que arquivos e conexões são fechados)
-   - `auracode sec .` (Garantir zero riscos de injeção de código)
-   - `auracode types .` (Garantir tipagem estrita)
-   - `auracode arch .` (Garantir que o domain não importa infrastructure)
-   - `auracode tests .` (Garantir que os testes possuem asserções válidas)
+   - `auracode slop .` (Procurar stubs, código morto e exceções engolidas no escopo suportado)
+   - `auracode leaks .` (Procurar padrões estruturais de recursos não fechados)
+   - `auracode sec .` (Procurar vetores de injeção suportados pelo analisador)
+   - `auracode types .` (Verificar as regras de tipagem implementadas)
+   - `auracode arch .` (Validar o contrato de dependência entre camadas)
+   - `auracode tests .` (Verificar a integridade estrutural dos testes)
 
-4. **Polimento Visual da Interface**:
-   - Aplica os princípios visuais definidos em `_auracode_sdd/06_interface_e_design_system.md` (Design premium, cores harmoniosas, micro-animações e tipografia moderna).
+   Se qualquer garantia retornar `NOT_RUN`, `NOT_APPLICABLE` inesperado ou `ERROR`, interrompa a iteração e explique qual prova está ausente. Resultado limpo não significa ausência universal de defeitos.
+
+4. **Implementação Visual da Interface**:
+   - Aplique somente os princípios visuais explicitamente aprovados no caderno de design correspondente ao perfil; não invente cores, animações, tipografia ou estilo.

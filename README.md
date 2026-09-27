@@ -1,15 +1,14 @@
 # AuraCode — Agentic Unified Reliability & Assurance Framework
 
 > **AuraCode** (**A**gentic **U**nified **R**eliability & **A**ssurance for **Code**)  
-> **Status: 0.3.0 (Stable / V2.0 Strategic Modernization) — AST Verification Engine, Active Agent Isolation, DevContainer Sandboxing, Graduated SDD Profiles, Mutation Testing, Polyglot Scanners, Lay-User TUI Wizard & Adversarial Debates**  
-> **Language Support:** Architectural principles, container isolation, and governance controls are language-agnostic. The automated syntax analysis engine (`auracode multilang`) natively inspects **Python, TypeScript, JavaScript, Go, Java, and C#**.
+> **Status: 0.3.0.dev0 (Development Preview) — active implementation and validation**  
+> **Language Support:** Python has structural AST checks. TypeScript, JavaScript, Go, Java, and C# currently have partial heuristic checks and are not yet certified as equivalent AST coverage.
 
 [![Português](https://img.shields.io/badge/Language-Portugu%C3%AAs-blue.svg)](README.pt-BR.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests: 158 Passed](https://img.shields.io/badge/Tests-158%20Passed%20(100%25)-brightgreen.svg)](tests/)
-[![AST Violations: 0](https://img.shields.io/badge/AST%20Violations-0-success.svg)](tools/)
+[![Release: Development Preview](https://img.shields.io/badge/Release-Development%20Preview-orange.svg)](ROADMAP.md)
 
-A vendor-neutral, evidence-gated framework and active governance toolkit for building, auditing, and operating professional software developed with substantial assistance from large language models (LLMs) and autonomous coding agents—specifically designed to guide **lay and non-technical users** through building software from scratch or modernizing existing systems using senior software engineering best practices.
+A vendor-neutral assurance toolkit evolving into a guided AI application builder. The current release provides real governance and analysis components, but it is **not yet an end-to-end certified application builder**. The missing builder, packaging, user experience, and empirical validation work is tracked in the [roadmap](ROADMAP.md) and the approved `_auracode_sdd/` specifications.
 
 ---
 
@@ -26,40 +25,40 @@ AuraCode bridges this gap through **Zero-Trust AI Pair Programming for Non-Techn
 1. **Zero-Presumption Directive (Tolerância Zero a Presunções):** The AI agent is strictly forbidden from inferring or deciding business rules, screen behaviors, data models, or error cases on its own. Every ambiguity—no matter how small—triggers a plain-language question to the user.
 2. **House Blueprint First Paradigm (`_auracode_sdd/`):** Just like constructing a house, no application code, directories, or scripts are generated before the complete theoretical architecture (frontend, backend, database, security, APIs, design system, assurance level AL1-AL4) is fully specified and reviewed in markdown blueprints under `_auracode_sdd/` (4 graduated profiles: `micro` [1 spec], `lite` [3 specs], `standard` [7 specs], or `enterprise` [15 specs]).
 3. **Plain-Language Dialogue & Physical World Analogies:** Complex technical trade-offs are translated into real-world analogies (e.g., Database $\rightarrow$ *"Smart Filing Cabinet"*, Backend $\rightarrow$ *"Restaurant Kitchen"*, API $\rightarrow$ *"Waiter taking orders"*, Frontend $\rightarrow$ *"Storefront counter"*, Authentication $\rightarrow$ *"ID Badge"*). Structured choice menus with simple pros and cons are provided whenever technical options arise.
-4. **Active Contention & Safe Sandboxing:** The agent cannot touch the developer's main branch, execute dangerous OS commands, or freely transmit data over the internet. AuraCode enforces physical Git Worktree isolation, fail-closed Pre-Tool hooks, and hermetic DevContainers with Default-Deny firewalls.
-5. **Native AST Static Analysis & Mutation Testing (`auracode <command>`):** Deterministic syntax analyzers inspect code for LLM anti-patterns without relying on LLMs to judge LLMs: hunts dead code and stubs (`auracode slop`), prevents resource leaks (`auracode leaks`), catches injection vectors (`auracode sec`), enforces strict type hints (`auracode types`), isolates Clean Architecture layers (`auracode arch`), inspects polyglot codebases (`auracode multilang`), executes lightweight AST mutation testing to kill fake test oracles (`auracode tests --mutate`), and restricts diffs to under 500 lines while forbidding unauthorized test tampering (`auracode diff`).
+4. **Active Containment & Sandboxing Controls:** AuraCode provides Worktree, Guard, and Cage controls. Their protection applies only when installed, configured, and verified for the active execution surface.
+5. **Native AST Static Analysis & Mutation Testing (`auracode <command>`):** Deterministic analyzers inspect supported patterns without relying on an LLM as the judge: they flag selected dead-code and stub patterns (`auracode slop`), possible resource leaks (`auracode leaks`), selected injection vectors (`auracode sec`), type-hint violations (`auracode types`), configured Clean Architecture dependency violations (`auracode arch`), and vacuous test patterns (`auracode tests`). Python receives structural AST analysis; the other listed languages currently receive narrower heuristic checks. These checks reduce risk but do not prove the absence of defects.
 6. **Progressive Assurance Levels (AL1 to AL4):** From low-risk local utilities (AL1) to mission-critical financial infrastructure (AL4), verification rigor scales proportionally with the impact of failure.
 
 ---
 
-## 🛡️ The 5 Pillars of V2.0 Modernization
+## 🛡️ Five Implemented Control Areas
 
-Based on the engineering principles codified in the comprehensive treatise [*Engenharia de Software com Agentes Inteligentes*](RESUMO_ENGENHARIA_SOFTWARE_AGENTES_INTELIGENTES.md), AuraCode V2.0 introduces 5 core structural fronts for enterprise agentic reliability:
+The development preview contains five control areas. Each one has a limited enforcement surface and must be verified in the environment where it is used:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                                   AURACODE V2.0 STACK                                   │
 ├──────────────────────────┬─────────────────────────────┬────────────────────────────────┤
 │      1. AURA GUARD       │       2. AURA WORKTREE      │       3. SDD ENTERPRISE        │
-│ Fail-closed pre/post-tool│ Physical branch isolation   │ 15 modular specs covering      │
-│ hooks intercepting OS/git│ ensuring zero dirty working │ compliance, telemetry, DR,     │
-│ and blocking exfiltration│ trees on developer branch   │ threat modeling & architecture │
+│ Pattern-based hook checks│ Optional branch isolation   │ 15 specification templates     │
+│ on configured surfaces   │ through explicit worktrees  │ requiring human completion     │
+│ and recognized commands  │ and verified Git state      │ and approval                    │
 ├──────────────────────────┴─────────────────────────────┴────────────────────────────────┤
 │      4. AURA CAGE                                      │ 5. AURA LOOP                   │
-│ Hermetic DevContainer with Default-Deny outbound        │ Stateless Ralph Architecture   │
-│ firewall neutralizing indirect prompt injection attacks│ runner with 5-level AST gates  │
+│ DevContainer Default-Deny configuration                 │ Stateful iteration runner      │
+│ requiring build and runtime verification                │ with configurable gates        │
 └────────────────────────────────────────────────────────┴────────────────────────────────┘
 ```
 
 ### 1. Aura Guard: Active Pre/Post-Tool Execution Hooks (`auracode guard`)
-- Intercepts all tool invocations before execution via `.agents/hooks.json` and `tools/pre_tool_guard.py`.
-- **Fail-Closed Protection:** Blocks destructive terminal commands (`rm -rf /`, `rmdir /s /q C:\`, disk formatting, `dd`, `git reset --hard HEAD~10`).
-- **Data Exfiltration Defense:** Blocks commands that attempt to pipe sensitive environment tokens, private keys (`id_rsa`), or AWS/database credentials to remote URLs via `curl`, `wget`, or netcat.
+- Inspects invocations only on integrations that load `.agents/hooks.json` and dispatch them through `tools/pre_tool_guard.py`.
+- **Pattern-Based Protection:** Rejects the supported destructive command patterns, including representative root deletion, disk-formatting, `dd`, and destructive Git reset forms.
+- **Pattern-Based Exfiltration Defense:** Rejects supported patterns that pipe recognized secret names or private-key paths to recognized network tools. It does not inspect every possible shell, tool, encoding, or data-flow path.
 - Quick setup: `auracode guard install .` or direct audit check: `auracode guard check --tool run_command --cmd "rm -rf /"`.
 
 ### 2. Aura Worktree: Physical Git Isolation (`auracode worktree`)
-- Eliminates "dirty working tree" chaos by isolating every agent session inside an independent physical Git worktree directory under `.auracode/worktrees/<task>`.
-- The developer's active branch and unstaged work remain 100% clean and untouched.
+- Creates an independent Git worktree directory under `.auracode/worktrees/<task>` for sessions that use this workflow.
+- When the worktree workflow is used and verified, agent changes are isolated from the developer's active branch.
 - Commands:
   - `auracode worktree create --task auth-feature`
   - `auracode worktree list`
@@ -84,18 +83,17 @@ Based on the engineering principles codified in the comprehensive treatise [*Eng
   14. `14_migracao_e_legado.md` — Database versioning, migration rollback paths, and legacy bridging.
   15. `15_implantacao_e_rollout.md` — Blue/green deployment, canary releases, and rollback criteria.
 
-### 4. Aura Cage: Hermetic DevContainers with Default-Deny Firewall (`auracode cage`)
-- Solves the critical security risk of autonomous / "YOLO mode" agent execution.
-- Generates an isolated Linux DevContainer equipped with `iptables` running in a strict **Default-Deny** network policy.
-- All outbound traffic is blocked by default; only explicitly authorized endpoints (e.g. PyPI, GitHub, internal APIs listed in `allowed-domains.txt`) are permitted.
-- Neutralizes indirect prompt injection attacks where malicious web or code content commands the agent to exfiltrate proprietary source code or credentials to external servers.
+### 4. Aura Cage: DevContainer Default-Deny Configuration (`auracode cage`)
+- Generates a Linux DevContainer configuration with an `iptables` **Default-Deny** policy and an explicit allowlist.
+- The policy applies only inside a successfully built and running container after `auracode cage verify` confirms the expected configuration. Merely generating the files does not isolate the host or prove runtime enforcement.
+- This reduces common outbound exfiltration paths; it does not neutralize prompt injection itself or prove that every side channel is closed.
 - Commands:
   - `auracode cage init .`
   - `auracode cage verify`
 
 ### 5. Aura Loop: Ralph Architecture Autonomous Runner (`auracode loop`)
 - Implements the stateless runner pattern inspired by Geoffrey Huntley's Ralph Architecture.
-- **Anti-Dumb-Zone:** Prevents cognitive degradation occurring in LLMs when context windows exceed 100k tokens. Every iteration runs in a fresh, clean context driven by explicit file state.
+- **Context Reset:** Starts each supported iteration from explicit file state in a fresh process context. This is intended to reduce accumulated-context degradation, not prove model reliability.
 - **Anti-Reward-Hacking:** Enforces 5 strict deterministic verification levels (Compilation $\rightarrow$ AST Linters $\rightarrow$ Unit Tests $\rightarrow$ Semantic Coverage $\rightarrow$ Security Check) after each turn. If an agent attempts to delete tests or weaken assertions to claim success, the iteration is rejected.
 - **Circuit Breaker:** Automatic emergency halt if 3 consecutive failures occur, preventing wasteful token loops.
 - Commands:
@@ -105,9 +103,9 @@ Based on the engineering principles codified in the comprehensive treatise [*Eng
 
 ---
 
-## 🏛️ From Idea to Production: The Senior-Grade Guided Journey
+## 🏛️ Target Journey: From Idea to Evidence-Gated Release
 
-AuraCode transforms chaotic AI interaction (often marked by silent assumptions and hallucinated code—commonly termed *Vibe Coding*) into a disciplined, **Senior-Level Software Engineering Journey**. Any founder, product owner, or non-technical creator is guided from scratch to delivering a production-ready, enterprise-grade software system.
+AuraCode is being evolved toward a complete guided journey for non-technical users. In `0.3.0.dev0`, several controls exist, but the visual Studio and certified end-to-end builder are still under construction. Production readiness must be established for a specific release and environment; it is never inferred from installing AuraCode.
 
 ```mermaid
 graph TD
@@ -115,13 +113,13 @@ graph TD
     B --> C["2. House Blueprint Specifications<br>_auracode_sdd/ (Basic 7 or Enterprise 15)"]
     C -->|Explicit Human Approval| D["3. Isolation & Active Protection<br>(Aura Worktree + Aura Cage + Aura Guard)"]
     D --> E["4. Supervised Construction & AST Linters<br>(auracode-forward + arch, slop, leaks, sec, types)"]
-    E --> F["5. Autonomous Loop & Certification<br>(Aura Loop / SARIF v2.1.0 / AL1–AL4)"]
-    F --> G["🚀 Enterprise-Ready Production Software"]
+    E --> F["5. Autonomous Loop & Evidence Review<br>(Aura Loop / SARIF v2.1.0 / AL1–AL4)"]
+    F --> G["Release Candidate With Explicit Evidence"]
 ```
 
 ### 1. The Analogy: The "Senior Chief Engineer" vs. The "Hasty Mason"
 * **Conventional AI (*Vibe Coding*):** Acts like a hasty mason who immediately pours cement and lays bricks on bare soil without a foundation or plumbing blueprints. The structure might look nice on day one, but it cracks, leaks, and collapses under production traffic.
-* **AuraCode (*Senior Pair Programming*):** Acts like a Senior Chief Engineer who sits down with you, designs the complete architectural blueprint in plain human terms, explains where each load-bearing column goes, and **strictly forbids laying a single brick** before you understand and approve the blueprint. During construction, every line of code is inspected with laser-precise AST linters, contained in safe worktrees, and guarded by real-time firewalls.
+* **AuraCode (*Senior Pair Programming*):** Aims to act like a chief engineer who first documents the blueprint in plain language and requires approval before construction. During implementation, supported code patterns can be checked by deterministic analyzers, while Worktree, Guard, and Cage add protection only on their configured and verified surfaces.
 
 ---
 
@@ -130,7 +128,7 @@ graph TD
 #### 📋 Phase 1: Zero-Jargon Briefing & Clarification
 * **Zero-Presumption Directive:** The AI is forbidden from guessing data models, screen behavior, or business rules.
 * **Physical World Analogies:** Technical concepts are translated into daily physical terms (Database $\rightarrow$ *"Smart Filing Cabinet"*, Backend $\rightarrow$ *"Restaurant Kitchen"*, API $\rightarrow$ *"Order Waiter"*, Authentication $\rightarrow$ *"Building Badge"*).
-* **Gate G1 Ambiguity Scanner:** The `auracode ambiguity` command scans requirements for vague phrasing (*"maybe"*, *"should work"*, *"standard way"*), enforcing absolute clarity.
+* **Gate G1 Ambiguity Scanner:** The `auracode ambiguity` command flags supported vague phrases (*"maybe"*, *"should work"*, *"standard way"*) for human clarification; a clean result is not proof that every ambiguity was removed.
 
 #### 📐 Phase 2: The House Blueprint — SDD Specifications (`_auracode_sdd/`)
 No code is generated before explicit user sign-off on the specification blueprints:
@@ -141,21 +139,21 @@ No code is generated before explicit user sign-off on the specification blueprin
 
 #### 🔒 Phase 3: Sandboxed & Isolated Execution Environment
 * **Aura Worktree:** Creates an isolated branch workspace (`.auracode/worktrees/<task>`), safeguarding the developer's working directory.
-* **Aura Cage:** Generates a DevContainer with a Default-Deny firewall to thwart prompt injection and unauthorized network exfiltration.
-* **Aura Guard:** Activates pre-tool hooks to block destructive OS commands and token theft in real time.
+* **Aura Cage:** Generates a DevContainer Default-Deny configuration that must be built, run, and verified; it reduces selected network-exfiltration paths inside that container.
+* **Aura Guard:** Activates pre-tool hooks for supported integrations and rejects recognized destructive or exfiltration command patterns.
 
 #### 🏗️ Phase 4: Supervised Construction & Clean Architecture
 Implementation (`auracode-forward`) is strictly governed by deterministic AST linters:
-* **Hermetic Boundaries:** Clean Architecture layers (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`), validated by `auracode arch`.
-* **Zero AI Slop:** `auracode slop` rejects empty stubs, dead code, and swallowed exceptions (`except: pass`).
-* **Resource Leak Prevention:** `auracode leaks` enforces context managers (`with`) on files, sockets, and DB connections.
-* **Strict Type Safety:** `auracode types` enforces explicit function signatures and flags untyped `Any`.
-* **Injection Vector Immunity:** `auracode sec` blocks `eval`, `exec`, SQL string concatenations, and `shell=True`.
-* **Supply Chain Guardrails:** `auracode deps` checks packages against official PyPI indexes before installation.
-* **Surgical Diffs:** `auracode diff` limits churn to under 500 lines per cycle and blocks test tampering (*anti-reward hacking*).
+* **Configured Architecture Boundaries:** `auracode arch` validates supported Python import relationships against `contracts.json`.
+* **Slop Patterns:** `auracode slop` flags supported empty-stub, unreachable-code, and swallowed-exception patterns.
+* **Resource Patterns:** `auracode leaks` flags supported resource-acquisition patterns that lack a recognized context manager.
+* **Type-Hint Rules:** `auracode types` checks supported Python function signatures and selected `Any` usage.
+* **Injection Patterns:** `auracode sec` flags supported uses of `eval`, `exec`, SQL string construction, and `shell=True`; it is not a universal security proof.
+* **Dependency Existence Check:** `auracode deps` queries PyPI metadata for declared Python packages and versions. It does not verify signatures, provenance, or package safety.
+* **Surgical Diffs:** `auracode diff` checks the selected Git diff against the configured line limit and protected-test rules.
 
-#### 🛡️ Phase 5: Autonomous Loop Execution & Production Certification
-* **Aura Loop:** Multi-turn autonomous iterations under Ralph Architecture with state reset to eliminate cognitive degradation.
+#### 🛡️ Phase 5: Autonomous Loop Execution & Assurance Evaluation
+* **Aura Loop:** Multi-turn autonomous iterations with fresh process context intended to reduce accumulated-context degradation.
 * **OASIS SARIF v2.1.0 Integration:** Unified findings format ingested by GitHub Advanced Security, SonarQube, and VS Code.
 * **Global Security Standards:** Control coverage mapped to NIST SSDF 1.1, OWASP LLM Top 10, CWE Top 25, and ISO 25010.
 * **Non-Vacuous Test Suites:** `auracode tests` audits test ASTs to ensure assertions are semantic and meaningful (zero `assert True`).
@@ -171,25 +169,25 @@ Implementation (`auracode-forward`) is strictly governed by deterministic AST li
 | **Code Architecture** | Spaghetti code mixing DB, business logic, and UI in single files | **Clean Architecture** with inward dependency AST contracts (`contracts.json`) |
 | **Working Directory** | Dirty working trees, broken uncommitted files, overwritten code | **Aura Worktree:** Complete physical Git directory isolation per task |
 | **Host System Safety** | Executes dangerous commands (`rm -rf`, format) blindly | **Aura Guard:** Real-time fail-closed hooks intercepting destructive actions |
-| **Network & Injection** | Open network access vulnerable to prompt injection exfiltration | **Aura Cage:** Hermetic DevContainer with Default-Deny iptables firewall |
+| **Network & Injection** | Open network access vulnerable to prompt injection exfiltration | **Aura Cage:** Configures a Default-Deny policy inside a built and verified DevContainer |
 | **Error Handling** | Errors swallowed with empty `try/catch` or `except: pass` | **Fail-Closed:** AST linters block dead code and silent swallows (`auracode slop`) |
 | **Autonomous Runner** | Long-context degradation (Dumb Zone) and hallucinated tasks | **Aura Loop:** Stateless Ralph Architecture runner with 5-level AST gates |
-| **Dependencies** | Frequent package hallucinations and supply chain vulnerabilities | Cryptographic verification against official package registries (`auracode deps`) |
+| **Dependencies** | Frequent package hallucinations and supply chain vulnerabilities | PyPI package/version existence lookup (`auracode deps`); no signature or safety attestation |
 | **Test Suite Quality** | Tautological or fake tests (`assert True`) that test nothing | AST Visitor (`auracode tests`) enforces semantic asserts and blocks tampering |
-| **Production Readiness** | Heavy technical debt requiring total rewrite by senior engineers | **Enterprise Ready:** Modular, auditable, and certified software (AL1–AL4) |
+| **Production Readiness** | Often asserted without evidence | Readiness is not automatic; each required guarantee must be executed and evidenced for the declared scope |
 
 ---
 
 ## 🚀 How to Install and Use in Your Project (Beginner & Lay-User Friendly Guide)
 
-You do not need to be a software developer or terminal expert to use AuraCode. The framework was specifically engineered to guide founders, product owners, and non-technical creators to build software using senior-level engineering practices with AI pair programmers.
+The current preview includes the Aura Studio visual shell and local server, but its guided workflows have not been implemented yet; the journey therefore still expects terminal familiarity.
 
 Follow the simple steps below:
 
 ---
 
-### Step 0: The Only Prerequisite (Check Python)
-AuraCode only requires **Python** (version 3.9 or higher).
+### Step 0: Check prerequisites
+The AuraCode CLI requires **Python 3.9 or higher**. Checkpoint and worktree workflows also require **Git**; Docker is needed only for Cage, container preview, and deployment workflows.
 
 To check if Python is installed on your machine, open your terminal (Command Prompt, PowerShell, or macOS/Linux Terminal) and type:
 ```bash
@@ -200,18 +198,24 @@ python --version
 
 ---
 
-### Step 1: Install AuraCode on Your Computer (Single Command)
-Open your terminal anywhere and run the command below to install AuraCode globally:
+### Step 1: Install the development preview
+Until an official signed distribution exists, the command below installs directly from the development repository and must not be treated as a stable release:
 
 ```bash
 pip install git+https://github.com/Maferreira25/Aura-Code.git
 ```
 
-Verify that it works:
+Verify what was actually installed:
 ```bash
-auracode --help
+auracode doctor
+auracode skills verify
 ```
-*Done! The `auracode` command is now available across every folder on your computer.*
+In the current preview, `doctor` reports `studio=PASS` for package integrity but keeps the overall result at `NOT_RUN` because `studio_workflows=NOT_RUN`: the guided workflows have not been implemented and validated yet. This is a known limitation, not a complete success.
+
+To copy the verified official skills into the current project without overwriting local changes:
+```bash
+auracode skills install .
+```
 
 > 💡 **Tip for Advanced Users (Instant Execution via `uvx`):**  
 > If you already use Astral's `uv`, you can execute any AuraCode command directly without prior installation:  
@@ -224,7 +228,7 @@ auracode --help
 Now that AuraCode is installed, choose what you want to do:
 
 #### 🟢 Scenario A: Starting a Brand-New Project from Scratch
-*(You have an idea for an app, website, or backend and want to build it with maximum reliability)*
+*(You have an idea for an app, website, or backend and want to develop it with explicit assurance checks)*
 
 1. Create a clean folder for your project and enter it:
    ```bash
@@ -236,9 +240,9 @@ Now that AuraCode is installed, choose what you want to do:
    auracode wizard
    # (alias: auracode interview)
    ```
-   *The wizard will ask you 5 plain-language questions using everyday physical world analogies (no technical jargon).*
-3. At the end of the conversation, AuraCode automatically scaffolds your tailored **House Blueprint** in `_auracode_sdd/` and installs active agent safety guardrails.
-4. Now open the project in your favorite AI IDE (Cursor, Antigravity, VS Code, Claude Code) and instruct the AI to construct the application strictly adhering to the approved blueprints!
+   *The current prototype runs a five-stage briefing and scaffolds draft templates. It returns clarity as `NOT_RUN`, never supplies missing decisions, and does not authorize construction.*
+3. Review and complete every generated blueprint in `_auracode_sdd/` before approving it.
+4. Application construction is not yet an end-to-end CLI feature in this preview; do not treat the scaffold as production readiness evidence.
 
 #### 🟡 Scenario B: Auditing and Protecting an Existing (Production) Project
 *(You already have a codebase and want to discover hidden bugs, silent errors, resource leaks, and architectural technical debt)*
@@ -251,7 +255,7 @@ Now that AuraCode is installed, choose what you want to do:
    ```bash
    auracode guard install .
    ```
-   *This activates active pre-tool hooks in `.agents/hooks.json` AND configures `.git/hooks/pre-push`, preventing AI agents from executing destructive commands and blocking broken code or silent errors from being pushed to remote repositories.*
+   *This configures the supported integrations. Protection applies only to execution surfaces that invoke the hook and must be checked with `auracode guard check`; it is not a universal barrier.*
 3. Run a **Comprehensive Health Audit**:
    ```bash
    auracode audit .
@@ -268,9 +272,9 @@ Now that AuraCode is installed, choose what you want to do:
 
 ---
 
-## 🛠️ Complete 22-Command CLI Reference (`auracode <command>`)
+## 🛠️ CLI Reference (`auracode <command>`)
 
-AuraCode provides 22 unified static AST, containment, mutation testing, multi-language, TUI briefing, local preflight CI-mirror, whole-project health audit, and governance commands:
+AuraCode provides static analysis, containment, mutation testing, multi-language, terminal briefing, local preflight, evidence audit, installation diagnostics, and skill-package commands:
 
 ```bash
 # 1. Initialize workspace directories and SDD blueprints (profile: micro, lite, standard, enterprise)
@@ -280,7 +284,7 @@ auracode init --profile standard
 auracode wizard
 # or alias: auracode interview
 
-# 3. Evaluate requirement ambiguity & generate clarifying non-technical questions (Gate G1)
+# 3. Flag supported textual ambiguity markers and generate clarification questions (Gate G1)
 auracode ambiguity .
 
 # 4. Scan Python AST for dead code, unreachable code, and swallowed errors
@@ -345,10 +349,24 @@ auracode debate "Sistema de Armazenamento de Arquivos"
 # 21. Local Preflight & CI/CD Pipeline Mirror (Executes all 10 assurance gates locally before push)
 auracode preflight
 
-# 22. Executive Software Health Audit with Score (0-100) and Plain-Language Report
+# 22. Evidence-based audit with explicit PASS/FAIL/NOT_RUN/NOT_APPLICABLE/ERROR states
 auracode audit .
 auracode audit . --output audit_report.txt
 auracode audit . --json
+
+# 23. Diagnose the installed preview and disclose missing components
+auracode doctor
+auracode doctor --json
+
+# 24. Verify, list, or safely install the packaged official skills
+auracode skills verify
+auracode skills list
+auracode skills install .
+
+# 25. Open, verify, and seal a temporal iteration baseline (500 lines maximum)
+auracode iteration begin . --id ac-f01-wizard --requirement AC-F01 --scope "tools/wizard.py,tests/test_wizard.py" --allow-tests
+auracode iteration verify . --id ac-f01-wizard
+auracode iteration seal . --id ac-f01-wizard
 ```
 
 ---
@@ -364,40 +382,29 @@ AuraCode defines 15 specialized IDE skills enforcing non-technical dialogue prot
 5. **`auracode-forward`**: Spec-driven execution agent implementing Clean Architecture code (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`) strictly from approved blueprints.
 6. **`auracode-adversary`**: Red-team assurance challenger identifying architectural risks, edge cases, and vitiated tests before production deployment.
 7. **`auracode-debate`**: Structured 3-phase adversarial debate orchestrator ensuring balanced trade-off analysis with lay-user physical analogies.
-8. **`auracode-guard`**: Active execution safety gate intercepting commands and protecting the operating system.
+8. **`auracode-guard`**: Pattern-based command safety gate for integrations that invoke its hook.
 9. **`auracode-worktree`**: Git physical directory isolation manager for agent workflows.
-10. **`auracode-cage`**: DevContainer sandbox architect enforcing Default-Deny firewalls.
-11. **`auracode-loop`**: Autonomous Ralph Architecture loop runner with 5-level AST verification gates.
-12. **`auracode-audit`**: Autonomous QA runner executing the full 20-part `auracode` static analysis suite.
+10. **`auracode-cage`**: DevContainer and Default-Deny firewall configuration assistant with explicit verification.
+11. **`auracode-loop`**: Autonomous iteration runner with configured verification gates and a circuit breaker.
+12. **`auracode-audit`**: Evidence-based audit runner with explicit result states for the guarantees it can execute.
 13. **`auracode-debugger`**: Bug investigator reproducing failures via failing unit tests first before applying minimal surgical fixes.
-14. **`auracode-refactor`**: Quality specialist eliminating slop, unclosed resources, and missing type hints without altering public APIs.
+14. **`auracode-refactor`**: Refactoring workflow that checks behavior-preservation evidence within an approved scope.
 15. **`auracode-agents-help`**: Explanatory catalog detailing the specialized agent personas using plain-language analogies.
 
 ---
 
-## 📚 Theoretical Foundation & Complete Reference Guide
+## 📚 Non-Normative Background Reading
 
-AuraCode V2.0 is built upon the comprehensive body of knowledge detailed in our accompanying treatise:
-
-📖 **[Resumo de Engenharia de Software com Agentes Inteligentes](RESUMO_ENGENHARIA_SOFTWARE_AGENTES_INTELIGENTES.md)** (113 KB, 9 Chapters)
-* *Chapter 1:* Foundations of Agentic Software Engineering
-* *Chapter 2:* Architectures of Intelligent Agents (ReAct, Plan-and-Solve, Ralph)
-* *Chapter 3:* Specification-Driven Development (SDD) & Enterprise Blueprints
-* *Chapter 4:* Physical Worktree Isolation & Active Guard Hooks
-* *Chapter 5:* Hermetic DevContainers & Default-Deny Network Sandboxing
-* *Chapter 6:* AST Static Verification & AI Slop Elimination
-* *Chapter 7:* Anti-Reward-Hacking & Non-Vacuous Test Suites
-* *Chapter 8:* Autonomous Loop Engineering & Context Decay Prevention
-* *Chapter 9:* Socio-Technical Governance & Continuous Assurance Levels (AL1–AL4)
+The repository may include background material, but it is not part of the AuraCode validation scope. The normative sources for this development preview are the approved `_auracode_sdd/` specifications, executable contracts, tests, and generated evidence.
 
 ---
 
 ## 🧪 Test Suite & Quality Verification
 
-AuraCode maintains 100% test coverage across all assurance tools:
+Run the current test and assurance suites to inspect the evidence for your checkout:
 
 ```bash
-# Run complete test suite (144 unit tests)
+# Run complete test suite
 python -m unittest discover -s tests -p "test_*.py"
 
 # Run AST linters across AuraCode codebase
@@ -410,9 +417,9 @@ auracode tests .
 auracode multilang .
 ```
 
-- **Total Test Cases:** 144 passing unit tests (0 failures, 0 errors).
-- **AST Violations:** 0 across all 8 linters and analyzers.
-- **External Dependencies:** Zero (Pure Python standard library for core tools).
+- Test counts and results are build evidence, not permanent README claims.
+- Non-Python scanners remain heuristic until structural adapters are implemented and validated.
+- The current Python core uses the standard library; future Studio/builder dependencies will be inventoried and locked.
 
 ---
 

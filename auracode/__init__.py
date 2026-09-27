@@ -4,7 +4,9 @@ Provides programmatic and CLI access to AST linters, Clean Architecture contract
 supply chain anti-hallucination engines, and MCP guardrails.
 """
 
-__version__ = "0.1.1"
+from tools.version import FRAMEWORK_VERSION
+
+__version__ = FRAMEWORK_VERSION
 
 from tools.assurance import main as cli
 from tools.check_architecture import check_architecture

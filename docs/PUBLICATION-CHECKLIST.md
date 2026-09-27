@@ -10,6 +10,6 @@ Before making the repository public:
 - [x] Enable Dependabot/renovation policy appropriate to repository (Configured in .github/dependabot.yml).
 - [x] Run framework validator, validation-suite validator and tests from a clean clone (`tools/validate_framework.py`, `validation/tools/validate_suite.py`, unit tests).
 - [ ] Review all external references/status dates.
-- [ ] Tag `v0.1.1-draft`; do not label as stable/certified.
+- [ ] Tag `v0.3.0.dev0`; do not label as stable/certified.
 - [ ] Create Discussions or equivalent venue for control proposals (Configure in GitHub Settings -> Features).
 - [x] Add named maintainers to GOVERNANCE.md (Added @Maferreira25 as Lead Maintainer).

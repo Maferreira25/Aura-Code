@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "artifact_path": "auracode/studio/manifest.json",
+  "input_paths": ["VERSION", "auracode/studio/server.py", "auracode/studio/assets", "studio/scripts/package_manifest.py"],
+  "command": ["python", "studio/scripts/package_manifest.py"],
+  "audit_command": ["python", "studio/scripts/package_manifest.py", "--verify"],
+  "generator": "AuraCode-studio-manifest@1",
+  "working_directory": ".",
+  "timeout": 120
+}

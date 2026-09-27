@@ -319,6 +319,9 @@ class TestRequirementsAmbiguityDetector(unittest.TestCase):
             res = ambiguity_engine.analyze_workspace(td)
             self.assertEqual(res["status"], "PASS")
             self.assertEqual(res["total_ambiguity_findings"], 0)
+            self.assertEqual(res["coverage"], "supported_markers_only")
+            self.assertEqual(res["clarity_status"], "NOT_RUN")
+            self.assertNotIn("ambiguity_score", res)
 
     def test_ambiguity_markers_detected(self):
         with tempfile.TemporaryDirectory() as td:
@@ -378,7 +381,7 @@ class TestProgrammaticAPI(unittest.TestCase):
 
     def test_import_auracode_metadata(self):
         import auracode
-        self.assertEqual(auracode.__version__, "0.1.1")
+        self.assertEqual(auracode.__version__, "0.3.0.dev0")
         self.assertTrue(callable(auracode.cli))
         self.assertTrue(callable(auracode.check_architecture))
         self.assertTrue(callable(auracode.check_slop))

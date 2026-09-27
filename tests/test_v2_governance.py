@@ -232,7 +232,7 @@ class TestSurgicalDiff(unittest.TestCase):
         self.assertFalse(res["success"])
         self.assertTrue(any(v["rule"] == "out_of_scope_change" for v in res["violations"]))
 
-    def test_excessive_churn_warning(self):
+    def test_excessive_churn_blocks_by_default(self):
         changes = [{"status": "M", "file": "src/domain.py"}]
         res = check_surgical_diff(
             repo_dir=Path("."),
@@ -242,9 +242,63 @@ class TestSurgicalDiff(unittest.TestCase):
             direct_changes=changes,
             direct_stats={"total_added": 200, "total_deleted": 50}
         )
-        # Warning does not fail hard success
+        self.assertFalse(res["success"])
+        violation = next(v for v in res["violations"] if v["rule"] == "excessive_diff_churn")
+        self.assertEqual(violation["severity"], "error")
+
+    def test_selected_scope_reports_but_does_not_count_other_dirty_files(self):
+        changes = [
+            {"status": "M", "file": "src/domain.py"},
+            {"status": "M", "file": "unrelated/legacy.py"},
+        ]
+        res = check_surgical_diff(
+            repo_dir=Path("."),
+            allowed_scope=["src/*.py"],
+            allow_test_modifications=True,
+            max_modified_lines=20,
+            direct_changes=changes,
+            direct_stats={
+                "complete": True,
+                "files": {
+                    "src/domain.py": {"added": 8, "deleted": 2},
+                    "unrelated/legacy.py": {"added": 500, "deleted": 0},
+                },
+                "total_added": 508,
+                "total_deleted": 2,
+            },
+            selected_scope_only=True,
+        )
+
         self.assertTrue(res["success"])
-        self.assertTrue(any(v["rule"] == "excessive_diff_churn" for v in res["violations"]))
+        self.assertEqual(res["scope_mode"], "selected_only")
+        self.assertEqual(res["total_files_changed"], 1)
+        self.assertEqual(res["total_lines_added"], 8)
+        self.assertEqual(res["total_lines_deleted"], 2)
+        self.assertEqual(res["ignored_files"], ["unrelated/legacy.py"])
+        self.assertFalse(any(v["rule"] == "out_of_scope_change" for v in res["violations"]))
+
+    def test_selected_scope_requires_an_explicit_scope(self):
+        res = check_surgical_diff(
+            repo_dir=Path("."),
+            allowed_scope=None,
+            direct_changes=[],
+            direct_stats={"complete": True, "files": {}, "total_added": 0, "total_deleted": 0},
+            selected_scope_only=True,
+        )
+
+        self.assertFalse(res["success"])
+        self.assertEqual(res["error"], "selected_scope_only requires at least one allowed scope pattern")
+
+    def test_churn_limit_cannot_be_downgraded_to_advisory(self):
+        res = check_surgical_diff(
+            repo_dir=Path("."),
+            direct_changes=[],
+            direct_stats={"complete": True, "files": {}, "total_added": 0, "total_deleted": 0},
+            block_on_excessive_churn=False,
+        )
+
+        self.assertFalse(res["success"])
+        self.assertIn("advisory churn mode is not permitted", res["error"])
 
 
 class TestAssuranceMCPServer(unittest.TestCase):

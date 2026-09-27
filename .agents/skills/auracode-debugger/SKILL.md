@@ -14,4 +14,4 @@ O `auracode-debugger` gerencia defeitos e comportamentos inesperados no sistema.
 1. **Entrada do Defeito**: Registra o problema relatado pelo usuário no diretório `_auracode_bugs/<id_bug>/bug.md`.
 2. **Teste Quebrando Primeiro**: Escreve um teste automatizado que reproduz a falha exatamente como relatada. O teste DEVE falhar antes de qualquer alteração no código.
 3. **Correção Cirúrgica**: Aplica o menor ajuste necessário no código da aplicação até o teste passar.
-4. **Validação AST**: Roda `auracode slop` e `auracode sec` para garantir que a correção não introduziu novo código viciado ou falhas de segurança.
+4. **Validação AST**: Roda `auracode audit` e os testes afetados para procurar regressões no escopo suportado. Resultado limpo não prova ausência universal de defeitos.

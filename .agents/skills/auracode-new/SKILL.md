@@ -34,7 +34,7 @@ Conduza uma conversa por rodadas, perguntando:
 4. **Regras e Segurança**: Quem pode ver ou alterar o quê? (Use a analogia do *Crachá de Acesso*).
 5. **Aparência e Estilo**: Quais cores, sensações ou estilo visual o usuário prefere para a interface? (Use a analogia da *Decoração da Loja*).
 
-Se restar QUALQUER dúvida, faça mais rodadas até obter 100% de clareza.
+Enquanto houver decisão obrigatória sem resposta, contradição ou termo não compreendido pelo usuário, faça novas rodadas e mantenha o estado como incompleto.
 
 ---
 
@@ -67,5 +67,5 @@ Assim que todas as respostas forem consolidadas, gere os documentos de especific
 ### Etapa 3: Apresentação do Resumo e Portão de Aprovação
 Ao concluir a criação dos 7 arquivos da Planta Teórica:
 1. Apresente um resumo executivo em linguagem simples para o usuário.
-2. Explique que a "planta da casa" está 100% desenhada e revisada.
+2. Explique quais cadernos foram preenchidos, quais verificações passaram e se ainda existe alguma pendência visível.
 3. Solicite a **autorização explícita** do usuário para prosseguir para a fase de construção de código (`/auracode-forward`).

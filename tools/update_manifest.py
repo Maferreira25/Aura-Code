@@ -17,6 +17,7 @@ from tools.validate_framework import (
     MANIFEST_EXCLUDE_ROOT_FILES,
     load_normalized_bytes,
 )
+from tools.version import FRAMEWORK_VERSION
 
 
 def compute_file_metrics(filepath: Path) -> tuple[str, int]:
@@ -52,7 +53,7 @@ def generate_manifest(root_dir: Path = ROOT) -> dict:
         }
 
     manifest = {
-        "framework_version": "0.1.1-draft",
+        "framework_version": FRAMEWORK_VERSION,
         "validation_suite": "0.1.1-alpha",
         "file_count": len(files_map),
         "files": files_map

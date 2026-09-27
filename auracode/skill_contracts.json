@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "skill_version": "1.0.0",
+  "core_compatibility": {
+    "minimum": "0.3.0.dev0",
+    "maximum_exclusive": "0.4.0"
+  },
+  "skills": [
+    {
+      "id": "auracode",
+      "description_en": "Main AuraCode entry point that routes guided, specification-first software work for non-technical users.",
+      "inputs": ["user_intent", "workspace_state"],
+      "outputs": ["selected_workflow", "next_safe_action"],
+      "permissions": ["read_workspace", "ask_human"],
+      "tools": ["auracode doctor", "auracode audit"],
+      "guarantees": ["routes_before_execution", "requires_explicit_decisions"],
+      "failure_points": ["unknown_intent", "incomplete_installation"]
+    },
+    {
+      "id": "auracode-adversary",
+      "description_en": "Challenges architecture and implementation proposals for security gaps, leaks, stubs, and weak test oracles.",
+      "inputs": ["proposal", "evidence"],
+      "outputs": ["contested_findings"],
+      "permissions": ["read_workspace", "execute_local_checks"],
+      "tools": ["auracode sec", "auracode tests"],
+      "guarantees": ["findings_require_evidence"],
+      "failure_points": ["missing_evidence", "unsupported_analyzer"]
+    },
+    {
+      "id": "auracode-agents-help",
+      "description_en": "Explains AuraCode agents and their responsibilities to non-technical users with everyday analogies.",
+      "inputs": ["help_topic"],
+      "outputs": ["plain_language_guidance"],
+      "permissions": ["read_workspace"],
+      "tools": [],
+      "guarantees": ["non_technical_explanation"],
+      "failure_points": ["unknown_agent"]
+    },
+    {
+      "id": "auracode-audit",
+      "description_en": "Runs evidence-based AuraCode assurance checks and reports explicit per-guarantee states without a composite score.",
+      "inputs": ["target_workspace", "architecture_contract"],
+      "outputs": ["guarantee_matrix", "findings"],
+      "permissions": ["read_workspace", "execute_local_checks", "write_managed_artifacts"],
+      "tools": ["auracode audit"],
+      "guarantees": ["fail_closed_target_validation", "no_composite_score"],
+      "failure_points": ["missing_target", "missing_contract", "unsupported_language"]
+    },
+    {
+      "id": "auracode-brainstorm",
+      "description_en": "Helps non-technical users explore and structure a software idea before creating an approved specification.",
+      "inputs": ["initial_idea"],
+      "outputs": ["options", "open_decisions"],
+      "permissions": ["ask_human", "write_managed_artifacts"],
+      "tools": [],
+      "guarantees": ["options_are_not_silent_decisions"],
+      "failure_points": ["unanswered_business_decision"]
+    },
+    {
+      "id": "auracode-cage",
+      "description_en": "Creates and checks a DevContainer policy with default-deny outbound networking for isolated execution.",
+      "inputs": ["target_workspace", "allowed_domains"],
+      "outputs": ["devcontainer_policy", "verification_result"],
+      "permissions": ["read_workspace", "write_managed_artifacts", "container_runtime"],
+      "tools": ["auracode cage"],
+      "guarantees": ["declared_default_deny_policy"],
+      "failure_points": ["docker_unavailable", "firewall_not_verified", "unsupported_host"]
+    },
+    {
+      "id": "auracode-clarify",
+      "description_en": "Resolves requirement ambiguity through short questions, comparisons, and explicit user choices without silent assumptions.",
+      "inputs": ["idea", "existing_decisions"],
+      "outputs": ["confirmed_decisions", "remaining_questions"],
+      "permissions": ["ask_human", "write_managed_artifacts"],
+      "tools": ["auracode ambiguity"],
+      "guarantees": ["zero_silent_business_decisions"],
+      "failure_points": ["mandatory_question_unanswered", "contradictory_answers"]
+    },
+    {
+      "id": "auracode-debate",
+      "description_en": "Coordinates a contained adversarial discussion and records proposals, objections, evidence, and unresolved decisions.",
+      "inputs": ["debate_topic", "approved_constraints"],
+      "outputs": ["debate_record", "unresolved_decisions"],
+      "permissions": ["read_workspace", "spawn_isolated_agents", "write_managed_artifacts"],
+      "tools": ["auracode debate"],
+      "guarantees": ["unresolved_disagreement_remains_visible"],
+      "failure_points": ["agent_isolation_unavailable", "missing_constraints"]
+    },
+    {
+      "id": "auracode-debugger",
+      "description_en": "Triages defects, creates a failing reproduction, and applies a bounded correction followed by regression checks.",
+      "inputs": ["defect_report", "workspace"],
+      "outputs": ["reproduction_test", "bounded_fix", "verification_evidence"],
+      "permissions": ["read_workspace", "write_workspace", "execute_local_checks"],
+      "tools": ["auracode diff", "auracode audit"],
+      "guarantees": ["reproduction_before_fix"],
+      "failure_points": ["defect_not_reproduced", "regression_failure"]
+    },
+    {
+      "id": "auracode-forward",
+      "description_en": "Implements small, reversible iterations strictly from an explicitly approved AuraCode specification.",
+      "inputs": ["approved_specification", "authorized_iteration"],
+      "outputs": ["implementation_diff", "test_evidence", "checkpoint"],
+      "permissions": ["read_workspace", "write_workspace", "execute_local_checks", "git_checkpoint"],
+      "tools": ["auracode diff", "auracode audit", "auracode worktree"],
+      "guarantees": ["approved_specification_required", "bounded_iteration"],
+      "failure_points": ["specification_not_approved", "gate_failure", "excessive_diff"]
+    },
+    {
+      "id": "auracode-guard",
+      "description_en": "Evaluates tool and command requests before execution and blocks recognized destructive or exfiltration patterns.",
+      "inputs": ["command_request", "workspace_policy"],
+      "outputs": ["allow_or_block_decision", "reason"],
+      "permissions": ["read_command_metadata", "write_managed_artifacts"],
+      "tools": ["auracode guard"],
+      "guarantees": ["recognized_dangerous_patterns_fail_closed"],
+      "failure_points": ["hook_not_installed", "unsupported_tool_surface"]
+    },
+    {
+      "id": "auracode-loop",
+      "description_en": "Runs bounded autonomous iterations with explicit stop conditions and repeated local assurance gates.",
+      "inputs": ["task_backlog", "iteration_limit"],
+      "outputs": ["iteration_records", "stop_reason"],
+      "permissions": ["read_workspace", "write_workspace", "execute_local_checks"],
+      "tools": ["auracode loop", "auracode audit"],
+      "guarantees": ["bounded_iterations", "gate_before_continuation"],
+      "failure_points": ["verification_failure", "iteration_limit", "missing_task"]
+    },
+    {
+      "id": "auracode-new",
+      "description_en": "Guides a non-technical briefing and creates specification documents before any application code is generated.",
+      "inputs": ["project_idea", "user_decisions"],
+      "outputs": ["specification_set", "approval_request"],
+      "permissions": ["ask_human", "write_managed_artifacts"],
+      "tools": ["auracode init", "auracode ambiguity"],
+      "guarantees": ["specification_before_code", "explicit_approval_required"],
+      "failure_points": ["mandatory_decision_missing", "specification_ambiguous"]
+    },
+    {
+      "id": "auracode-refactor",
+      "description_en": "Improves structure and typing while preserving behavior through tests and bounded diffs.",
+      "inputs": ["approved_scope", "behavior_tests"],
+      "outputs": ["refactoring_diff", "regression_evidence"],
+      "permissions": ["read_workspace", "write_workspace", "execute_local_checks"],
+      "tools": ["auracode diff", "auracode audit"],
+      "guarantees": ["behavior_tests_must_remain_green"],
+      "failure_points": ["missing_behavior_test", "behavior_change", "gate_failure"]
+    },
+    {
+      "id": "auracode-worktree",
+      "description_en": "Creates isolated Git worktrees for agent tasks and keeps intermediate changes outside the active workspace.",
+      "inputs": ["task_name", "base_branch"],
+      "outputs": ["isolated_worktree", "tracking_record"],
+      "permissions": ["read_workspace", "git_worktree", "write_managed_artifacts"],
+      "tools": ["auracode worktree"],
+      "guarantees": ["separate_working_directory"],
+      "failure_points": ["not_a_git_repository", "dirty_or_conflicting_state", "worktree_collision"]
+    }
+  ]
+}

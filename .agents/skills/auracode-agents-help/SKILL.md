@@ -5,7 +5,7 @@ description: Catálogo explicativo dos agentes do Aura Code com analogias didát
 
 # Aura Code — Catálogo de Agentes Especiais (`auracode-agents-help`)
 
-O **Aura Code** organiza seu trabalho utilizando um "time de especialistas virtuais" (swarms de agentes). Cada um cuida de uma fase do desenvolvimento com máxima precisão.
+O **Aura Code** organiza seu trabalho utilizando um "time de especialistas virtuais". Cada agente possui responsabilidade e limites declarados; nenhum deles substitui as provas exigidas pelo fluxo.
 
 ---
 
@@ -29,7 +29,7 @@ O **Aura Code** organiza seu trabalho utilizando um "time de especialistas virtu
 
 5. **`auracode-reviewer` / `auracode-audit` (O Fiscal da Defesa Civil)**:
    - *Analogia*: É o inspetor de obras que testa a resistência das paredes, caixa d'água e fiação antes da entrega.
-   - *Função*: Executa 12 testes automatizados na estrutura (AST, vazamentos, segurança e qualidade).
+   - *Função*: Executa as garantias aplicáveis e mostra `PASS`, `FAIL`, `NOT_RUN`, `NOT_APPLICABLE` ou `ERROR` com evidência.
 
 6. **`auracode-debugger` (O Técnico de Reparos)**:
    - *Analogia*: É o encanador/eletricista chamado para encontrar a causa exata de uma infiltração e consertar na hora.

@@ -1,5 +1,5 @@
 {
-  "framework_version": "0.1.1-draft",
+  "framework_version": "0.3.0.dev0",
   "assurance_level": "AL3",
   "description": "High Assurance — internet-facing, sensitive data, multi-tenant, significant financial/security boundary, major migration or globally scaled service.",
   "included_controls": [

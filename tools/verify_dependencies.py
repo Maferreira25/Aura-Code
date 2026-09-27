@@ -17,6 +17,8 @@ import urllib.request
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+from tools.version import FRAMEWORK_VERSION
+
 # Built-in Python Standard Library modules (never need installation)
 if hasattr(sys, "stdlib_module_names"):
     PYTHON_STDLIB_MODULES = set(sys.stdlib_module_names)
@@ -93,7 +95,7 @@ def query_pypi_package(package_name: str, timeout: int = 5) -> Tuple[Optional[Di
         return None, "INVALID_NAME"
 
     url = PYPI_JSON_URL.format(package=package_name)
-    headers = {"User-Agent": "AI-Software-Assurance-Framework/0.1.1"}
+    headers = {"User-Agent": f"AI-Software-Assurance-Framework/{FRAMEWORK_VERSION}"}
     req = urllib.request.Request(url, headers=headers)
 
     try:

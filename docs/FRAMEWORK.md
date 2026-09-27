@@ -1,4 +1,4 @@
-# Framework Specification — 0.1.1-draft
+# Framework Specification — 0.3.0.dev0
 
 ## Scope
 

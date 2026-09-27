@@ -32,7 +32,7 @@ python tools/assess.py <assessment.json>
 
 Preferred:
 
-> Assessed against AI Software Assurance Framework for Agentic Development 0.1.1-draft, AL2, scope commit `<sha>`. All applicable included controls were recorded as PASS or justified NA. This is a self-assessment and not a certification.
+> Assessed against AI Software Assurance Framework for Agentic Development 0.3.0.dev0, AL2, scope commit `<sha>`. All applicable included controls were recorded as PASS or justified NA. This is a self-assessment and not a certification.
 
 Or:
 

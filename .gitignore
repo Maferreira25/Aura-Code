@@ -4,12 +4,17 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+node_modules/
+.next/
+*.tsbuildinfo
 graphify-out/
 validation/workspaces/
 .venv/
 .pytest_cache/
 /.auracode/
 /_auracode_*/
+!/_auracode_sdd/
+!/_auracode_sdd/**
 .env
 *.log
 .vscode/

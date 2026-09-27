@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.3.0 — 2026-09-26
+## 0.3.0.dev0 — Unreleased
 
-Strategic Enhancement Release — Graduated SDD profiles, AST mutation testing, non-technical TUI briefing wizard, polyglot static scanning, and adversarial agentic debate:
+Development preview — existing graduated SDD profiles, mutation testing, TUI prototype, heuristic polyglot scanning, and adversarial debate are being integrated into a truthful end-to-end builder. This version is not stable or certified.
 
 ### Added
 - **Graduated SDD Profiles (`templates/sdd/` & `auracode init --profile <name>`):**
@@ -19,9 +19,9 @@ Strategic Enhancement Release — Graduated SDD profiles, AST mutation testing, 
 - **Interactive Terminal Briefing Wizard (`tools/wizard.py` & `auracode wizard` / `interview`):**
   - Non-technical, zero-jargon interactive TUI guiding lay users through 5 structured briefing stages.
   - Translates technical decisions into physical world analogies (smart filing cabinets, storefronts, ID badges).
-  - Automatically initializes appropriate SDD blueprints and computes the Gate G1 requirement clarity score directly from the terminal.
+  - Initializes SDD templates; the current five-question prototype does not prove complete requirement clarity.
 - **Polyglot Multi-Language Scanner (`tools/multilang_runner.py` & `auracode multilang`):**
-  - Unified syntax inspection for Python, TypeScript, JavaScript, Go, Java, and C# codebases.
+  - Python AST inspection plus heuristic checks for TypeScript, JavaScript, Go, Java, and C# codebases.
   - Catches empty exception handling / swallowed errors, unclosed stream/file leaks, and unsafe code execution across all supported languages without requiring language-specific compilation dependencies.
   - Ingests and outputs findings in standard SARIF v2.1.0 and JSON formats.
 - **Adversarial Agentic Debate with Containment (`tools/adversarial_debate.py`, `auracode debate`, `.agents/skills/auracode-debate`, `.agents/skills/auracode-adversary`):**
@@ -29,7 +29,7 @@ Strategic Enhancement Release — Graduated SDD profiles, AST mutation testing, 
   - Phase 1 (Builder / Proponent) proposes architecture $\rightarrow$ Phase 2 (Adversary Red-Team) challenges security/scale risks $\rightarrow$ Phase 3 (Lay-User Clarifier) translates findings into everyday physical analogies and structured choices for human decision.
 - **CLI and Test Suite Growth:**
   - Expanded CLI to 20 native commands.
-  - Expanded unit test suite from 124 to 144 passing tests (100% pass rate).
+  - Test results are recorded by the active CI run rather than claimed permanently in this changelog.
   - 15 active agent skills registered in `.agents/skills/`.
 
 ## 0.2.0 — 2026-09-26

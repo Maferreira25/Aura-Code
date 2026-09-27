@@ -1,5 +1,5 @@
 {
-  "framework_version": "0.1.1-draft",
+  "framework_version": "0.3.0.dev0",
   "assurance_level": "AL1",
   "description": "Foundation — low-impact/local/prototype or initial governed development baseline.",
   "included_controls": [

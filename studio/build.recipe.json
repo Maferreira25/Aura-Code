@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "artifact_path": "studio/out",
+  "input_paths": [
+    "studio/package.json",
+    "studio/package-lock.json",
+    "studio/tsconfig.json",
+    "studio/next-env.d.ts",
+    "studio/next.config.ts",
+    "studio/app",
+    "studio/lib",
+    "studio/scripts"
+  ],
+  "command": ["python", "studio/scripts/build.py"],
+  "audit_command": ["python", "studio/scripts/audit.py"],
+  "generator": "Next.js@16.3.5+npm@11.6.2+Node.js@24.13.0",
+  "working_directory": ".",
+  "timeout": 600
+}

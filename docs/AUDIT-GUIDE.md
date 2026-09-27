@@ -43,6 +43,6 @@ Record:
 ## 6. Conformance statement
 
 Use:
-> "Assessed against AI Software Assurance Framework 0.1.1-draft, profile ALx, for scope <commit/release>. This is not a certification."
+> "Assessed against AI Software Assurance Framework 0.3.0.dev0, profile ALx, for scope <commit/release>. This is not a certification."
 
 Do not call an assessment "certified" unless a future governance program explicitly creates and controls certification.

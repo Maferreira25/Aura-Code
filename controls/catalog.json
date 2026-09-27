@@ -1,7 +1,7 @@
 {
   "framework": "AI Software Assurance Framework for Agentic Development",
   "working_title": true,
-  "version": "0.1.1-draft",
+  "version": "0.3.0.dev0",
   "normative_language": "MUST/MUST NOT = mandatory when applicable; SHOULD/SHOULD NOT = strong recommendation; MAY = optional.",
   "assurance_levels": [
     "AL1",

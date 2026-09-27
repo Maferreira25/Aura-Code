@@ -29,10 +29,11 @@ import tools.check_requirements_ambiguity as check_requirements_ambiguity
 from tools.audit import audit_workspace
 from tools.preflight import run_preflight_checks
 from tools.multilang_runner import scan_multilang_workspace
+from tools.version import FRAMEWORK_VERSION
 
 
 SERVER_NAME = "auracode-mcp"
-SERVER_VERSION = "0.1.1"
+SERVER_VERSION = FRAMEWORK_VERSION
 PROTOCOL_VERSION = "2024-11-05"
 
 
@@ -201,7 +202,7 @@ TOOLS_MANIFEST = [
     },
     {
         "name": "run_audit",
-        "description": "Executive software assurance & health audit with 0-100 score, AST findings, and plain language physical analogies.",
+        "description": "Software assurance audit with explicit PASS, FAIL, NOT_RUN, NOT_APPLICABLE, or ERROR states and supporting findings.",
         "inputSchema": {
             "type": "object",
             "properties": {

@@ -1,6 +1,6 @@
 # Normative Control Catalog
 
-Framework version: `0.1.1-draft`.
+Framework version: `0.3.0.dev0`.
 
 The machine-readable source of truth is `catalog.json`. This Markdown file is a human-readable projection.
 

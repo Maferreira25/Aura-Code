@@ -1,0 +1,730 @@
+{
+  "schema_version": 1,
+  "framework_version": "0.3.0.dev0",
+  "skills": [
+    {
+      "manifest": {
+        "id": "auracode",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Ponto de entrada principal do Aura Code Framework. Orquestra o desenvolvimento guiado para pessoas leigas, do briefing sem jargões até a planta da casa e o código com garantias estáticas AST.",
+          "en": "Main AuraCode entry point that routes guided, specification-first software work for non-technical users."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "user_intent",
+          "workspace_state"
+        ],
+        "outputs": [
+          "selected_workflow",
+          "next_safe_action"
+        ],
+        "permissions": [
+          "read_workspace",
+          "ask_human"
+        ],
+        "tools": [
+          "auracode doctor",
+          "auracode audit"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "b393f5ee67f3d07a32071e79601bdb6143f6cec7be30c28831a477f873601897",
+            "bytes": 3553
+          }
+        ],
+        "guarantees": [
+          "routes_before_execution",
+          "requires_explicit_decisions"
+        ],
+        "failure_points": [
+          "unknown_intent",
+          "incomplete_installation"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode\ndescription: Ponto de entrada principal do Aura Code Framework. Orquestra o desenvolvimento guiado para pessoas leigas, do briefing sem jargões até a planta da casa e o código com garantias estáticas AST.\n---\n\n# Aura Code — Orquestrador do Framework\n\nBem-vindo ao **Aura Code Framework** (Agentic Unified Reliability & Assurance Framework)!\nEste skill é o ponto de entrada principal para interagir com o ecossistema de desenvolvimento guiado para pessoas leigas e engenharia de software orientada a especificações.\n\n---\n\n## 🎯 Regras Não-Negociáveis do Aura Code\n\n1. **Tolerância Zero a Presunções (Zero-Presumption Directive)**:\n   - NUNCA infira ou decida regras de negócio, telas, campos, fluxos ou configurações pelo usuário.\n   - Qualquer lacuna — por menor ou mais simples que pareça — DEVE ser perguntada antes de avançar.\n   - Se o usuário não souber termos técnicos, apresente opções didáticas com comparações simples (ex: *\"Opção A: Como uma pasta aberta... / Opção B: Como um cofre trancado...\"*).\n\n2. **Paradigma da Planta da Casa (House Blueprint First)**:\n   - NENHUMA linha de código de aplicação, arquivo ou diretório de projeto é gerado antes que toda a especificação teórica esteja pronta, revisada e aprovada em `_auracode_sdd/`.\n   - O projeto teórico deve incluir: Visão de Negócio, Componentes de Frontend/Backend, Banco de Dados Conceitual, Segurança/Permissões, Contratos de APIs, Design System/Telas e Nível de Garantia (AL1-AL4).\n\n3. **Protocolo de Comunicação Didática**:\n   - Fale sempre em linguagem simples e cotidiana.\n   - Use analogias do mundo físico (Armário para banco de dados, Cozinha para backend, Garçom para API, Vitrine para frontend).\n\n---\n\n## 🧭 Menu de Comandos Disponíveis\n\nQuando acionado, apresente o menu ao usuário e auxilie-o a escolher o fluxo correto:\n\n1. **`/auracode-new`** (ou `auracode-new`):\n   - Iniciar um novo sistema ou nova grande funcionalidade.\n   - Conduz o briefing em linguagem simples e gera a Planta Teórica Completa em `_auracode_sdd/`.\n\n2. **`/auracode-clarify`** (ou `auracode-clarify`):\n   - Rodada de esclarecimento de dúvidas e remoção de ambiguidades.\n   - Faz perguntas didáticas com comparações para preencher todas as lacunas do projeto.\n\n3. **`/auracode-brainstorm`** (ou `auracode-brainstorm`):\n   - Fase de ideação inicial, exploração de possibilidades e definição didática do escopo.\n\n4. **`/auracode-forward`** (ou `auracode-forward`):\n   - Fase de execução: transforma a Planta Teórica aprovada em `_auracode_sdd/` em código real com Clean Architecture.\n\n5. **`/auracode-audit`** (ou `auracode-audit`):\n   - Executa `auracode audit` e relata separadamente as garantias aplicáveis, o método usado e qualquer parte não executada.\n\n6. **`/auracode-debugger`** (ou `auracode-debugger`):\n   - Registro e correção de falhas e bugs via testes que reproduzem o erro antes de alterar qualquer linha.\n\n7. **`/auracode-refactor`** (ou `auracode-refactor`):\n   - Limpeza e otimização de código sem alterar o comportamento do sistema.\n\n8. **`/auracode-agents-help`** (ou `auracode-agents-help`):\n   - Explicação detalhada sobre a função de cada agente especializado do Aura Code.\n\n---\n\n## 🚀 Como Proceder Agora\n\nSe o usuário digitou apenas `auracode` ou solicitou ajuda para iniciar:\n- Pergunte amigavelmente qual é a ideia do sistema que ele deseja construir.\n- Recomende iniciar pelo **`/auracode-new`** para fazer a entrevista de briefing em linguagem simples.\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-adversary",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Agente auditor contestador do Aura Code. Desafia propostas de arquitetura buscando falhas de segurança, vazamentos, stubs e oráculos viciados.",
+          "en": "Challenges architecture and implementation proposals for security gaps, leaks, stubs, and weak test oracles."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "proposal",
+          "evidence"
+        ],
+        "outputs": [
+          "contested_findings"
+        ],
+        "permissions": [
+          "read_workspace",
+          "execute_local_checks"
+        ],
+        "tools": [
+          "auracode sec",
+          "auracode tests"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "e1ff382291ddce511ddf4f7b51d5b4641f5879f47983eb65805745bba849922b",
+            "bytes": 1099
+          }
+        ],
+        "guarantees": [
+          "findings_require_evidence"
+        ],
+        "failure_points": [
+          "missing_evidence",
+          "unsupported_analyzer"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-adversary\ndescription: Agente auditor contestador do Aura Code. Desafia propostas de arquitetura buscando falhas de segurança, vazamentos, stubs e oráculos viciados.\n---\n\n# Aura Code — Auditor Adversarial (`auracode-adversary`)\n\nO `auracode-adversary` atua como o \"advogado do diabo\" ou *Red-Team* do Aura Code. Seu objetivo é garantir que nenhuma suposição oculta passe sem ser desafiada.\n\n---\n\n## 🎯 Missão e Postura\n\n1. **Zero Complacência:** Nunca concorde facilmente com uma proposta técnica. Procure onde ela pode falhar sob carga, concorrência ou entradas maliciosas.\n2. **Caça a Oráculos Viciados:** Verifique se os testes propostos realmente verificam a regra de negócio ou se passam mesmo se o código estiver quebrado.\n3. **Auditoria STRIDE:** Aponte vetores de Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service e Elevation of Privilege.\n\n---\n\n## 🛠️ Comandos de Suporte\n\n```bash\n# Executar mutações nos testes propostos\nauracode tests --mutate [arquivo.py]\n\n# Verificar injeções no código proposto\nauracode sec .\n```\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-agents-help",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Catálogo explicativo dos agentes do Aura Code com analogias didáticas para pessoas leigas.",
+          "en": "Explains AuraCode agents and their responsibilities to non-technical users with everyday analogies."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "help_topic"
+        ],
+        "outputs": [
+          "plain_language_guidance"
+        ],
+        "permissions": [
+          "read_workspace"
+        ],
+        "tools": [],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "34b392de1af6e7d7a7c3277b0610ecfd596794ca26fb7b1162f9348d6bc7ea59",
+            "bytes": 2111
+          }
+        ],
+        "guarantees": [
+          "non_technical_explanation"
+        ],
+        "failure_points": [
+          "unknown_agent"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-agents-help\ndescription: Catálogo explicativo dos agentes do Aura Code com analogias didáticas para pessoas leigas.\n---\n\n# Aura Code — Catálogo de Agentes Especiais (`auracode-agents-help`)\n\nO **Aura Code** organiza seu trabalho utilizando um \"time de especialistas virtuais\". Cada agente possui responsabilidade e limites declarados; nenhum deles substitui as provas exigidas pelo fluxo.\n\n---\n\n## 👥 Conheça o Time Virtual do Aura Code\n\n1. **`auracode-clarify` (O Entrevistador Didático)**:\n   - *Analogia*: É como o arquiteto paciente que faz perguntas sobre os hábitos da sua família antes de desenhar a casa.\n   - *Função*: Faz perguntas simples sem termos difíceis para entender exatamente o que você quer construir.\n\n2. **`auracode-brainstorm` (O Mestre de Ideias)**:\n   - *Analogia*: É o consultor de novos negócios que ajuda você a colocar a ideia no papel.\n   - *Função*: Transforma vontades abstratas em uma lista organizada de funcionalidades.\n\n3. **`auracode-architect` (O Engenheiro Calculista)**:\n   - *Analogia*: É o engenheiro responsável por calcular a estrutura, a fiação e o encanamento.\n   - *Função*: Desenha a Planta Teórica Completa em `_auracode_sdd/` cobrindo segurança, telas e banco de dados.\n\n4. **`auracode-writer` (O Mestre de Obras)**:\n   - *Analogia*: É o construtor experiente que ergue as paredes seguindo rigorosamente a planta aprovada.\n   - *Função*: Escreve o código limpo, sem desperdício e com tipagem segura.\n\n5. **`auracode-reviewer` / `auracode-audit` (O Fiscal da Defesa Civil)**:\n   - *Analogia*: É o inspetor de obras que testa a resistência das paredes, caixa d'água e fiação antes da entrega.\n   - *Função*: Executa as garantias aplicáveis e mostra `PASS`, `FAIL`, `NOT_RUN`, `NOT_APPLICABLE` ou `ERROR` com evidência.\n\n6. **`auracode-debugger` (O Técnico de Reparos)**:\n   - *Analogia*: É o encanador/eletricista chamado para encontrar a causa exata de uma infiltração e consertar na hora.\n   - *Função*: Identifica defeitos, cria testes que reproduzem o erro e aplica correções cirúrgicas.\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-audit",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Executor da auditoria baseada em evidências do Aura Code. Relata cada garantia como PASS, FAIL, NOT_RUN, NOT_APPLICABLE ou ERROR, sem nota geral.",
+          "en": "Runs evidence-based AuraCode assurance checks and reports explicit per-guarantee states without a composite score."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "target_workspace",
+          "architecture_contract"
+        ],
+        "outputs": [
+          "guarantee_matrix",
+          "findings"
+        ],
+        "permissions": [
+          "read_workspace",
+          "execute_local_checks",
+          "write_managed_artifacts"
+        ],
+        "tools": [
+          "auracode audit"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "762d1ebc43e32cf041eb208797981a02b6d26c94056f0c0a082a5702cba8c994",
+            "bytes": 1914
+          }
+        ],
+        "guarantees": [
+          "fail_closed_target_validation",
+          "no_composite_score"
+        ],
+        "failure_points": [
+          "missing_target",
+          "missing_contract",
+          "unsupported_language"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-audit\ndescription: Executor da auditoria baseada em evidências do Aura Code. Relata cada garantia como PASS, FAIL, NOT_RUN, NOT_APPLICABLE ou ERROR, sem nota geral.\n---\n\n# Aura Code — Auditoria e Garantia de Qualidade (`auracode-audit`)\n\nO `auracode-audit` executa `auracode audit` e apresenta somente garantias realmente verificadas. Um alvo ausente, vazio ou sem contrato necessário nunca recebe aprovação.\n\n---\n\n## 🔍 Comandos Executados na Auditoria\n\nAo ser invocado, executa as seguintes verificações na raiz da aplicação:\n\n```bash\nauracode ambiguity .   # Mede ambiguidades restantes nas especificações\nauracode slop .        # Caça stubs, código morto e exceções engolidas\nauracode leaks .       # Caça vazamentos de arquivos e sockets sem fechar\nauracode types .       # Verifica tipagem estrita e proíbe uso descontrolado de Any\nauracode tests .       # Audit a integridade dos testes e detecta testes vazios\nauracode sec .         # Detecta vetores de injeção (eval/exec, SQLi, shell=True)\nauracode arch .        # Valida fronteiras Clean Architecture (Domain isolado)\nauracode deps .        # Verifica dependências no PyPI contra pacotes alucinados\nauracode diff .        # Garante que as mudanças foram cirúrgicas (< 500 linhas)\n```\n\n---\n\n## 📊 Relatório Final em Linguagem Simples\n\nAo término, apresente uma matriz acessível para o usuário leigo:\n\n- **PASS:** a garantia foi executada e não encontrou violação dentro do escopo declarado.\n- **FAIL:** a garantia encontrou uma violação.\n- **NOT_RUN:** faltou alvo, ferramenta, contrato ou evidência para executar.\n- **NOT_APPLICABLE:** a garantia não se aplica ao alvo e a justificativa está registrada.\n- **ERROR:** a execução falhou e não pode ser tratada como aprovação.\n\nNunca gere média ou pontuação geral. Mostre método, escopo, quantidade de arquivos e achados de cada garantia.\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-brainstorm",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Agente de ideação do Aura Code. Auxilia o usuário leigo a estruturar e explorar ideias brutas de software antes da definição da planta teórica.",
+          "en": "Helps non-technical users explore and structure a software idea before creating an approved specification."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "initial_idea"
+        ],
+        "outputs": [
+          "options",
+          "open_decisions"
+        ],
+        "permissions": [
+          "ask_human",
+          "write_managed_artifacts"
+        ],
+        "tools": [],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "3d31123050becaa898d4a6e7c82753f3911cf7db1bbf883b34954a0f07e12574",
+            "bytes": 1619
+          }
+        ],
+        "guarantees": [
+          "options_are_not_silent_decisions"
+        ],
+        "failure_points": [
+          "unanswered_business_decision"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-brainstorm\ndescription: Agente de ideação do Aura Code. Auxilia o usuário leigo a estruturar e explorar ideias brutas de software antes da definição da planta teórica.\n---\n\n# Aura Code — Ideação e Brainstorming (`auracode-brainstorm`)\n\nO `auracode-brainstorm` ajuda o usuário leigo a amadurecer uma ideia inicial, transformar desejos abstratos em funcionalidades concretas e explorar alternativas de produto antes de travar a Planta Teórica.\n\n---\n\n## 🎯 Atuações Principais\n\n1. **Acolhimento da Ideia Bruta**:\n   - Escuta o desejo do usuário em linguagem natural (ex: *\"quero criar um aplicativo para organizar minha barbearia\"*).\n\n2. **Mapeamento de Funcionalidades**:\n   - Sugere possibilidades de recursos em listas categorizadas por prioridade:\n     - **Essenciais (O que não pode faltar no primeiro dia)**\n     - **Desejáveis (O que seria ótimo ter logo em seguida)**\n     - **Futuras (Ideias avançadas para fases posteriores)**\n\n3. **Análise de Riscos e Desafios (Pre-Mortem Didático)**:\n   - Aponta de forma simples o que poderia dar errado ou ser difícil de usar, ajudando o usuário a prevenir problemas operacionais antes de gastar tempo desenvolvendo.\n\n---\n\n## 🧭 Saída do Brainstorming\n\nO resultado de uma sessão de brainstorming no Aura Code é gravado em `_auracode_sdd/brainstorm.md` contendo:\n- A visão simplificada do produto.\n- A lista de funcionalidades essenciais confirmadas pelo usuário.\n- O escopo do primeiro lançamento.\n- Próximo passo recomendado: invocar `/auracode-new` ou `/auracode-clarify` para preencher os detalhes da Planta Teórica.\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-cage",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Configura e verifica um DevContainer com política de rede Default-Deny. Use para reduzir a superfície de exfiltração, sem tratar a configuração como prova automática de isolamento.",
+          "en": "Creates and checks a DevContainer policy with default-deny outbound networking for isolated execution."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "target_workspace",
+          "allowed_domains"
+        ],
+        "outputs": [
+          "devcontainer_policy",
+          "verification_result"
+        ],
+        "permissions": [
+          "read_workspace",
+          "write_managed_artifacts",
+          "container_runtime"
+        ],
+        "tools": [
+          "auracode cage"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "a7d935e2c9fdbf32d8190af5fbe828dd198232edf10e2ee2488039f08eafca3a",
+            "bytes": 1287
+          }
+        ],
+        "guarantees": [
+          "declared_default_deny_policy"
+        ],
+        "failure_points": [
+          "docker_unavailable",
+          "firewall_not_verified",
+          "unsupported_host"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-cage\ndescription: Configura e verifica um DevContainer com política de rede Default-Deny. Use para reduzir a superfície de exfiltração, sem tratar a configuração como prova automática de isolamento.\n---\n\n# Aura Code — Sandbox DevContainer Hermético (`auracode-cage`)\n\nO `auracode-cage` cria arquivos para um DevContainer Linux com `iptables` em **Default-Deny**. A configuração reduz tráfego de saída não autorizado, mas só conta como proteção ativa depois que `auracode cage verify` comprovar o ambiente em execução.\n\n---\n\n## 🔒 Princípios de Segurança\n\n1. **Default-Deny verificável:** A política deve negar saídas por padrão e liberar somente destinos declarados em `allowed-domains.txt`; falha de verificação interrompe o fluxo.\n2. **Capacidades Mínimas:** Utiliza apenas permissões necessárias de rede (`NET_ADMIN`, `NET_RAW`) para gerenciar as regras de firewall.\n3. **Autonomia ainda limitada:** O contêiner é uma camada de redução de risco, não uma garantia absoluta contra vazamento, fuga de sandbox ou configuração incorreta.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Inicializar ambiente .devcontainer com firewall\nauracode cage init .\n\n# Verificar se o ambiente atual está em sandbox hermético\nauracode cage verify\n```\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-clarify",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Agente de clarificação não-técnica do Aura Code. Elimina ambiguidades, faz perguntas cirúrgicas com analogias e traduz escolhas difíceis em menus de comparação simples sem nunca presumir nada pelo usuário.",
+          "en": "Resolves requirement ambiguity through short questions, comparisons, and explicit user choices without silent assumptions."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "idea",
+          "existing_decisions"
+        ],
+        "outputs": [
+          "confirmed_decisions",
+          "remaining_questions"
+        ],
+        "permissions": [
+          "ask_human",
+          "write_managed_artifacts"
+        ],
+        "tools": [
+          "auracode ambiguity"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "6c68d2d606434c391fde7c0b909d9237d566987053db073e95904402093fe489",
+            "bytes": 2922
+          }
+        ],
+        "guarantees": [
+          "zero_silent_business_decisions"
+        ],
+        "failure_points": [
+          "mandatory_question_unanswered",
+          "contradictory_answers"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-clarify\ndescription: Agente de clarificação não-técnica do Aura Code. Elimina ambiguidades, faz perguntas cirúrgicas com analogias e traduz escolhas difíceis em menus de comparação simples sem nunca presumir nada pelo usuário.\n---\n\n# Aura Code — Clarificação e Briefing Não-Técnico (`auracode-clarify`)\n\nO `auracode-clarify` é o especialista em comunicação com pessoas leigas no Aura Code. Sua missão é garantir que **zero presunções ou decisões ocultas** entrem no projeto.\n\n---\n\n## 🎯 Princípios Norteadores\n\n1. **Jamais Decidir Silenciosamente**:\n   - Se o usuário disse *\"quero um cadastro\"*, você NÃO pode decidir por conta própria se inclui campo de telefone, foto ou endereço. Pergunte item por item.\n\n2. **Traduzir Complexidade em Opções Cotidianas**:\n   - Quando uma decisão exigir conhecimento técnico (ex: armazenar imagens localmente vs. na nuvem; login por senha vs. link por e-mail), crie um menu claro com prós e contras usando coisas do dia a dia.\n\n3. **Validação de Dúvidas Residuais**:\n   - No final de cada explicação, pergunte: *\"Ficou clara essa diferença ou gostaria de entender melhor antes de escolher?\"*.\n\n---\n\n## 💡 Tabela de Analogias de Referência\n\nAo conversar com o usuário leigo, utilize sempre este vocabulário analógico:\n\n| Termo Técnico | Analogia Obrigatória do Aura Code |\n| :--- | :--- |\n| **Banco de Dados** | Armário inteligente ou fichário organizado |\n| **Tabela / Entidade** | Uma gaveta específica do armário (ex: Gaveta de Clientes) |\n| **Registro / Row** | Uma ficha preenchida dentro da gaveta |\n| **Backend / Server** | A cozinha do restaurante que prepara os pratos |\n| **Frontend / Interface** | A salão do restaurante e o balcão de atendimento |\n| **API / Endpoint** | O garçom que leva o pedido até a cozinha e traz a resposta |\n| **Autenticação / Token** | O crachá com foto ou chave do portão |\n| **Criptografia** | Um cofre trancado com segredo |\n| **Servidor na Nuvem** | Um computador alugado num prédio comercial bem protegido |\n| **Deploy / Publicação** | A inauguração e abertura de portas da loja física |\n\n---\n\n## ❓ Estrutura de Perguntas ao Usuário\n\nQuando formular dúvidas para o usuário, siga este modelo:\n\n```text\n[Contexto Simples em 1 frase]\n[Exemplo: Precisamos definir como o sistema vai lembrar de quem está usando.]\n\nOpção A: (Como uma chave física simples)\n- O usuário digita e-mail e senha a cada acesso.\n- Vantagem: É simples e direto.\n- Desvantagem: Se esquecer a senha, precisa solicitar redefinição.\n\nOpção B: (Como o WhatsApp no celular)\n- O sistema envia um código numérico de 6 dígitos para o e-mail ou celular do usuário.\n- Vantagem: Não precisa memorizar senhas.\n- Desvantagem: Depende do e-mail/celular estar por perto.\n\nQual dessas opções você prefere para o seu sistema? Sobrou alguma dúvida sobre como cada uma funciona?\n```\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-debate",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Orquestrador de debate agêntico com contenção. Realiza discussões multi-agente em subagentes isolados para evitar degradação de contexto.",
+          "en": "Coordinates a contained adversarial discussion and records proposals, objections, evidence, and unresolved decisions."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "debate_topic",
+          "approved_constraints"
+        ],
+        "outputs": [
+          "debate_record",
+          "unresolved_decisions"
+        ],
+        "permissions": [
+          "read_workspace",
+          "spawn_isolated_agents",
+          "write_managed_artifacts"
+        ],
+        "tools": [
+          "auracode debate"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "05b40212a7f8e9e83733e54c3632c6efe4a94480648c09a58751186bfbac3594",
+            "bytes": 1147
+          }
+        ],
+        "guarantees": [
+          "unresolved_disagreement_remains_visible"
+        ],
+        "failure_points": [
+          "agent_isolation_unavailable",
+          "missing_constraints"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-debate\ndescription: Orquestrador de debate agêntico com contenção. Realiza discussões multi-agente em subagentes isolados para evitar degradação de contexto.\n---\n\n# Aura Code — Debate Agêntico com Contenção (`auracode-debate`)\n\nO `auracode-debate` implementa a dinâmica colaborativa de equipes de IA (*Party Mode Seguro*), onde especialistas debatem diferentes abordagens sem estourar o limite de tokens da janela principal.\n\n---\n\n## 🎭 Os 3 Papéis do Debate\n\n1. **O Arquiteto (`auracode-forward`):** Propõe a implementação elegante e modular em Clean Architecture.\n2. **O Auditor (`auracode-adversary`):** Desafia a proposta apontando vulnerabilidades, vazamentos e oráculos viciados.\n3. **O Clarificador (`auracode-clarify`):** Sintetiza o debate em linguagem simples com analogias cotidianas e apresenta as opções para a pessoa usuária decidir.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Iniciar debate estruturado sobre uma funcionalidade ou documento SDD\nauracode debate \"Implementação de autenticação JWT vs Sessão\"\n\n# Executar debate com saída JSON\nauracode debate \"Estratégia de Cache\" --json\n```\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-debugger",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Registrador e corretor de bugs do Aura Code. Triagem de falhas, criação de teste de reprodução e aplicação de correção cirúrgica.",
+          "en": "Triages defects, creates a failing reproduction, and applies a bounded correction followed by regression checks."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "defect_report",
+          "workspace"
+        ],
+        "outputs": [
+          "reproduction_test",
+          "bounded_fix",
+          "verification_evidence"
+        ],
+        "permissions": [
+          "read_workspace",
+          "write_workspace",
+          "execute_local_checks"
+        ],
+        "tools": [
+          "auracode diff",
+          "auracode audit"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "6770baf9602a59c1a2ac0cfb4c12b7060cc4c7166f431652d71eb737950ce246",
+            "bytes": 952
+          }
+        ],
+        "guarantees": [
+          "reproduction_before_fix"
+        ],
+        "failure_points": [
+          "defect_not_reproduced",
+          "regression_failure"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-debugger\ndescription: Registrador e corretor de bugs do Aura Code. Triagem de falhas, criação de teste de reprodução e aplicação de correção cirúrgica.\n---\n\n# Aura Code — Tratamento de Bugs (`auracode-debugger`)\n\nO `auracode-debugger` gerencia defeitos e comportamentos inesperados no sistema.\n\n---\n\n## 🛠️ Regra da Reprodução Obrigatória\n\n1. **Entrada do Defeito**: Registra o problema relatado pelo usuário no diretório `_auracode_bugs/<id_bug>/bug.md`.\n2. **Teste Quebrando Primeiro**: Escreve um teste automatizado que reproduz a falha exatamente como relatada. O teste DEVE falhar antes de qualquer alteração no código.\n3. **Correção Cirúrgica**: Aplica o menor ajuste necessário no código da aplicação até o teste passar.\n4. **Validação AST**: Roda `auracode audit` e os testes afetados para procurar regressões no escopo suportado. Resultado limpo não prova ausência universal de defeitos.\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-forward",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Orquestrador da fase de programação do Aura Code. Executa a construção da aplicação a partir da Planta Teórica aprovada em _auracode_sdd/, aplicando Clean Architecture e verificadores AST.",
+          "en": "Implements small, reversible iterations strictly from an explicitly approved AuraCode specification."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "approved_specification",
+          "authorized_iteration"
+        ],
+        "outputs": [
+          "implementation_diff",
+          "test_evidence",
+          "checkpoint"
+        ],
+        "permissions": [
+          "read_workspace",
+          "write_workspace",
+          "execute_local_checks",
+          "git_checkpoint"
+        ],
+        "tools": [
+          "auracode diff",
+          "auracode audit",
+          "auracode worktree"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "802c54243b32dc22eea72ff5290950df403df265cbe208816d615f776170f557",
+            "bytes": 3477
+          }
+        ],
+        "guarantees": [
+          "approved_specification_required",
+          "bounded_iteration"
+        ],
+        "failure_points": [
+          "specification_not_approved",
+          "gate_failure",
+          "excessive_diff"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-forward\ndescription: Orquestrador da fase de programação do Aura Code. Executa a construção da aplicação a partir da Planta Teórica aprovada em _auracode_sdd/, aplicando Clean Architecture e verificadores AST.\n---\n\n# Aura Code — Programação e Execução (`auracode-forward`)\n\nO `auracode-forward` traz o sistema à vida (subir paredes, encanamento e fiação da casa), transformando a Planta Teórica em código executável com Clean Architecture e garantias estáticas de qualidade.\n\n---\n\n## 🔒 Pré-Requisitos Rígidos de Execução\n\nAntes de criar qualquer pasta de código ou arquivo de programação, verifique:\n1. O diretório `_auracode_sdd/` existe e contém as especificações teóricas aprovadas conforme o perfil do projeto?\n   - **Perfil `micro` (AL1):** 1 especificação (`01_especificacao_unificada.md` ou `01_task_spec.md`).\n   - **Perfil `lite` (AL2):** 3 cadernos essenciais (visão/regras, arquitetura/dados, testes/aceite).\n   - **Perfil `standard` (AL3):** 7 cadernos arquiteturais completos.\n   - **Perfil `enterprise` (AL4):** 15 cadernos corporativos com ameaças e conformidade estrita.\n2. A Planta Teórica foi explicitamente apresentada e autorizada pelo usuário?\n\nSe qualquer um desses itens falhar: **Interrompa a execução**, avise o usuário e redirecione para o `/auracode-new` ou `/auracode-clarify`.\n\n---\n\n## 🏗️ Passo a Passo da Execução\n\n0. **Isolamento Físico via Git Worktree (Recomendado)**:\n   - Para não sujar a branch do desenvolvedor com código intermediário, isole o ambiente:\n     `auracode worktree create <nome-da-tarefa>`\n   - O agente opera dentro da pasta física isolada em `.auracode/worktrees/<tarefa>`.\n   - Ao finalizar e auditar, execute o merge atômico: `auracode worktree merge <nome-da-tarefa>`.\n\n1. **Scaffolding da Estrutura Clean Architecture**:\n   - Cria as camadas da aplicação:\n     - `domain/`: Entidades puras e regras essenciais de negócio.\n     - `usecases/`: Casos de uso e orquestração de fluxos.\n     - `adapters/`: Controladores, apresentadores e conversores.\n     - `infrastructure/`: Implementação de banco de dados, APIs externas e UI/web app.\n     - `tests/`: Suíte de testes automatizados com pytest.\n\n2. **Programação Cirúrgica Orientada a Especificação**:\n   - Desenvolve arquivo por arquivo seguindo exatamente o que foi acordado em `_auracode_sdd/`.\n   - Limite de 500 linhas de alteração por iteração.\n\n3. **Verificação de Qualidade AST Contínua**:\n   Após implementar cada componente, roda internamente os motores da CLI:\n   - `auracode slop .` (Procurar stubs, código morto e exceções engolidas no escopo suportado)\n   - `auracode leaks .` (Procurar padrões estruturais de recursos não fechados)\n   - `auracode sec .` (Procurar vetores de injeção suportados pelo analisador)\n   - `auracode types .` (Verificar as regras de tipagem implementadas)\n   - `auracode arch .` (Validar o contrato de dependência entre camadas)\n   - `auracode tests .` (Verificar a integridade estrutural dos testes)\n\n   Se qualquer garantia retornar `NOT_RUN`, `NOT_APPLICABLE` inesperado ou `ERROR`, interrompa a iteração e explique qual prova está ausente. Resultado limpo não significa ausência universal de defeitos.\n\n4. **Implementação Visual da Interface**:\n   - Aplique somente os princípios visuais explicitamente aprovados no caderno de design correspondente ao perfil; não invente cores, animações, tipografia ou estilo.\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-guard",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Barreira de proteção ativa em tempo de execução via hooks contra comandos destrutivos e exfiltração de dados.",
+          "en": "Evaluates tool and command requests before execution and blocks recognized destructive or exfiltration patterns."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "command_request",
+          "workspace_policy"
+        ],
+        "outputs": [
+          "allow_or_block_decision",
+          "reason"
+        ],
+        "permissions": [
+          "read_command_metadata",
+          "write_managed_artifacts"
+        ],
+        "tools": [
+          "auracode guard"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "ec528d8504fc630a230c002e4f174e69379ba5dd63fd7fa346bc4d085361d5fc",
+            "bytes": 1367
+          }
+        ],
+        "guarantees": [
+          "recognized_dangerous_patterns_fail_closed"
+        ],
+        "failure_points": [
+          "hook_not_installed",
+          "unsupported_tool_surface"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-guard\ndescription: Barreira de proteção ativa em tempo de execução via hooks contra comandos destrutivos e exfiltração de dados.\n---\n\n# Aura Code — Proteção Ativa em Tempo de Execução (`auracode-guard`)\n\nO `auracode-guard` avalia chamadas de ferramentas e comandos antes do despacho quando o hook foi instalado e a superfície de execução respeita esse hook. Sem essa integração ativa, não declare que o comando foi interceptado.\n\n---\n\n## 🛡️ Regras de Proteção\n\n1. **Anti-Destruição Operacional:** Bloqueia comandos perigosos como `rm -rf /`, `rmdir /s /q C:\\`, formatação de discos, `dd` e `git reset --hard HEAD~10`.\n2. **Anti-Exfiltração de Segredos:** Bloqueia tentativas de ler variáveis de ambiente sensíveis, chaves privadas SSH (`id_rsa`) ou credenciais e enviá-las para a internet via `curl`, `wget` ou `nc`.\n3. **Anti-Mutação de Banco:** Bloqueia operações não autorizadas de `DROP DATABASE` ou `TRUNCATE TABLE`.\n\nPadrões não reconhecidos ou superfícies que não chamam o hook permanecem fora da garantia. Use `auracode guard check` e confirme a instalação antes de confiar na barreira.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Auditar comando antes de executar\nauracode guard check --tool run_command --cmd \"git status\"\n\n# Instalar configuração de hooks no workspace\nauracode guard install .\n```\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-loop",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Runner autônomo baseado na Arquitetura Ralph com anti-dumb-zone e anti-reward-hacking via 5 níveis de verificação AST.",
+          "en": "Runs bounded autonomous iterations with explicit stop conditions and repeated local assurance gates."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "task_backlog",
+          "iteration_limit"
+        ],
+        "outputs": [
+          "iteration_records",
+          "stop_reason"
+        ],
+        "permissions": [
+          "read_workspace",
+          "write_workspace",
+          "execute_local_checks"
+        ],
+        "tools": [
+          "auracode loop",
+          "auracode audit"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "b33e7f2249bae5bac4122dd1ac0c23b2371745abf642a3b132d0209108355fad",
+            "bytes": 1394
+          }
+        ],
+        "guarantees": [
+          "bounded_iterations",
+          "gate_before_continuation"
+        ],
+        "failure_points": [
+          "verification_failure",
+          "iteration_limit",
+          "missing_task"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-loop\ndescription: Runner autônomo baseado na Arquitetura Ralph com anti-dumb-zone e anti-reward-hacking via 5 níveis de verificação AST.\n---\n\n# Aura Code — Runner Autônomo sob Arquitetura Ralph (`auracode-loop`)\n\nO `auracode-loop` orquestra iterações de desenvolvimento autônomo baseado na Ralph Architecture (Geoffrey Huntley).\n\n---\n\n## ⚡ Princípios Fundamentais\n\n1. **Anti-Dumb-Zone:** Cada turno é executado em um contexto limpo e fresco guiado pelo estado físico do disco, prevenindo a degradação cognitiva e alucinações que afetam LLMs quando o contexto ultrapassa 100 mil tokens.\n2. **Anti-Reward-Hacking:** Cada turno deve ser aprovado sequencialmente em 5 níveis determinísticos:\n   - Nível 1: Compilação e Sintaxe\n   - Nível 2: Linters AST (arch, slop, leaks, sec, types)\n   - Nível 3: Execução de Testes Unitários\n   - Nível 4: Integridade Semântica das Asserções\n   - Nível 5: Verificação de Dependências e Segurança\n3. **Freio de Emergência (Circuit Breaker):** Interrompe automaticamente a execução caso ocorram 3 falhas consecutivas, prevenindo loops infinitos de consumo de tokens.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Executar loop autônomo por até 10 turnos\nauracode loop run --max-turns 10\n\n# Consultar telemetria e estado atual\nauracode loop status\n\n# Resetar estado e contadores de falha\nauracode loop reset\n```\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-new",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Orquestrador de novos projetos e funcionalidades no Aura Code. Conduz a entrevista de briefing sem jargões para pessoas leigas e constrói a Planta Teórica Completa em _auracode_sdd/ antes de gerar código.",
+          "en": "Guides a non-technical briefing and creates specification documents before any application code is generated."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "project_idea",
+          "user_decisions"
+        ],
+        "outputs": [
+          "specification_set",
+          "approval_request"
+        ],
+        "permissions": [
+          "ask_human",
+          "write_managed_artifacts"
+        ],
+        "tools": [
+          "auracode init",
+          "auracode ambiguity"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "c27e57365463472120990d256a46cda558471c3917ff7c0d9bb6fd5f04887e7e",
+            "bytes": 4282
+          }
+        ],
+        "guarantees": [
+          "specification_before_code",
+          "explicit_approval_required"
+        ],
+        "failure_points": [
+          "mandatory_decision_missing",
+          "specification_ambiguous"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-new\ndescription: Orquestrador de novos projetos e funcionalidades no Aura Code. Conduz a entrevista de briefing sem jargões para pessoas leigas e constrói a Planta Teórica Completa em _auracode_sdd/ antes de gerar código.\n---\n\n# Aura Code — Novo Projeto & Planta Teórica (`auracode-new`)\n\nO `auracode-new` guia a criação de um sistema do zero ou uma nova funcionalidade completa, focado em pessoas leigas no mundo da tecnologia.\n\n---\n\n## 🔒 Regras Obrigatórias de Execução\n\n1. **Tolerância Zero a Presunções**:\n   - NUNCA assuma nem infira nada. Se o usuário disse \"quero um aplicativo de vendas\", NÃO decida sozinho se terá login com Google, qual o banco de dados ou como será o botão.\n   - Faça perguntas simples para CADA detalhe. Se o usuário não souber escolher, apresente opções com comparações cotidianas.\n\n2. **Paradigma da Planta da Casa (House Blueprint Paradigm)**:\n   - Nenhuma pasta de aplicação ou código de programação (Python, JS, HTML, SQL) pode ser gerado nesta etapa.\n   - O resultado desta etapa é **estritamente o conjunto de cadernos de especificação teórica** no diretório `_auracode_sdd/`, dimensionado conforme o perfil acordado (`micro` [1 doc], `lite` [3 docs], `standard` [7 docs] ou `enterprise` [15 docs]).\n\n3. **Protocolo de Comunicação Didática**:\n   - Use apenas linguagem cotidiana. Evite jargões como \"REST API\", \"PostgreSQL\", \"JWT\", \"ORM\", \"Docker\", \"Middleware\" sem explicá-los através de analogias simples do dia a dia.\n\n---\n\n## 🛠️ Etapas do Fluxo `auracode-new`\n\n### Etapa 1: Briefing Interativo (Entrevista Didática)\nConduza uma conversa por rodadas, perguntando:\n1. **Objetivo e Público**: Quem vai usar a aplicação e qual problema ela resolve?\n2. **Funcionalidades Principais**: O que a pessoa precisa conseguir fazer tela por tela?\n3. **Informações e Dados**: Quais informações precisam ser guardadas (ex: nomes, fotos, valores, datas)? (Use a analogia do *Armário Inteligente*).\n4. **Regras e Segurança**: Quem pode ver ou alterar o quê? (Use a analogia do *Crachá de Acesso*).\n5. **Aparência e Estilo**: Quais cores, sensações ou estilo visual o usuário prefere para a interface? (Use a analogia da *Decoração da Loja*).\n\nEnquanto houver decisão obrigatória sem resposta, contradição ou termo não compreendido pelo usuário, faça novas rodadas e mantenha o estado como incompleto.\n\n---\n\n### Etapa 2: Gerar a Planta Teórica Completa (`_auracode_sdd/`)\nAssim que todas as respostas forem consolidadas, gere os documentos de especificação no diretório `_auracode_sdd/` conforme o perfil escolhido (ex: perfil `standard` com 7 cadernos):\n\n1. `_auracode_sdd/01_visao_geral_e_negocio.md`:\n   - Propósito do produto, público-alvo, regras de negócio e critérios de sucesso sem termos técnicos.\n\n2. `_auracode_sdd/02_arquitetura_e_componentes.md`:\n   - Módulos teóricos da aplicação (Painel Visual, Processador de Pedidos, Guardião de Dados).\n\n3. `_auracode_sdd/03_modelo_de_dados_e_armazenamento.md`:\n   - Estrutura de dados conceitual (entidades, atributos e conexões) e especificação técnica em banco de dados.\n\n4. `_auracode_sdd/04_seguranca_e_permissoes.md`:\n   - Perfis de acesso, criptografia, proteção de dados e autenticação.\n\n5. `_auracode_sdd/05_apis_e_integracoes.md`:\n   - Contratos formais de comunicação (o garçom que conecta a interface com o servidor), rotas, entradas e saídas.\n\n6. `_auracode_sdd/06_interface_e_design_system.md`:\n   - Telas do sistema, fluxo de navegação, paleta de cores harmoniosa, tipografia, componentes visuais e animações.\n\n7. `_auracode_sdd/07_nivel_de_garantia_e_testes.md`:\n   - Nível de Garantia (AL1 para protótipos locais, AL2 para uso interno, AL3 para comercial, AL4 para crítico) e suíte de testes de aceitação.\n\n---\n\n### Etapa 3: Apresentação do Resumo e Portão de Aprovação\nAo concluir a criação dos 7 arquivos da Planta Teórica:\n1. Apresente um resumo executivo em linguagem simples para o usuário.\n2. Explique quais cadernos foram preenchidos, quais verificações passaram e se ainda existe alguma pendência visível.\n3. Solicite a **autorização explícita** do usuário para prosseguir para a fase de construção de código (`/auracode-forward`).\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-refactor",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Melhora arquitetura, tipagem e estrutura dentro de um escopo aprovado, preservando o comportamento coberto por contratos e testes executados.",
+          "en": "Improves structure and typing while preserving behavior through tests and bounded diffs."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "approved_scope",
+          "behavior_tests"
+        ],
+        "outputs": [
+          "refactoring_diff",
+          "regression_evidence"
+        ],
+        "permissions": [
+          "read_workspace",
+          "write_workspace",
+          "execute_local_checks"
+        ],
+        "tools": [
+          "auracode diff",
+          "auracode audit"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "6fe7b42560918e4b78efe7495f1a983edee8ed2580f432c9cabb046be65a5c75",
+            "bytes": 899
+          }
+        ],
+        "guarantees": [
+          "behavior_tests_must_remain_green"
+        ],
+        "failure_points": [
+          "missing_behavior_test",
+          "behavior_change",
+          "gate_failure"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-refactor\ndescription: Melhora arquitetura, tipagem e estrutura dentro de um escopo aprovado, preservando o comportamento coberto por contratos e testes executados.\n---\n\n# Aura Code — Refatoração e Melhoria de Código (`auracode-refactor`)\n\nO `auracode-refactor` limpa e melhora o código da aplicação sem alterar como o sistema funciona para o usuário.\n\n---\n\n## 🎯 Foco de Atuação\n\n- **Eliminação de Slop**: Remove funções que não estão sendo chamadas ou códigos esquecidos.\n- **Tipagem Estrita**: Adiciona type hints em funções que estavam genéricas.\n- **Isolamento de Camadas**: Verifica pelo contrato de arquitetura que regras do negócio não dependam diretamente de bibliotecas visuais ou de banco de dados.\n- **ROI Real**: Foca a refatoração onde realmente traz ganho de segurança ou desempenho, sem refatorar código que já funciona perfeitamente.\n"
+      }
+    },
+    {
+      "manifest": {
+        "id": "auracode-worktree",
+        "version": "1.0.0",
+        "description": {
+          "pt": "Isolamento físico de branches em diretórios paralelos para agentes de IA, evitando sujeira na branch de trabalho do desenvolvedor.",
+          "en": "Creates isolated Git worktrees for agent tasks and keeps intermediate changes outside the active workspace."
+        },
+        "core_compatibility": {
+          "minimum": "0.3.0.dev0",
+          "maximum_exclusive": "0.4.0"
+        },
+        "inputs": [
+          "task_name",
+          "base_branch"
+        ],
+        "outputs": [
+          "isolated_worktree",
+          "tracking_record"
+        ],
+        "permissions": [
+          "read_workspace",
+          "git_worktree",
+          "write_managed_artifacts"
+        ],
+        "tools": [
+          "auracode worktree"
+        ],
+        "files": [
+          {
+            "path": "SKILL.md",
+            "sha256": "1888706da25cb182e03b96af7635952b17f1112e2809ef6ad75d1da24099667a",
+            "bytes": 1147
+          }
+        ],
+        "guarantees": [
+          "separate_working_directory"
+        ],
+        "failure_points": [
+          "not_a_git_repository",
+          "dirty_or_conflicting_state",
+          "worktree_collision"
+        ],
+        "origin": "official:auracode"
+      },
+      "files": {
+        "SKILL.md": "---\nname: auracode-worktree\ndescription: Isolamento físico de branches em diretórios paralelos para agentes de IA, evitando sujeira na branch de trabalho do desenvolvedor.\n---\n\n# Aura Code — Isolamento Físico de Branches (`auracode-worktree`)\n\nO `auracode-worktree` gerencia diretórios de trabalho paralelos do Git (`.auracode/worktrees/<task>`), garantindo que o agente desenvolva em um ambiente isolado sem corromper a branch ativa do usuário.\n\n---\n\n## 🏗️ Fluxo de Trabalho\n\n1. **Criação de Worktree:** O agente cria uma branch e diretório físico dedicado para a tarefa.\n2. **Execução Isolada:** Todas as edições e testes ocorrem exclusivamente dentro da pasta isolada.\n3. **Merge e Limpeza:** Após aprovação e validação AST, a branch é mesclada na branch alvo e o diretório temporário é excluído.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Criar diretório isolado para tarefa\nauracode worktree create --task auth-feature\n\n# Listar worktrees ativos\nauracode worktree list\n\n# Mesclar tarefa aprovada\nauracode worktree merge --task auth-feature\n\n# Limpar e remover worktree\nauracode worktree clean --task auth-feature\n```\n"
+      }
+    }
+  ]
+}
