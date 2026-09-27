@@ -668,12 +668,12 @@
       "bytes": 24680
     },
     "tools/audit.py": {
-      "sha256": "7bb8ebe32b1cb3065ef7824933d54c00a899ec011a75873f9e7778a2c9bfa928",
-      "bytes": 14407
+      "sha256": "89b3c8096708b137757e569dcae86d0e8c72c6d4369410c474e887063b5629bd",
+      "bytes": 14586
     },
     "tools/check_architecture.py": {
-      "sha256": "ebee2b0f0f4aaed6b782b208e25a361eb00a5d383c9fbb9fe46662ddc34dda3c",
-      "bytes": 18166
+      "sha256": "eaf0ea6e9a402bb48da532a96abd8686427ca9695651ca7edc1502fe31cd1164",
+      "bytes": 18537
     },
     "tools/check_injection_vectors.py": {
       "sha256": "b5e11d960308f55d1e89ba2fe0732632b1a21f577ec9372cbeba0a7223782e2f",
@@ -748,8 +748,8 @@
       "bytes": 12794
     },
     "tools/verify_dependencies.py": {
-      "sha256": "5d81257876171f0dadd778f86faeee464d5b6e4e2e408384a4b839ee12ed9de3",
-      "bytes": 15904
+      "sha256": "03a7caaf0c0257094bce3f9e19c99849eedba44af0b37a6e32f5a3d454d49318",
+      "bytes": 15898
     },
     "tools/wizard.py": {
       "sha256": "c030d33741ea4cf18bf412392257b25d56b86edaaf21dada6534310009d61db6",

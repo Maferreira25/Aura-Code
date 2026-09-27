@@ -109,6 +109,10 @@ def check_pattern_escapes(root_dir: Path, pattern: str) -> bool:
 
 def find_files_for_layer(root_dir: Path, pattern: str) -> List[Path]:
     """Find files matching glob/pattern relative to root_dir."""
+    ignored_parts = {
+        ".git", "node_modules", "dist", "build", "vendor",
+        "__pycache__", "venv", ".venv", ".agents", ".auracode", "site-packages", ".pytest_cache"
+    }
     files = []
     if "/" not in pattern and "\\" not in pattern:
         matched = list(root_dir.glob(pattern))
@@ -121,12 +125,15 @@ def find_files_for_layer(root_dir: Path, pattern: str) -> List[Path]:
                 files.append(p)
             elif p.is_dir():
                 files.extend([f for f in p.rglob("*.py") if f.is_file()])
-    # Ensure every discovered file is strictly inside root_dir
+    # Ensure every discovered file is strictly inside root_dir and not in ignored directories
     safe_files = []
     for f in sorted(list(set(files))):
         try:
-            if f.resolve().is_relative_to(root_dir):
-                safe_files.append(f)
+            resolved = f.resolve()
+            if resolved.is_relative_to(root_dir):
+                rel = resolved.relative_to(root_dir)
+                if not any(p in ignored_parts for p in rel.parts):
+                    safe_files.append(f)
         except ValueError:
             continue
     return safe_files

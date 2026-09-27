@@ -405,7 +405,7 @@ def main() -> None:
             badge = f"[{f['status']}]"
             print(f"{badge:24} {f['package']}: {f['message']}")
             for note in f.get("risk_notes", []):
-                print(f"   └── WARNING: {note}")
+                print(f"   |-- WARNING: {note}")
 
         if result.get("success"):
             print("\nSUPPLY CHAIN DEPENDENCIES VERIFIED")

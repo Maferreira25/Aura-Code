@@ -110,6 +110,7 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
     c_candidates = [
         contracts_path if contracts_path else None,
         workspace_dir / ".auracode" / "contracts.json",
+        workspace_dir / ".reversa" / "contracts.json",
         workspace_dir / "contracts.json",
         workspace_dir / "architecture.json",
     ]
@@ -126,6 +127,8 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
 
     # 7. Requirements Ambiguity
     sdd_dir = workspace_dir / "_auracode_sdd"
+    if not sdd_dir.is_dir() and (workspace_dir / "_reversa_sdd").is_dir():
+        sdd_dir = workspace_dir / "_reversa_sdd"
     ambiguity_result: Optional[Dict[str, Any]] = None
     if sdd_dir.is_dir():
         ambiguity_result = check_requirements_ambiguity.analyze_workspace(str(sdd_dir))
