@@ -11,10 +11,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.validate_framework import (
-    MANIFEST_EXCLUDE_DIRS,
-    MANIFEST_EXCLUDE_EXTS,
-    MANIFEST_EXCLUDE_FILES,
-    MANIFEST_EXCLUDE_ROOT_FILES,
+    load_gitignore_patterns,
+    is_ignored_by_framework,
     load_normalized_bytes,
 )
 from tools.version import FRAMEWORK_VERSION
@@ -27,24 +25,16 @@ def compute_file_metrics(filepath: Path) -> tuple[str, int]:
 
 def generate_manifest(root_dir: Path = ROOT) -> dict:
     files_map = {}
+    gitignore_patterns = load_gitignore_patterns(root_dir)
     all_files = sorted(list(root_dir.rglob("*")))
 
     for f in all_files:
         if not f.is_file():
             continue
         rel = f.relative_to(root_dir)
+        if is_ignored_by_framework(rel, gitignore_patterns):
+            continue
         rel_str = str(rel).replace("\\", "/")
-
-        # Check directory exclusions
-        parts = rel.parts
-        if any(part in MANIFEST_EXCLUDE_DIRS or part.startswith("_auracode_") or part.startswith("_reversa_") for part in parts):
-            continue
-        if parts and parts[0] in {".agents", ".reversa"}:
-            continue
-
-        # Check extension and filename exclusions
-        if f.suffix.lower() in MANIFEST_EXCLUDE_EXTS or f.name in MANIFEST_EXCLUDE_FILES or rel_str in MANIFEST_EXCLUDE_ROOT_FILES:
-            continue
 
         sha, size = compute_file_metrics(f)
         files_map[rel_str] = {

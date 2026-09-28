@@ -44,5 +44,15 @@ class FrameworkTests(unittest.TestCase):
         self.assertTrue(result["success"], result["errors"])
         self.assertEqual(len(result["errors"]), 0)
 
+    def test_no_gitignored_files_in_manifest(self):
+        from tools.validate_framework import load_gitignore_patterns, is_ignored_by_framework
+        manifest = json.loads((ROOT / "MANIFEST.json").read_text(encoding="utf-8"))
+        gitignore_patterns = load_gitignore_patterns(ROOT)
+        violations = []
+        for rel_path in manifest.get("files", {}):
+            if is_ignored_by_framework(Path(rel_path), gitignore_patterns):
+                violations.append(rel_path)
+        self.assertEqual(violations, [], f"Gitignored or excluded files present in MANIFEST.json: {violations}")
+
 if __name__=="__main__":
     unittest.main()

@@ -860,8 +860,8 @@
       "bytes": 1692
     },
     "tests/test_framework.py": {
-      "sha256": "0f82a2d72b0321079ea9b26e0174088d647c4a3c344faf3ca09838ab1487b159",
-      "bytes": 1892
+      "sha256": "98638992d175998f46c7cf6428517077d67676fa8817292baea8b9367acd98af",
+      "bytes": 2490
     },
     "tests/test_generated_artifact.py": {
       "sha256": "89f993c4efba5f8d04b564d1fe3e11221eba65f03b575216450e5ea75e77805a",
@@ -980,28 +980,28 @@
       "bytes": 24736
     },
     "tools/audit.py": {
-      "sha256": "2fbc2804776cad8ff0c6123542042a361222c0336b4ef4c556231fe0c46c5e13",
-      "bytes": 16803
+      "sha256": "285ae31547504b4a0309d032563da3d395dc2a4ac1401d68b170f279f2270132",
+      "bytes": 16822
     },
     "tools/check_architecture.py": {
       "sha256": "eaf0ea6e9a402bb48da532a96abd8686427ca9695651ca7edc1502fe31cd1164",
       "bytes": 18537
     },
     "tools/check_injection_vectors.py": {
-      "sha256": "7e97c8a72b0200950ef6d8f8c02aca78441a1a0472927a0ca600c63b543470d7",
-      "bytes": 5818
+      "sha256": "c5c3ec3ca2cba050673622fde6c8bf081876214d22bb0cdec21d6a2927438036",
+      "bytes": 5837
     },
     "tools/check_requirements_ambiguity.py": {
       "sha256": "06a9d244e9e10d167d0ea7e9b5c2111b0dde9a132c9fdb6481e11536688bf25c",
       "bytes": 4681
     },
     "tools/check_resource_leaks.py": {
-      "sha256": "e090b226969566cd550d561f714cb82ba2fc0b3ccce4d0363749364ee89cf37c",
-      "bytes": 4587
+      "sha256": "d03e51626127a4d9536cbffdeb040db562b9b2381939cb8ead3ddf5faa21f04b",
+      "bytes": 4606
     },
     "tools/check_slop_code.py": {
-      "sha256": "4f52d673eefcfb1b8209d0de147a6256efd91fa6e3702d397edee0c350987d35",
-      "bytes": 4741
+      "sha256": "9fd4350485825317c9527243b1c9ccee8230315633479f1ad3fddb4d1da73dd6",
+      "bytes": 4768
     },
     "tools/check_strict_types.py": {
       "sha256": "6b85da3ba18ece09b2766212c579cd3fbfa583c2e0daca9c68b2fdd9aeee4457",
@@ -1072,12 +1072,12 @@
       "bytes": 4882
     },
     "tools/update_manifest.py": {
-      "sha256": "95d614ff0599d70fb0c6e338ee0eac62500ee3e8c5d8af743f75f3b16aa0f8d3",
-      "bytes": 2053
+      "sha256": "d3315813f798cc0f5bd592717d24af4054266d1bcf3a91f9e4643eea666a0bde",
+      "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "df7277ed06546f81fdfb84a20052cce14db0042343aa4354fc8f8465ab0e3026",
-      "bytes": 12899
+      "sha256": "a8491986786cf413e1da5ea1cedbcfec99d989f2f28c99b12ff75c1984edc4be",
+      "bytes": 14638
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",

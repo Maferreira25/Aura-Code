@@ -112,7 +112,7 @@ def discover_source_files(workspace_dir: Path, include_benchmarks: bool = False)
     workspace_dir = workspace_dir.resolve()
     ignored_parts = {
         ".git", "node_modules", "dist", "build", "vendor", "out",
-        "__pycache__", "venv", ".venv", ".agents", ".auracode"
+        "__pycache__", "venv", ".venv", ".agents", ".auracode", ".next", ".turbo"
     }
     if not include_benchmarks:
         ignored_parts.update({"validation", "scenarios", "reference"})

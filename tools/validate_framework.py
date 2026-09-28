@@ -5,7 +5,7 @@ import json
 import sys
 import re
 import hashlib
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Optional
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,6 +25,54 @@ def load_normalized_bytes(f_path: Path) -> bytes:
     return raw.replace(b"\r\n", b"\n")
 
 
+def load_gitignore_patterns(root_dir: Path) -> List[str]:
+    """Load non-empty, non-comment patterns from .gitignore."""
+    gitignore = root_dir / ".gitignore"
+    if not gitignore.is_file():
+        return []
+    patterns: List[str] = []
+    for line in gitignore.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        patterns.append(line)
+    return patterns
+
+
+def is_ignored_by_framework(rel_path: Path, gitignore_patterns: Optional[List[str]] = None) -> bool:
+    """Determine if a relative path should be excluded from cryptographic tracking."""
+    rel_str = rel_path.as_posix()
+    parts = rel_path.parts
+
+    # 1. Directory exclusions
+    if any(p in MANIFEST_EXCLUDE_DIRS or p.startswith("_auracode_") or p.startswith("_reversa_") for p in parts):
+        return True
+    if parts and parts[0] in {".agents", ".reversa"}:
+        return True
+
+    # 2. Extension and filename exclusions
+    if rel_path.suffix.lower() in MANIFEST_EXCLUDE_EXTS:
+        return True
+    if rel_path.name in MANIFEST_EXCLUDE_FILES or rel_str in MANIFEST_EXCLUDE_ROOT_FILES:
+        return True
+
+    # 3. .gitignore pattern checks
+    if gitignore_patterns:
+        import fnmatch
+        for pat in gitignore_patterns:
+            if pat.startswith("!"):
+                continue
+            clean_pat = pat.rstrip("/")
+            if fnmatch.fnmatch(rel_str, clean_pat) or fnmatch.fnmatch(rel_path.name, clean_pat):
+                return True
+            if any(fnmatch.fnmatch(part, clean_pat) for part in parts):
+                return True
+            if any(fnmatch.fnmatch(part + "/", pat) for part in parts):
+                return True
+
+    return False
+
+
 def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
     """Execute complete internal integrity and governance checks.
 
@@ -32,6 +80,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
     """
     errors: List[str] = []
     warnings: List[str] = []
+    gitignore_patterns = load_gitignore_patterns(root_dir)
 
     def load(rel: str) -> dict:
         with open(root_dir / rel, encoding="utf-8") as f:
@@ -134,6 +183,10 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
 
             # 1. Manifest -> Disk verification
             for rel_path, meta in m_files.items():
+                p = Path(rel_path)
+                if is_ignored_by_framework(p, gitignore_patterns):
+                    errors.append(f"Forbidden gitignored or excluded file in MANIFEST.json: {rel_path}")
+                    continue
                 f_path = root_dir / rel_path
                 if not f_path.exists():
                     errors.append(f"Manifest entry not found on disk: {rel_path}")
@@ -150,12 +203,9 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
                 if not f.is_file():
                     continue
                 rel = f.relative_to(root_dir)
-                parts = rel.parts
-                if any(p in MANIFEST_EXCLUDE_DIRS or p.startswith("_auracode_") or p.startswith("_reversa_") for p in parts) or (parts and parts[0] in {".agents", ".reversa"}):
+                if is_ignored_by_framework(rel, gitignore_patterns):
                     continue
                 rel_str = str(rel).replace("\\", "/")
-                if f.suffix.lower() in MANIFEST_EXCLUDE_EXTS or f.name in MANIFEST_EXCLUDE_FILES or rel_str in MANIFEST_EXCLUDE_ROOT_FILES:
-                    continue
                 if rel_str not in m_files:
                     errors.append(f"Untracked file on disk missing from MANIFEST.json: {rel_str}")
         except Exception as exc:
