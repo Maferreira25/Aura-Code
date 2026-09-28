@@ -508,6 +508,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     # Subcommand: check
     check_p = subparsers.add_parser("check", help="Check command safety before execution")
     check_p.add_argument("command_str", nargs="?", default="", help="Command line string to evaluate")
+    check_p.add_argument("--cmd", type=str, default=None, help="Command line string to evaluate (flag alias)")
+    check_p.add_argument("--tool", type=str, default=None, help="Tool or harness name issuing the command")
     check_p.add_argument("--json", action="store_true", help="Output result in JSON format")
 
     # Subcommand: install
@@ -521,7 +523,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
 
     if args.guard_action == "check":
-        cmd_to_check = args.command_str
+        cmd_to_check = args.cmd if args.cmd is not None else args.command_str
         if not cmd_to_check:
             # Read from stdin if piped
             if not sys.stdin.isatty():

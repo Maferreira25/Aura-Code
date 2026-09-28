@@ -81,8 +81,8 @@
         "files": [
           {
             "path": "SKILL.md",
-            "sha256": "e1ff382291ddce511ddf4f7b51d5b4641f5879f47983eb65805745bba849922b",
-            "bytes": 1099
+            "sha256": "d32bc96eedc0077f122d8cd71db1d9c0037b7caed3ecfc57a7b3d89685a35f6b",
+            "bytes": 1251
           }
         ],
         "guarantees": [
@@ -95,7 +95,7 @@
         "origin": "official:auracode"
       },
       "files": {
-        "SKILL.md": "---\nname: auracode-adversary\ndescription: Agente auditor contestador do Aura Code. Desafia propostas de arquitetura buscando falhas de segurança, vazamentos, stubs e oráculos viciados.\n---\n\n# Aura Code — Auditor Adversarial (`auracode-adversary`)\n\nO `auracode-adversary` atua como o \"advogado do diabo\" ou *Red-Team* do Aura Code. Seu objetivo é garantir que nenhuma suposição oculta passe sem ser desafiada.\n\n---\n\n## 🎯 Missão e Postura\n\n1. **Zero Complacência:** Nunca concorde facilmente com uma proposta técnica. Procure onde ela pode falhar sob carga, concorrência ou entradas maliciosas.\n2. **Caça a Oráculos Viciados:** Verifique se os testes propostos realmente verificam a regra de negócio ou se passam mesmo se o código estiver quebrado.\n3. **Auditoria STRIDE:** Aponte vetores de Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service e Elevation of Privilege.\n\n---\n\n## 🛠️ Comandos de Suporte\n\n```bash\n# Executar mutações nos testes propostos\nauracode tests --mutate [arquivo.py]\n\n# Verificar injeções no código proposto\nauracode sec .\n```\n"
+        "SKILL.md": "---\nname: auracode-adversary\ndescription: Agente auditor contestador do Aura Code. Desafia propostas de arquitetura buscando falhas de segurança, vazamentos, stubs e oráculos viciados.\n---\n\n# Aura Code — Auditor Adversarial (`auracode-adversary`)\n\nO `auracode-adversary` atua como o \"advogado do diabo\" ou *Red-Team* do Aura Code. Seu objetivo é garantir que nenhuma suposição oculta passe sem ser desafiada.\n\n---\n\n## 🎯 Missão e Postura\n\n1. **Zero Complacência:** Nunca concorde facilmente com uma proposta técnica. Procure onde ela pode falhar sob carga, concorrência ou entradas maliciosas.\n2. **Caça a Oráculos Viciados:** Verifique se os testes propostos realmente verificam a regra de negócio ou se passam mesmo se o código estiver quebrado.\n3. **Auditoria STRIDE:** Aponte vetores de Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service e Elevation of Privilege.\n\n---\n\n## 🛠️ Comandos de Suporte\n\n```bash\n# Executar mutações e caçar oráculos viciados no arquivo alvo\nauracode tests --mutate arquivo.py\n\n# Executar mutações com suite de teste explícita\nauracode tests --mutate --source modulo.py --test-target tests/test_modulo.py\n\n# Verificar injeções no código proposto\nauracode sec .\n```\n"
       }
     },
     {
@@ -359,8 +359,8 @@
         "files": [
           {
             "path": "SKILL.md",
-            "sha256": "05b40212a7f8e9e83733e54c3632c6efe4a94480648c09a58751186bfbac3594",
-            "bytes": 1147
+            "sha256": "be95248478819bc2a442b47de62ff3be43b5fee68474fabae515e0376e7c4eda",
+            "bytes": 1975
           }
         ],
         "guarantees": [
@@ -373,7 +373,7 @@
         "origin": "official:auracode"
       },
       "files": {
-        "SKILL.md": "---\nname: auracode-debate\ndescription: Orquestrador de debate agêntico com contenção. Realiza discussões multi-agente em subagentes isolados para evitar degradação de contexto.\n---\n\n# Aura Code — Debate Agêntico com Contenção (`auracode-debate`)\n\nO `auracode-debate` implementa a dinâmica colaborativa de equipes de IA (*Party Mode Seguro*), onde especialistas debatem diferentes abordagens sem estourar o limite de tokens da janela principal.\n\n---\n\n## 🎭 Os 3 Papéis do Debate\n\n1. **O Arquiteto (`auracode-forward`):** Propõe a implementação elegante e modular em Clean Architecture.\n2. **O Auditor (`auracode-adversary`):** Desafia a proposta apontando vulnerabilidades, vazamentos e oráculos viciados.\n3. **O Clarificador (`auracode-clarify`):** Sintetiza o debate em linguagem simples com analogias cotidianas e apresenta as opções para a pessoa usuária decidir.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Iniciar debate estruturado sobre uma funcionalidade ou documento SDD\nauracode debate \"Implementação de autenticação JWT vs Sessão\"\n\n# Executar debate com saída JSON\nauracode debate \"Estratégia de Cache\" --json\n```\n"
+        "SKILL.md": "---\nname: auracode-debate\ndescription: Orquestrador de debate agêntico com contenção. Realiza discussões multi-agente em subagentes isolados para evitar degradação de contexto.\n---\n\n# Aura Code — Debate Agêntico com Contenção (`auracode-debate`)\n\nO `auracode-debate` implementa a dinâmica colaborativa de equipes de IA (*Party Mode Seguro*), onde 3 especialistas debatem abordagens técnicas em contextos isolados para prevenir a \"Dumb Zone\" (>100k tokens) e entregam uma síntese didática com analogias cotidianas para decisão humana.\n\n---\n\n## 🎭 Os 3 Papéis do Debate\n\n1. **O Arquiteto (`auracode-forward`):** Propõe a implementação elegante e desacoplada em Clean Architecture (`domain/`, `usecases/`, `adapters/`).\n2. **O Auditor (`auracode-adversary`):** Atua como Red-Team, apontando riscos STRIDE, vazamento de recursos (`leaks`), injeções (`sec`) e testes com oráculos viciados.\n3. **O Clarificador (`auracode-clarify`):** Traduz o embate em linguagem simples para leigos com analogias do mundo físico e monta o menu de escolha (Opção A vs Opção B).\n\n---\n\n## ⚙️ Conectividade e Modelos\n\nO motor suporta conexão direta com endpoints de IA compatíveis com a API OpenAI (OpenAI, Ollama, Groq, OpenRouter, vLLM, LM Studio) ou análise contextual determinística caso esteja offline:\n\n- `OPENAI_API_KEY` ou `AURA_LLM_API_KEY`: Chave da API do modelo.\n- `AURA_LLM_BASE_URL` ou `OPENAI_BASE_URL`: Endpoint (ex: `http://localhost:11434/v1` para Ollama local).\n- `AURA_LLM_MODEL`: Modelo a utilizar (padrão: `gpt-4o-mini`).\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Iniciar debate estruturado sobre uma funcionalidade ou documento SDD\nauracode debate \"Implementação de autenticação JWT vs Sessão\"\n\n# Executar debate com saída JSON\nauracode debate \"Estratégia de Cache Redis vs Local\" --json\n```\n\nNo chat interativo da IDE, o assistente pode ainda orquestrar os 3 subagentes em turnos sequenciais separados para aprofundamento dialético.\n\n"
       }
     },
     {
@@ -510,8 +510,8 @@
         "files": [
           {
             "path": "SKILL.md",
-            "sha256": "ec528d8504fc630a230c002e4f174e69379ba5dd63fd7fa346bc4d085361d5fc",
-            "bytes": 1367
+            "sha256": "1facf9512f7b5f78dec2a1f5ca08e856a31749f4270d3642888b716f0255496b",
+            "bytes": 1485
           }
         ],
         "guarantees": [
@@ -524,7 +524,7 @@
         "origin": "official:auracode"
       },
       "files": {
-        "SKILL.md": "---\nname: auracode-guard\ndescription: Barreira de proteção ativa em tempo de execução via hooks contra comandos destrutivos e exfiltração de dados.\n---\n\n# Aura Code — Proteção Ativa em Tempo de Execução (`auracode-guard`)\n\nO `auracode-guard` avalia chamadas de ferramentas e comandos antes do despacho quando o hook foi instalado e a superfície de execução respeita esse hook. Sem essa integração ativa, não declare que o comando foi interceptado.\n\n---\n\n## 🛡️ Regras de Proteção\n\n1. **Anti-Destruição Operacional:** Bloqueia comandos perigosos como `rm -rf /`, `rmdir /s /q C:\\`, formatação de discos, `dd` e `git reset --hard HEAD~10`.\n2. **Anti-Exfiltração de Segredos:** Bloqueia tentativas de ler variáveis de ambiente sensíveis, chaves privadas SSH (`id_rsa`) ou credenciais e enviá-las para a internet via `curl`, `wget` ou `nc`.\n3. **Anti-Mutação de Banco:** Bloqueia operações não autorizadas de `DROP DATABASE` ou `TRUNCATE TABLE`.\n\nPadrões não reconhecidos ou superfícies que não chamam o hook permanecem fora da garantia. Use `auracode guard check` e confirme a instalação antes de confiar na barreira.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Auditar comando antes de executar\nauracode guard check --tool run_command --cmd \"git status\"\n\n# Instalar configuração de hooks no workspace\nauracode guard install .\n```\n"
+        "SKILL.md": "---\nname: auracode-guard\ndescription: Barreira de proteção ativa em tempo de execução via hooks contra comandos destrutivos e exfiltração de dados.\n---\n\n# Aura Code — Proteção Ativa em Tempo de Execução (`auracode-guard`)\n\nO `auracode-guard` avalia chamadas de ferramentas e comandos antes do despacho quando o hook foi instalado e a superfície de execução respeita esse hook. Sem essa integração ativa, não declare que o comando foi interceptado.\n\n---\n\n## 🛡️ Regras de Proteção\n\n1. **Anti-Destruição Operacional:** Bloqueia comandos perigosos como `rm -rf /`, `rmdir /s /q C:\\`, formatação de discos, `dd` e `git reset --hard HEAD~10`.\n2. **Anti-Exfiltração de Segredos:** Bloqueia tentativas de ler variáveis de ambiente sensíveis, chaves privadas SSH (`id_rsa`) ou credenciais e enviá-las para a internet via `curl`, `wget` ou `nc`.\n3. **Anti-Mutação de Banco:** Bloqueia operações não autorizadas de `DROP DATABASE` ou `TRUNCATE TABLE`.\n\nPadrões não reconhecidos ou superfícies que não chamam o hook permanecem fora da garantia. Use `auracode guard check` e confirme a instalação antes de confiar na barreira.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Auditar comando antes de executar (forma direta)\nauracode guard check \"git status\"\n\n# Auditar comando com identificador de ferramenta (usado por hooks)\nauracode guard check --tool run_command --cmd \"git status\"\n\n# Instalar configuração de hooks no workspace\nauracode guard install .\n```\n"
       }
     },
     {
@@ -559,8 +559,8 @@
         "files": [
           {
             "path": "SKILL.md",
-            "sha256": "b33e7f2249bae5bac4122dd1ac0c23b2371745abf642a3b132d0209108355fad",
-            "bytes": 1394
+            "sha256": "09b242abaac413b45246de0a8305fb7f284085a10f4df90fb5b51d90ca3f19a6",
+            "bytes": 1571
           }
         ],
         "guarantees": [
@@ -575,7 +575,7 @@
         "origin": "official:auracode"
       },
       "files": {
-        "SKILL.md": "---\nname: auracode-loop\ndescription: Runner autônomo baseado na Arquitetura Ralph com anti-dumb-zone e anti-reward-hacking via 5 níveis de verificação AST.\n---\n\n# Aura Code — Runner Autônomo sob Arquitetura Ralph (`auracode-loop`)\n\nO `auracode-loop` orquestra iterações de desenvolvimento autônomo baseado na Ralph Architecture (Geoffrey Huntley).\n\n---\n\n## ⚡ Princípios Fundamentais\n\n1. **Anti-Dumb-Zone:** Cada turno é executado em um contexto limpo e fresco guiado pelo estado físico do disco, prevenindo a degradação cognitiva e alucinações que afetam LLMs quando o contexto ultrapassa 100 mil tokens.\n2. **Anti-Reward-Hacking:** Cada turno deve ser aprovado sequencialmente em 5 níveis determinísticos:\n   - Nível 1: Compilação e Sintaxe\n   - Nível 2: Linters AST (arch, slop, leaks, sec, types)\n   - Nível 3: Execução de Testes Unitários\n   - Nível 4: Integridade Semântica das Asserções\n   - Nível 5: Verificação de Dependências e Segurança\n3. **Freio de Emergência (Circuit Breaker):** Interrompe automaticamente a execução caso ocorram 3 falhas consecutivas, prevenindo loops infinitos de consumo de tokens.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Executar loop autônomo por até 10 turnos\nauracode loop run --max-turns 10\n\n# Consultar telemetria e estado atual\nauracode loop status\n\n# Resetar estado e contadores de falha\nauracode loop reset\n```\n"
+        "SKILL.md": "---\nname: auracode-loop\ndescription: Runner autônomo baseado na Arquitetura Ralph com anti-dumb-zone e anti-reward-hacking via 5 níveis de verificação AST.\n---\n\n# Aura Code — Runner Autônomo sob Arquitetura Ralph (`auracode-loop`)\n\nO `auracode-loop` orquestra iterações de desenvolvimento autônomo baseado na Ralph Architecture (Geoffrey Huntley).\n\n---\n\n## ⚡ Princípios Fundamentais\n\n1. **Anti-Dumb-Zone:** Cada turno é executado em um contexto limpo e fresco guiado pelo estado físico do disco, prevenindo a degradação cognitiva e alucinações que afetam LLMs quando o contexto ultrapassa 100 mil tokens.\n2. **Anti-Reward-Hacking:** Cada turno deve ser aprovado sequencialmente em 5 níveis determinísticos:\n   - Nível 1: Compilação e Sintaxe\n   - Nível 2: Linters AST (arch, slop, leaks, sec, types)\n   - Nível 3: Execução de Testes Unitários\n   - Nível 4: Integridade Semântica das Asserções\n   - Nível 5: Verificação de Dependências e Segurança\n3. **Freio de Emergência (Circuit Breaker):** Interrompe automaticamente a execução caso ocorram 3 falhas consecutivas, prevenindo loops infinitos de consumo de tokens.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Executar loop autônomo por até 10 turnos (suporta --max-turns ou --max-iterations)\nauracode loop run --max-turns 10\n\n# Executar despachando cada tarefa para um agente CLI externo\nauracode loop run --max-turns 10 --agent-cmd \"python ./agent_runner.py\"\n\n# Consultar telemetria e estado atual\nauracode loop status\n\n# Resetar estado e contadores de falha\nauracode loop reset\n```\n"
       }
     },
     {
@@ -708,8 +708,8 @@
         "files": [
           {
             "path": "SKILL.md",
-            "sha256": "1888706da25cb182e03b96af7635952b17f1112e2809ef6ad75d1da24099667a",
-            "bytes": 1147
+            "sha256": "88d5479f6b1b30b41dd81d08fb374a14b41fe2e02af0e9a893e2ae8a1991315f",
+            "bytes": 1313
           }
         ],
         "guarantees": [
@@ -723,7 +723,7 @@
         "origin": "official:auracode"
       },
       "files": {
-        "SKILL.md": "---\nname: auracode-worktree\ndescription: Isolamento físico de branches em diretórios paralelos para agentes de IA, evitando sujeira na branch de trabalho do desenvolvedor.\n---\n\n# Aura Code — Isolamento Físico de Branches (`auracode-worktree`)\n\nO `auracode-worktree` gerencia diretórios de trabalho paralelos do Git (`.auracode/worktrees/<task>`), garantindo que o agente desenvolva em um ambiente isolado sem corromper a branch ativa do usuário.\n\n---\n\n## 🏗️ Fluxo de Trabalho\n\n1. **Criação de Worktree:** O agente cria uma branch e diretório físico dedicado para a tarefa.\n2. **Execução Isolada:** Todas as edições e testes ocorrem exclusivamente dentro da pasta isolada.\n3. **Merge e Limpeza:** Após aprovação e validação AST, a branch é mesclada na branch alvo e o diretório temporário é excluído.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Criar diretório isolado para tarefa\nauracode worktree create --task auth-feature\n\n# Listar worktrees ativos\nauracode worktree list\n\n# Mesclar tarefa aprovada\nauracode worktree merge --task auth-feature\n\n# Limpar e remover worktree\nauracode worktree clean --task auth-feature\n```\n"
+        "SKILL.md": "---\nname: auracode-worktree\ndescription: Isolamento físico de branches em diretórios paralelos para agentes de IA, evitando sujeira na branch de trabalho do desenvolvedor.\n---\n\n# Aura Code — Isolamento Físico de Branches (`auracode-worktree`)\n\nO `auracode-worktree` gerencia diretórios de trabalho paralelos do Git (`.auracode/worktrees/<task>`), garantindo que o agente desenvolva em um ambiente isolado sem corromper a branch ativa do usuário.\n\n---\n\n## 🏗️ Fluxo de Trabalho\n\n1. **Criação de Worktree:** O agente cria uma branch e diretório físico dedicado para a tarefa.\n2. **Execução Isolada:** Todas as edições e testes ocorrem exclusivamente dentro da pasta isolada.\n3. **Merge e Limpeza:** Após aprovação e validação AST, a branch é mesclada na branch alvo e o diretório temporário é excluído.\n\n---\n\n## 🛠️ Comandos\n\n```bash\n# Criar diretório isolado para tarefa (aceita argumento direto ou --task)\nauracode worktree create auth-feature\n# ou: auracode worktree create --task auth-feature\n\n# Listar worktrees ativos\nauracode worktree list\n\n# Mesclar tarefa aprovada\nauracode worktree merge auth-feature\n# ou: auracode worktree merge --task auth-feature\n\n# Limpar e remover worktree\nauracode worktree clean auth-feature\n# ou: auracode worktree clean --task auth-feature\n```\n"
       }
     }
   ]

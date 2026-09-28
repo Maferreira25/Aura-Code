@@ -152,8 +152,8 @@
       "bytes": 482
     },
     "auracode/skill_bundle.json": {
-      "sha256": "4acbb76223d44c770c2525803407d65866624bfce7ec469713f2143cb7d0347a",
-      "bytes": 50865
+      "sha256": "43a8b998455806dbb4ba5d555ea4fbf2fcf6d9f40d5450ffd7a0cc08c81d32e1",
+      "bytes": 52337
     },
     "auracode/skill_contracts.json": {
       "sha256": "44865566de5402fb0b9e7775cf0a7a1255fa5768152805bdc97b90ec5ce89a6f",
@@ -252,12 +252,12 @@
       "bytes": 3886
     },
     "auracode/studio/manifest.json": {
-      "sha256": "1e8771dd58c171d5306c9ce2ba560b1312ec63c2de7f58994a777d53b7847d5f",
-      "bytes": 4327
+      "sha256": "129315b9cfd7c8a40768adc344c44cae853651ff40b411ff3a8b2cbd9918b965",
+      "bytes": 4328
     },
     "auracode/studio/server.py": {
-      "sha256": "6768eea698bfb5985082cc5c5a47e2502768a2210bc39ee09c84007cda995ab6",
-      "bytes": 9089
+      "sha256": "b708faf0047b904ebef65a59e4b45eee5fa1951ff41749261c30cb4b3fd0efae",
+      "bytes": 9999
     },
     "CHANGELOG.md": {
       "sha256": "a650588b77aa5210a92ed3958806edafb48b90ea9f479df94a49ab142bc64f5a",
@@ -964,16 +964,16 @@
       "bytes": 55
     },
     "tools/adversarial_debate.py": {
-      "sha256": "895c49cb4dcf26d752fe3516c3544d01719629040d69eda5fd81c0366de8ccd0",
-      "bytes": 6029
+      "sha256": "6c2914f83afd294109fb433f5d71beb5efe9e6835f37aab45a7632a81426f240",
+      "bytes": 17835
     },
     "tools/assess.py": {
       "sha256": "90fde6428fc9f7ee711fec8b9d36a521b75b25bf1032b46f2ba341e0608ce7e4",
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "f08a43d7fc68dd76c4076db3dc1f32aac393f6a2acc2cec2ac45d603f78896ff",
-      "bytes": 36521
+      "sha256": "21661217e125cf161592032fc6806df93c0cdc48a5987095d36f152ff2be89aa",
+      "bytes": 37774
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1028,16 +1028,16 @@
       "bytes": 24529
     },
     "tools/loop_runner.py": {
-      "sha256": "4d20606f337b83fc0d00a39b61da63264216000feb128bf65b62af0085094293",
-      "bytes": 17493
+      "sha256": "46f458fbff6b8a523782e169a273d65d540c1c8ca7f04feba89469683aeb8a04",
+      "bytes": 17531
     },
     "tools/manage_cage.py": {
       "sha256": "c13daa23f24a49831f8b48d3f40134b257daa8fe283ffea4c89e32094a871306",
       "bytes": 5080
     },
     "tools/manage_worktree.py": {
-      "sha256": "dc86dcc691e1c2ad9a932380e8123d1b81e168d886001ab2a6f5111f0f36d265",
-      "bytes": 13196
+      "sha256": "14debc9ca3053fb63e32a10e1a1fe8efb501703576205cf529e6cfdd5c422ce1",
+      "bytes": 13887
     },
     "tools/multilang_ast.py": {
       "sha256": "9ad4da05e4e42f1f3d00ed7c25696d12671a130202fdea8dbe4c4957026e93d0",
@@ -1048,12 +1048,12 @@
       "bytes": 4691
     },
     "tools/mutation_engine.py": {
-      "sha256": "9bd72b530b4ff81e61fefa97125a821695c945cc31f00164c78a9a454e876270",
-      "bytes": 21423
+      "sha256": "e7dac60f61a826c39864e4acd5a499296258fd1980217447468434b292edc3f8",
+      "bytes": 21833
     },
     "tools/pre_tool_guard.py": {
-      "sha256": "47602d8c37a92ccf14bcac735839c686d57507b36cf24f6ea53b2ae4576b2f64",
-      "bytes": 20904
+      "sha256": "155a27e14b916b7528f0aa6fa8526d86a8c359861877bb85e6cbd9e0498af3e1",
+      "bytes": 21161
     },
     "tools/preflight.py": {
       "sha256": "f04828c04917cf72d2a65baa1e517db941d238287ca39f0aa971634f40bf992d",

@@ -20,8 +20,11 @@ O `auracode-adversary` atua como o "advogado do diabo" ou *Red-Team* do Aura Cod
 ## 🛠️ Comandos de Suporte
 
 ```bash
-# Executar mutações nos testes propostos
-auracode tests --mutate [arquivo.py]
+# Executar mutações e caçar oráculos viciados no arquivo alvo
+auracode tests --mutate arquivo.py
+
+# Executar mutações com suite de teste explícita
+auracode tests --mutate --source modulo.py --test-target tests/test_modulo.py
 
 # Verificar injeções no código proposto
 auracode sec .

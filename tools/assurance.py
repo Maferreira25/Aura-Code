@@ -190,6 +190,8 @@ def main() -> None:
     guard_sub = guard_p.add_subparsers(dest="guard_action", help="Guard action to execute")
     guard_check_p = guard_sub.add_parser("check", help="Check command safety before execution")
     guard_check_p.add_argument("command_str", nargs="?", default="", help="Command line string to evaluate")
+    guard_check_p.add_argument("--cmd", type=str, default=None, help="Command line string to evaluate (flag alias)")
+    guard_check_p.add_argument("--tool", type=str, default=None, help="Tool or harness name issuing the command")
     guard_check_p.add_argument("--json", action="store_true", help="Output result in JSON format")
     guard_install_p = guard_sub.add_parser("install", help="Install .agents/hooks.json in target workspace")
     guard_install_p.add_argument("target", nargs="?", default=".", help="Workspace root directory")
@@ -199,7 +201,8 @@ def main() -> None:
     wt_sub = wt_p.add_subparsers(dest="worktree_action", help="Worktree action to perform")
     
     wt_create_p = wt_sub.add_parser("create", help="Create an isolated worktree for an agent task")
-    wt_create_p.add_argument("task_name", help="Task name or identifier")
+    wt_create_p.add_argument("task_name", nargs="?", default=None, help="Task name or identifier")
+    wt_create_p.add_argument("--task", type=str, default=None, help="Task name or identifier (flag alias)")
     wt_create_p.add_argument("--base-branch", "-b", type=str, default=None, help="Base branch to fork from")
     wt_create_p.add_argument("--dir", "-d", type=str, default=None, help="Custom target directory for the worktree")
     wt_create_p.add_argument("--json", action="store_true", help="Output result in JSON format")
@@ -208,12 +211,14 @@ def main() -> None:
     wt_list_p.add_argument("--json", action="store_true", help="Output list in JSON format")
 
     wt_clean_p = wt_sub.add_parser("clean", help="Remove an agent worktree and prune tracking")
-    wt_clean_p.add_argument("task_name", help="Task name or identifier to clean")
+    wt_clean_p.add_argument("task_name", nargs="?", default=None, help="Task name or identifier to clean")
+    wt_clean_p.add_argument("--task", type=str, default=None, help="Task name or identifier to clean (flag alias)")
     wt_clean_p.add_argument("--delete-branch", action="store_true", help="Delete the agent branch as well")
     wt_clean_p.add_argument("--json", action="store_true", help="Output result in JSON format")
 
     wt_merge_p = wt_sub.add_parser("merge", help="Merge an approved agent worktree branch and clean up")
-    wt_merge_p.add_argument("task_name", help="Task name or identifier to merge")
+    wt_merge_p.add_argument("task_name", nargs="?", default=None, help="Task name or identifier to merge")
+    wt_merge_p.add_argument("--task", type=str, default=None, help="Task name or identifier to merge (flag alias)")
     wt_merge_p.add_argument("--target-branch", "-t", type=str, default=None, help="Target branch (default: current)")
     wt_merge_p.add_argument("--keep-branch", action="store_true", help="Do not delete the agent branch after merge")
     wt_merge_p.add_argument("--no-clean", action="store_true", help="Do not remove the worktree folder after merge")
@@ -236,7 +241,7 @@ def main() -> None:
     loop_sub = loop_p.add_subparsers(dest="loop_action", help="Loop action to perform")
 
     loop_run_p = loop_sub.add_parser("run", help="Start or resume autonomous loop runner")
-    loop_run_p.add_argument("--max-iterations", "-n", type=int, default=10, help="Maximum iterations before pausing (default: 10)")
+    loop_run_p.add_argument("--max-iterations", "-n", "--max-turns", dest="max_iterations", type=int, default=10, help="Maximum iterations before pausing (default: 10)")
     loop_run_p.add_argument("--tasks-file", "-t", type=str, default=None, help="Path to custom tasks JSON backlog")
     loop_run_p.add_argument("--dry-run", action="store_true", help="Simulate loop execution without running full suites")
     loop_run_p.add_argument("--continue-on-fail", action="store_true", help="Do not stop loop on verification failure")
@@ -410,12 +415,18 @@ def main() -> None:
         if getattr(args, "mutate", False):
             import json
             src = Path(args.source) if args.source else Path(args.target)
-            test_target = Path(args.test_target) if getattr(args, "test_target", None) else Path("tests")
-            if src.is_dir():
+            test_target = Path(args.test_target) if getattr(args, "test_target", None) else None
+            if src.is_file():
+                if not test_target:
+                    candidate = Path("tests") / f"test_{src.stem}.py"
+                    test_target = candidate if candidate.exists() else Path("tests")
+            elif src.is_dir():
                 py_files = [f for f in src.rglob("*.py") if "test" not in f.name and not any(p.startswith(".") for p in f.parts)]
                 if py_files:
                     src = py_files[0]
-            res = mutation_engine.execute_mutation_analysis(src, test_target)
+                if not test_target:
+                    test_target = Path("tests")
+            res = mutation_engine.execute_mutation_analysis(src, test_target or Path("tests"))
             if getattr(args, "json", False):
                 print(json.dumps(res, indent=2, ensure_ascii=False))
             else:
@@ -458,6 +469,10 @@ def main() -> None:
             guard_argv.append(args.guard_action)
         if getattr(args, "json", False):
             guard_argv.append("--json")
+        if getattr(args, "cmd", None):
+            guard_argv.extend(["--cmd", args.cmd])
+        if getattr(args, "tool", None):
+            guard_argv.extend(["--tool", args.tool])
         if getattr(args, "command_str", ""):
             guard_argv.append(args.command_str)
         if getattr(args, "target", "") and args.guard_action == "install":
@@ -468,8 +483,9 @@ def main() -> None:
         wt_argv = []
         if getattr(args, "worktree_action", None):
             wt_argv.append(args.worktree_action)
-        if getattr(args, "task_name", None):
-            wt_argv.append(args.task_name)
+        effective_task = getattr(args, "task", None) or getattr(args, "task_name", None)
+        if effective_task:
+            wt_argv.append(effective_task)
         if getattr(args, "base_branch", None):
             wt_argv.extend(["--base-branch", args.base_branch])
         if getattr(args, "dir", None):

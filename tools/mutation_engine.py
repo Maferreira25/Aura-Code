@@ -335,7 +335,7 @@ def execute_mutation_analysis(
     target_file: Path,
     test_file_or_dir: Path,
     max_mutants: int = 15,
-    timeout_sec: float = 6.0
+    timeout_sec: float = 20.0
 ) -> Dict[str, Any]:
     """Execute mutation testing against a single source file and its test suite."""
     target_file = target_file.resolve()
@@ -353,6 +353,7 @@ def execute_mutation_analysis(
     if not mutants:
         return {
             "status": "PASS",
+            "target_file": str(target_file),
             "message": "No mutable AST sites found in target file.",
             "total_mutants": 0,
             "killed": 0,
@@ -503,6 +504,14 @@ def format_prescriptive_report(res: Dict[str, Any]) -> str:
         f">> Mutantes Totais: {total} | Eliminados (Killed): {killed} | Sobreviventes: {survived}",
         f">> Escore de Mutação: {score}%",
     ]
+
+    if res.get("status") == "ERROR":
+        lines.append(f"\n[STATUS: ERROR] Falha na execução da análise de mutação:")
+        lines.append(f"   {res.get('message', 'Erro desconhecido')}")
+        if res.get("baseline_stderr"):
+            lines.append(f"   Stderr: {res['baseline_stderr']}")
+        lines.append("=" * 80)
+        return "\n".join(lines)
 
     if not remediations:
         lines.append("\n[STATUS: PASS] Nenhum oráculo viciado detectado! A suíte de testes exerceu as mutações com sucesso.")

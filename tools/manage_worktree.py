@@ -280,7 +280,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # create
     create_p = subparsers.add_parser("create", help="Create an isolated worktree for an agent task")
-    create_p.add_argument("task_name", help="Task name or identifier")
+    create_p.add_argument("task_name", nargs="?", default=None, help="Task name or identifier")
+    create_p.add_argument("--task", type=str, default=None, help="Task name or identifier (flag alias)")
     create_p.add_argument("--base-branch", "-b", type=str, default=None, help="Base branch to fork from")
     create_p.add_argument("--dir", "-d", type=str, default=None, help="Custom target directory for the worktree")
     create_p.add_argument("--json", action="store_true", help="Output result in JSON format")
@@ -291,13 +292,15 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # clean
     clean_p = subparsers.add_parser("clean", help="Remove an agent worktree and prune tracking")
-    clean_p.add_argument("task_name", help="Task name or identifier to clean")
+    clean_p.add_argument("task_name", nargs="?", default=None, help="Task name or identifier to clean")
+    clean_p.add_argument("--task", type=str, default=None, help="Task name or identifier to clean (flag alias)")
     clean_p.add_argument("--delete-branch", action="store_true", help="Delete the agent branch as well")
     clean_p.add_argument("--json", action="store_true", help="Output result in JSON format")
 
     # merge
     merge_p = subparsers.add_parser("merge", help="Merge an approved agent worktree branch and clean up")
-    merge_p.add_argument("task_name", help="Task name or identifier to merge")
+    merge_p.add_argument("task_name", nargs="?", default=None, help="Task name or identifier to merge")
+    merge_p.add_argument("--task", type=str, default=None, help="Task name or identifier to merge (flag alias)")
     merge_p.add_argument("--target-branch", "-t", type=str, default=None, help="Target branch (default: current)")
     merge_p.add_argument("--keep-branch", action="store_true", help="Do not delete the agent branch after merge")
     merge_p.add_argument("--no-clean", action="store_true", help="Do not remove the worktree folder after merge")
@@ -311,9 +314,15 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     repo_root = Path.cwd().resolve()
 
+    effective_task = getattr(args, "task", None) or getattr(args, "task_name", None)
+
+    if args.worktree_action in ("create", "clean", "merge") and not effective_task:
+        sys.stderr.write(f"Error: task name is required for worktree {args.worktree_action}.\n")
+        return 1
+
     if args.worktree_action == "create":
         target_dir = Path(args.dir).resolve() if args.dir else None
-        res = create_worktree(repo_root, args.task_name, base_branch=args.base_branch, target_dir=target_dir)
+        res = create_worktree(repo_root, effective_task, base_branch=args.base_branch, target_dir=target_dir)
         if args.json:
             print(json.dumps(res, indent=2, ensure_ascii=False))
         else:
@@ -337,7 +346,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
 
     elif args.worktree_action == "clean":
-        res = clean_worktree(repo_root, args.task_name, delete_branch=args.delete_branch)
+        res = clean_worktree(repo_root, effective_task, delete_branch=args.delete_branch)
         if args.json:
             print(json.dumps(res, indent=2, ensure_ascii=False))
         else:
@@ -347,7 +356,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     elif args.worktree_action == "merge":
         res = merge_worktree(
             repo_root,
-            args.task_name,
+            effective_task,
             target_branch=args.target_branch,
             auto_clean=not args.no_clean,
             delete_branch=not args.keep_branch,

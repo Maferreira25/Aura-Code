@@ -25,8 +25,11 @@ O `auracode-loop` orquestra iterações de desenvolvimento autônomo baseado na 
 ## 🛠️ Comandos
 
 ```bash
-# Executar loop autônomo por até 10 turnos
+# Executar loop autônomo por até 10 turnos (suporta --max-turns ou --max-iterations)
 auracode loop run --max-turns 10
+
+# Executar despachando cada tarefa para um agente CLI externo
+auracode loop run --max-turns 10 --agent-cmd "python ./agent_runner.py"
 
 # Consultar telemetria e estado atual
 auracode loop status

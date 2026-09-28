@@ -22,7 +22,10 @@ Padrões não reconhecidos ou superfícies que não chamam o hook permanecem for
 ## 🛠️ Comandos
 
 ```bash
-# Auditar comando antes de executar
+# Auditar comando antes de executar (forma direta)
+auracode guard check "git status"
+
+# Auditar comando com identificador de ferramenta (usado por hooks)
 auracode guard check --tool run_command --cmd "git status"
 
 # Instalar configuração de hooks no workspace

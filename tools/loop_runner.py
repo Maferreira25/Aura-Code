@@ -344,7 +344,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     # run
     run_p = subparsers.add_parser("run", help="Start or resume the autonomous loop runner")
-    run_p.add_argument("--max-iterations", "-n", type=int, default=10, help="Maximum iterations before pausing (default: 10)")
+    run_p.add_argument("--max-iterations", "-n", "--max-turns", dest="max_iterations", type=int, default=10, help="Maximum iterations before pausing (default: 10)")
     run_p.add_argument("--tasks-file", "-t", type=str, default=None, help="Path to custom tasks JSON backlog")
     run_p.add_argument("--dry-run", action="store_true", help="Simulate loop execution without running full suites")
     run_p.add_argument("--continue-on-fail", action="store_true", help="Do not stop loop on verification failure")

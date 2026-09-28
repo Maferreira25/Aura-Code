@@ -20,15 +20,18 @@ O `auracode-worktree` gerencia diretórios de trabalho paralelos do Git (`.aurac
 ## 🛠️ Comandos
 
 ```bash
-# Criar diretório isolado para tarefa
-auracode worktree create --task auth-feature
+# Criar diretório isolado para tarefa (aceita argumento direto ou --task)
+auracode worktree create auth-feature
+# ou: auracode worktree create --task auth-feature
 
 # Listar worktrees ativos
 auracode worktree list
 
 # Mesclar tarefa aprovada
-auracode worktree merge --task auth-feature
+auracode worktree merge auth-feature
+# ou: auracode worktree merge --task auth-feature
 
 # Limpar e remover worktree
-auracode worktree clean --task auth-feature
+auracode worktree clean auth-feature
+# ou: auracode worktree clean --task auth-feature
 ```
