@@ -16,28 +16,51 @@ class SlopASTVisitor(ast.NodeVisitor):
         self.check_placeholders = check_placeholders
         self.violations = []
 
-    def _check_unreachable(self, node: ast.AST) -> None:
-        has_returned = False
-        for stmt in node.body:
-            if has_returned:
+    def _check_statement_list(self, stmts: list, container_name: str) -> None:
+        has_terminated = False
+        for stmt in stmts:
+            if has_terminated:
                 self.violations.append({
                     "file": self.filename,
                     "line": stmt.lineno,
                     "type": "unreachable_code",
-                    "message": f"Statement is unreachable after return/raise in function '{node.name}'"
+                    "message": f"Statement is unreachable after return/raise in {container_name}"
                 })
             if isinstance(stmt, (ast.Return, ast.Raise, ast.Break, ast.Continue)):
-                has_returned = True
-        self.generic_visit(node)
+                has_terminated = True
 
     def visit_FunctionDef(self, node):
-        self._check_unreachable(node)
+        self._check_statement_list(node.body, f"function '{node.name}'")
+        self.generic_visit(node)
 
     def visit_AsyncFunctionDef(self, node):
-        self._check_unreachable(node)
+        self._check_statement_list(node.body, f"function '{node.name}'")
+        self.generic_visit(node)
+
+    def visit_If(self, node):
+        self._check_statement_list(node.body, "if block")
+        if node.orelse:
+            self._check_statement_list(node.orelse, "else block")
+        self.generic_visit(node)
+
+    def visit_For(self, node):
+        self._check_statement_list(node.body, "for loop")
+        self.generic_visit(node)
+
+    def visit_While(self, node):
+        self._check_statement_list(node.body, "while loop")
+        self.generic_visit(node)
 
     def visit_ExceptHandler(self, node):
-        if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+        is_empty = False
+        if len(node.body) == 1:
+            first = node.body[0]
+            if isinstance(first, ast.Pass):
+                is_empty = True
+            elif isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and (first.value.value is ... or first.value.value is Ellipsis):
+                is_empty = True
+
+        if is_empty:
             exc_name = node.type.id if isinstance(node.type, ast.Name) else "Exception"
             self.violations.append({
                 "file": self.filename,

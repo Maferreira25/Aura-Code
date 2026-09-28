@@ -3,8 +3,8 @@
   "framework_version": "0.3.0.dev0",
   "status": "READY",
   "reason": "The local server and compiled assets are packaged and hash-verified.",
-  "workflow_status": "NOT_RUN",
-  "workflow_reason": "The guided Studio workflows have not been implemented and validated yet.",
+  "workflow_status": "PASS",
+  "workflow_reason": "Aura Studio local workspace inspection workflows are verified.",
   "entrypoint": "server.py",
   "locales": [
     "pt-BR",
@@ -13,8 +13,8 @@
   "assets": [
     {
       "path": "server.py",
-      "bytes": 2973,
-      "sha256": "326778c78d7183ba3ac641b98c48d4d4bfbd2382223db947873016f432e6bd3d"
+      "bytes": 9089,
+      "sha256": "6768eea698bfb5985082cc5c5a47e2502768a2210bc39ee09c84007cda995ab6"
     },
     {
       "path": "assets/404.html",

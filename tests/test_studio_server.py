@@ -32,7 +32,8 @@ class StudioServerTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            host, port = server.server_address
+            host = str(server.server_address[0])
+            port = int(server.server_address[1])
             self.assertEqual(host, "127.0.0.1")
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=3) as response:
                 body = response.read().decode("utf-8")
@@ -50,7 +51,7 @@ class StudioServerTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            _, port = server.server_address
+            port = int(server.server_address[1])
             request = urllib.request.Request(f"http://127.0.0.1:{port}/", data=b"change", method="POST")
             with self.assertRaises(urllib.error.HTTPError) as raised:
                 urllib.request.urlopen(request, timeout=3)
@@ -98,6 +99,40 @@ class StudioServerTests(unittest.TestCase):
             any(item["type"] == "silent_exception_swallowing" for item in violations),
             violations,
         )
+
+    def test_server_serves_rest_api_status_and_projects(self) -> None:
+        import json
+        server = create_server(self.assets, port=0, workspace_root=self.assets)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            port = int(server.server_address[1])
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/status", timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                self.assertEqual(resp.headers["Content-Type"], "application/json; charset=utf-8")
+                data = json.loads(resp.read().decode("utf-8"))
+                self.assertEqual(data["status"], "PASS")
+                self.assertEqual(data["workflow_status"], "PASS")
+
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/projects", timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                data = json.loads(resp.read().decode("utf-8"))
+                self.assertIn("active_project", data)
+                self.assertEqual(data["guarantee_level"], "AL3")
+
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/decisions", timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                data = json.loads(resp.read().decode("utf-8"))
+                self.assertEqual(data["total_decisions"], 74)
+
+            req = urllib.request.Request(f"http://127.0.0.1:{port}/studio/v1/unknown")
+            with self.assertRaises(urllib.error.HTTPError) as raised:
+                urllib.request.urlopen(req, timeout=3)
+            self.assertEqual(raised.exception.code, 404)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=3)
 
 
 if __name__ == "__main__":

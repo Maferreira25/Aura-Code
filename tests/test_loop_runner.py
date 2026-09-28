@@ -128,6 +128,27 @@ class TestLoopRunner(unittest.TestCase):
             code = main(["reset"])
             self.assertEqual(code, 0)
 
+    @patch("tools.loop_runner._run_cmd")
+    def test_require_churn_fails_when_no_changes(self, mock_run_cmd):
+        mock_run_cmd.return_value = (0, "", "")
+        tasks = [{"id": "t1", "title": "Empty Task", "status": "pending"}]
+        self.state_mgr.save_tasks(tasks)
+
+        res = run_loop(self.temp_dir, dry_run=False, require_churn=True)
+        self.assertEqual(res["status"], "NO_CHURN_DETECTED")
+        self.assertIn("no code changes", res["error"])
+
+    @patch("tools.loop_runner._run_cmd")
+    def test_agent_cmd_invoked(self, mock_run_cmd):
+        mock_run_cmd.return_value = (0, "", "")
+        tasks = [{"id": "t1", "title": "Agent Task", "status": "pending"}]
+        self.state_mgr.save_tasks(tasks)
+
+        res = run_loop(self.temp_dir, dry_run=True, agent_cmd="echo hello")
+        self.assertEqual(res["status"], "COMPLETED")
+        called_cmds = [call.args[0] for call in mock_run_cmd.call_args_list]
+        self.assertTrue(any("echo" in cmd for cmd in called_cmds))
+
 
 if __name__ == "__main__":
     unittest.main()

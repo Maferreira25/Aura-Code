@@ -81,23 +81,23 @@ class SkillPackagingTests(unittest.TestCase):
             self.assertIn("auracode/SKILL.md", refused["conflicts"])
             self.assertEqual(changed.read_text(encoding="utf-8"), "user-owned change\n")
 
-    def test_doctor_separates_packaging_from_unvalidated_studio_workflows(self) -> None:
+    def test_doctor_validates_studio_workflows_and_packaging(self) -> None:
         report = run_doctor(package_root=ROOT)
         checks = {item["id"]: item for item in report["checks"]}
         self.assertEqual(checks["skills"]["status"], "PASS")
         self.assertEqual(checks["templates"]["status"], "PASS")
         self.assertEqual(checks["studio"]["status"], "PASS")
-        self.assertEqual(checks["studio_workflows"]["status"], "NOT_RUN")
-        self.assertEqual(report["status"], "NOT_RUN")
-        self.assertFalse(report["complete"])
+        self.assertEqual(checks["studio_workflows"]["status"], "PASS")
+        self.assertEqual(report["status"], "PASS")
+        self.assertTrue(report["complete"])
 
     def test_public_cli_exposes_doctor_and_skill_verification(self) -> None:
         output = io.StringIO()
         with patch.object(sys, "argv", ["auracode", "doctor", "--json"]), redirect_stdout(output):
             with self.assertRaises(SystemExit) as doctor_exit:
                 assurance.main()
-        self.assertEqual(doctor_exit.exception.code, 2)
-        self.assertEqual(json.loads(output.getvalue())["status"], "NOT_RUN")
+        self.assertEqual(doctor_exit.exception.code, 0)
+        self.assertEqual(json.loads(output.getvalue())["status"], "PASS")
 
         output = io.StringIO()
         with patch.object(sys, "argv", ["auracode", "skills", "verify", "--json"]), redirect_stdout(output):

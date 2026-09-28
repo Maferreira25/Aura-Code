@@ -258,7 +258,8 @@ class MultiLangASTAnalyzer:
                 has_open = True
                 open_line = idx
 
-        if has_open and not close_regex.search(content):
+        clean_content = re.sub(r"//.*|/\*.*?\*/", "", content, flags=re.DOTALL)
+        if has_open and not close_regex.search(clean_content):
             violations.append({
                 "file": rel_path,
                 "line": open_line,

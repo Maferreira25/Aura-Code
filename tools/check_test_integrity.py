@@ -66,8 +66,20 @@ def check_test_file(filepath: str, rel_path: Optional[str] = None) -> list:
         visitor = TestIntegrityVisitor(rpath)
         visitor.visit(tree)
         return visitor.vacuous_tests
-    except Exception:
-        return []
+    except SyntaxError as e:
+        return [{
+            "file": rpath,
+            "line": e.lineno or 1,
+            "type": "syntax_error",
+            "issue": f"Syntax error in test file: {e}"
+        }]
+    except Exception as e:
+        return [{
+            "file": rpath,
+            "line": 1,
+            "type": "read_error",
+            "issue": f"Failed to parse test file: {e}"
+        }]
 
 
 def main() -> None:

@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 2612,
+  "file_count": 2614,
   "files": {
     ".github/dependabot.yml": {
       "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
@@ -140,8 +140,16 @@
       "bytes": 1116
     },
     "auracode/__init__.py": {
-      "sha256": "f62a75d3ee9e27029163faa35340f6c6688616a0eae9a4a104b47372a0bb7ee2",
-      "bytes": 1444
+      "sha256": "827b812c9fe54b42bfd7bd5dc7f1321f5b0dc8aa135539cb08e8bafa7d3ad5e5",
+      "bytes": 1749
+    },
+    "auracode/__main__.py": {
+      "sha256": "a81ccc5b7737bebd6ccb4c8e0d8da5f3a59dff9d8749e61e363bf3e59f9eeef8",
+      "bytes": 161
+    },
+    "auracode/cli.py": {
+      "sha256": "a44c91adaad2a041b3f87f50017d534c0c84b4e69c3385bdb2fd95a7a3f48f51",
+      "bytes": 482
     },
     "auracode/skill_bundle.json": {
       "sha256": "4acbb76223d44c770c2525803407d65866624bfce7ec469713f2143cb7d0347a",
@@ -244,12 +252,12 @@
       "bytes": 3886
     },
     "auracode/studio/manifest.json": {
-      "sha256": "d0fb94045b701500226dd2a6d78c17094fde4ef97828350b6d93d59d91d7e626",
-      "bytes": 4340
+      "sha256": "1e8771dd58c171d5306c9ce2ba560b1312ec63c2de7f58994a777d53b7847d5f",
+      "bytes": 4327
     },
     "auracode/studio/server.py": {
-      "sha256": "326778c78d7183ba3ac641b98c48d4d4bfbd2382223db947873016f432e6bd3d",
-      "bytes": 2973
+      "sha256": "6768eea698bfb5985082cc5c5a47e2502768a2210bc39ee09c84007cda995ab6",
+      "bytes": 9089
     },
     "CHANGELOG.md": {
       "sha256": "a650588b77aa5210a92ed3958806edafb48b90ea9f479df94a49ab142bc64f5a",
@@ -400,8 +408,8 @@
       "bytes": 1424
     },
     "pyproject.toml": {
-      "sha256": "5da232e9561a2b6b9294989904bab2a80548b14a5e26ea07590da372b494997a",
-      "bytes": 1883
+      "sha256": "5ba20269b3229a7fd91885941a739a81ff8fe36bcc3699c4036c133b85f6a874",
+      "bytes": 2135
     },
     "README.md": {
       "sha256": "bb71649188a12552502eb14b4dda0b7e4c33ab2e11d32ff3aca0886ba8a5b9d4",
@@ -9356,8 +9364,8 @@
       "bytes": 1837
     },
     "studio/scripts/package_manifest.py": {
-      "sha256": "d0176282b993e6728d6467dc2c4e4374dbbab828d28bcba5420cc0538eb67008",
-      "bytes": 2387
+      "sha256": "5f662021d91339d29b1d078f576fed4ba6f38ba8640d6a063a781f860e0a60a6",
+      "bytes": 2374
     },
     "studio/tsconfig.json": {
       "sha256": "b1fd38c3330483a132a017c37fb7afd78cacd05e458a698f02efeb713b8a5cb0",
@@ -9632,8 +9640,8 @@
       "bytes": 14102
     },
     "tests/test_loop_runner.py": {
-      "sha256": "95d8d14c8c90dfcf3223bd1c6272d676e2602e99215ce429ffd4b69b8a094ed1",
-      "bytes": 4624
+      "sha256": "8bec7f404ada4ed99c40296ffaedb94eec86cdbeaf07f4d1ff13c06d832a19a3",
+      "bytes": 5622
     },
     "tests/test_manage_worktree.py": {
       "sha256": "fd355a1cea328a97fb9bd5ba524ff2bea0fbe73435317284bc3f57d5c2b180b7",
@@ -9680,8 +9688,8 @@
       "bytes": 8407
     },
     "tests/test_skill_packaging.py": {
-      "sha256": "df62198ab92f00e6843d2f3a6c7097af41cb207d79638c7b33963b5cf56c49cc",
-      "bytes": 4608
+      "sha256": "4639b136f78531d3b37a3ade5ef82a15a978e3a3488956ab12313194316930dc",
+      "bytes": 4585
     },
     "tests/test_studio_build_contract.py": {
       "sha256": "8df5f97a1de8dd7c21fb5b8a110b19a938ae42fb3a53276d66510fd86572a27f",
@@ -9696,8 +9704,8 @@
       "bytes": 4276
     },
     "tests/test_studio_server.py": {
-      "sha256": "15238e764ab64b9b86d92627a52bf4bef9a99a68d9b14b95df5fc79ef5f5ddc7",
-      "bytes": 4020
+      "sha256": "652a0f198e1b14b939dbf3a151c4f1b66f7dc4f403785e276cf7f4a540590eff",
+      "bytes": 5861
     },
     "tests/test_studio_source.py": {
       "sha256": "54e7208bb1930dbb7bb3cffdd2e4c6205f824d0a7c21fdb2933715b459b9409c",
@@ -9744,20 +9752,20 @@
       "bytes": 18537
     },
     "tools/check_injection_vectors.py": {
-      "sha256": "ba0f15d346d5c8750876fe430499ef4665b0da598243ebd1af7482a49d396a03",
-      "bytes": 3873
+      "sha256": "7e97c8a72b0200950ef6d8f8c02aca78441a1a0472927a0ca600c63b543470d7",
+      "bytes": 5818
     },
     "tools/check_requirements_ambiguity.py": {
       "sha256": "06a9d244e9e10d167d0ea7e9b5c2111b0dde9a132c9fdb6481e11536688bf25c",
       "bytes": 4681
     },
     "tools/check_resource_leaks.py": {
-      "sha256": "404e488eabee8e6811f74147429849372322f65351c0743fecd0b2d6bf3761cb",
-      "bytes": 2616
+      "sha256": "e090b226969566cd550d561f714cb82ba2fc0b3ccce4d0363749364ee89cf37c",
+      "bytes": 4587
     },
     "tools/check_slop_code.py": {
-      "sha256": "905b4fbbb583dc90880ece891e6334f3a4717aac4aa62165f32e7452aa0108c7",
-      "bytes": 3857
+      "sha256": "4f52d673eefcfb1b8209d0de147a6256efd91fa6e3702d397edee0c350987d35",
+      "bytes": 4741
     },
     "tools/check_strict_types.py": {
       "sha256": "6b85da3ba18ece09b2766212c579cd3fbfa583c2e0daca9c68b2fdd9aeee4457",
@@ -9768,8 +9776,8 @@
       "bytes": 14477
     },
     "tools/check_test_integrity.py": {
-      "sha256": "78505caa90eea6132cef3a1b74d632fa483f1e2329a86e1a08c85e99ea7f1368",
-      "bytes": 6180
+      "sha256": "db5db3faea51c34946a9527aa9492a6a52c8ad8c20d807bf68d8a4769cc67b73",
+      "bytes": 6546
     },
     "tools/doctor.py": {
       "sha256": "569026707bd9b227140791763da24ee202546cd69ce8f2fdeb9b4c378394afcc",
@@ -9784,8 +9792,8 @@
       "bytes": 24529
     },
     "tools/loop_runner.py": {
-      "sha256": "dae0d09d8350615154ef6e9bc7dc7b217b7304cde87d9a4bbe752de1a15be1d5",
-      "bytes": 15519
+      "sha256": "4d20606f337b83fc0d00a39b61da63264216000feb128bf65b62af0085094293",
+      "bytes": 17493
     },
     "tools/manage_cage.py": {
       "sha256": "c13daa23f24a49831f8b48d3f40134b257daa8fe283ffea4c89e32094a871306",
@@ -9796,8 +9804,8 @@
       "bytes": 13196
     },
     "tools/multilang_ast.py": {
-      "sha256": "18269ba273f2c6fe3311b4ad9f54337f36775929ab8d62e3087ce319f1dfc890",
-      "bytes": 19232
+      "sha256": "9ad4da05e4e42f1f3d00ed7c25696d12671a130202fdea8dbe4c4957026e93d0",
+      "bytes": 19318
     },
     "tools/multilang_runner.py": {
       "sha256": "31f1a042866575b983a33f95a4b5202d18b71ecd93eb45d334dbadd63a061816",

@@ -44,6 +44,39 @@ class SecurityASTVisitor(ast.NodeVisitor):
                         "message": f"Subprocess invocation '{func_name}' with 'shell=True' vulnerable to command injection"
                     })
 
+        is_os_call = isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name) and node.func.value.id == "os"
+        if (is_bare_name and func_name in ["system", "popen"]) or (is_os_call and func_name in ["system", "popen"]):
+            self.findings.append({
+                "file": self.filename,
+                "line": node.lineno,
+                "severity": "CRITICAL",
+                "type": "unsafe_os_system",
+                "message": f"Direct shell command execution via '{func_name}()' exposes codebase to command injection"
+            })
+
+        if isinstance(node.func, ast.Attribute) and node.func.attr == "format":
+            if isinstance(node.func.value, ast.Constant) and isinstance(node.func.value.value, str):
+                if any(sql_kw in node.func.value.value.upper() for sql_kw in ["SELECT ", "INSERT INTO ", "UPDATE ", "DELETE FROM "]):
+                    self.findings.append({
+                        "file": self.filename,
+                        "line": node.lineno,
+                        "severity": "HIGH",
+                        "type": "potential_sql_injection",
+                        "message": "str.format() detected inside SQL statement. Use parameterized queries instead."
+                    })
+
+        self.generic_visit(node)
+
+    def visit_BinOp(self, node):
+        if isinstance(node.op, ast.Mod) and isinstance(node.left, ast.Constant) and isinstance(node.left.value, str):
+            if any(sql_kw in node.left.value.upper() for sql_kw in ["SELECT ", "INSERT INTO ", "UPDATE ", "DELETE FROM "]):
+                self.findings.append({
+                    "file": self.filename,
+                    "line": node.lineno,
+                    "severity": "HIGH",
+                    "type": "potential_sql_injection",
+                    "message": "String modulo formatting (%) detected inside SQL statement. Use parameterized queries instead."
+                })
         self.generic_visit(node)
 
     def visit_JoinedStr(self, node):

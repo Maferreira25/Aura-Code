@@ -4,7 +4,16 @@ Provides programmatic and CLI access to AST linters, Clean Architecture contract
 supply chain anti-hallucination engines, and MCP guardrails.
 """
 
-from tools.version import FRAMEWORK_VERSION
+import importlib
+import sys
+
+try:
+    from tools.version import FRAMEWORK_VERSION
+except ImportError:
+    _tools_pkg = importlib.import_module("auracode.tools")
+    sys.modules["tools"] = _tools_pkg
+    _version_mod = importlib.import_module("auracode.tools.version")
+    FRAMEWORK_VERSION = getattr(_version_mod, "FRAMEWORK_VERSION", "0.3.0.dev0")
 
 __version__ = FRAMEWORK_VERSION
 

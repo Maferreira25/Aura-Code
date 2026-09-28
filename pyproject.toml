@@ -46,7 +46,7 @@ test = [
 ]
 
 [project.scripts]
-auracode = "tools.assurance:main"
+auracode = "auracode.cli:main"
 
 [project.urls]
 "Homepage" = "https://github.com/Maferreira25/Aura-Code"
@@ -54,13 +54,28 @@ auracode = "tools.assurance:main"
 "Repository" = "https://github.com/Maferreira25/Aura-Code"
 "Issues" = "https://github.com/Maferreira25/Aura-Code/issues"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["auracode*", "tools*", "controls*", "profiles*", "schemas*", "templates*", "validation*"]
+[tool.setuptools.package-dir]
+"auracode.tools" = "tools"
+"auracode.templates" = "templates"
+"auracode.schemas" = "schemas"
+"auracode.profiles" = "profiles"
+"auracode.controls" = "controls"
+
+[tool.setuptools]
+packages = [
+  "auracode",
+  "auracode.studio",
+  "auracode.tools",
+  "auracode.templates",
+  "auracode.schemas",
+  "auracode.profiles",
+  "auracode.controls",
+]
 
 [tool.setuptools.package-data]
 "*" = ["*.json", "*.md", "*.txt", "*.yaml", "*.yml"]
 "auracode.studio" = ["assets/**/*"]
+"auracode.templates" = ["**/*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

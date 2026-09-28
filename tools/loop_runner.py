@@ -20,12 +20,13 @@ from typing import Any, Dict, List, Optional, Tuple
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
-def _run_cmd(cmd: List[str], cwd: Path) -> Tuple[int, str, str]:
+def _run_cmd(cmd: List[str], cwd: Path, env: Optional[Dict[str, str]] = None) -> Tuple[int, str, str]:
     """Runs a command safely and captures output."""
     try:
         res = subprocess.run(
             cmd,
             cwd=str(cwd),
+            env=env,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -169,6 +170,8 @@ def run_loop(
     max_iterations: int = 10,
     stop_on_fail: bool = True,
     dry_run: bool = False,
+    agent_cmd: Optional[str] = None,
+    require_churn: bool = False,
 ) -> Dict[str, Any]:
     """Executes the autonomous loop machine using Ralph stateless architecture."""
     state_mgr = LoopStateManager(workspace_root)
@@ -217,6 +220,34 @@ def run_loop(
         state_mgr.save_tasks(tasks, tasks_file)
         state_mgr.save_state(state)
 
+        if agent_cmd:
+            print(f"[AURA LOOP AGENT] Dispatching task [{task_id}] to agent: {agent_cmd}")
+            import shlex
+            cmd_parts = shlex.split(agent_cmd, posix=os.name != "nt")
+            env = os.environ.copy()
+            env["AURA_TASK_ID"] = str(task_id)
+            env["AURA_TASK_TITLE"] = str(task_title)
+            env["AURA_TASK_DESCRIPTION"] = str(pending_task.get("description", ""))
+            agent_rc, _, agent_err = _run_cmd(cmd_parts, workspace_root, env=env)
+            if agent_rc != 0:
+                print(f"[AURA LOOP AGENT WARNING] Agent returned code {agent_rc}: {agent_err}")
+
+        churn_rc, churn_stdout, _ = _run_cmd(["git", "status", "--porcelain"], workspace_root)
+        has_churn = churn_rc == 0 and bool(churn_stdout.strip())
+        if require_churn and not dry_run and not has_churn:
+            print(f"[AURA LOOP CHURN] Warning: No file changes detected for task [{task_id}].")
+            state["consecutive_failures"] += 1
+            pending_task["status"] = "failed"
+            state["failed_tasks"].append(task_id)
+            state_mgr.save_tasks(tasks, tasks_file)
+            state_mgr.save_state(state)
+            return {
+                "status": "NO_CHURN_DETECTED",
+                "error": f"Task [{task_id}] produced no code changes. Cannot commit empty diff.",
+                "iterations_run": iterations_run,
+                "task": task_id,
+            }
+
         if dry_run:
             print(f"[DRY-RUN] Simulating verification for task {task_id}...")
             verification = {
@@ -249,10 +280,11 @@ def run_loop(
             state["completed_tasks"].append(task_id)
             state["consecutive_failures"] = 0
 
-            # Commit changes to Git if inside git repo
-            commit_msg = f"feat(agent): [{task_id}] {task_title} [Assurance 5-Level Pass]"
-            _run_cmd(["git", "add", "."], workspace_root)
-            _run_cmd(["git", "commit", "-m", commit_msg], workspace_root)
+            # Commit changes to Git if inside git repo and churn was detected
+            if has_churn:
+                commit_msg = f"feat(agent): [{task_id}] {task_title} [Assurance 5-Level Pass]"
+                _run_cmd(["git", "add", "."], workspace_root)
+                _run_cmd(["git", "commit", "-m", commit_msg], workspace_root)
         else:
             print(f"[AURA LOOP FAIL] Task [{task_id}] FAILED verification: {verification['errors']}")
             state["consecutive_failures"] += 1
@@ -316,6 +348,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     run_p.add_argument("--tasks-file", "-t", type=str, default=None, help="Path to custom tasks JSON backlog")
     run_p.add_argument("--dry-run", action="store_true", help="Simulate loop execution without running full suites")
     run_p.add_argument("--continue-on-fail", action="store_true", help="Do not stop loop on verification failure")
+    run_p.add_argument("--agent-cmd", "-a", type=str, default=None, help="Agent CLI command to invoke per iteration")
+    run_p.add_argument("--require-churn", action="store_true", help="Require genuine git file modifications before verification")
     run_p.add_argument("--json", action="store_true", help="Output summary in JSON format")
 
     # status
@@ -342,6 +376,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             max_iterations=args.max_iterations,
             stop_on_fail=not args.continue_on_fail,
             dry_run=args.dry_run,
+            agent_cmd=args.agent_cmd,
+            require_churn=args.require_churn,
         )
         if args.json:
             print(json.dumps(res, indent=2, ensure_ascii=False))
