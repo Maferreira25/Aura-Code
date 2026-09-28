@@ -56,3 +56,19 @@ Se qualquer um desses itens falhar: **Interrompa a execução**, avise o usuári
 
 4. **Implementação Visual da Interface**:
    - Aplique somente os princípios visuais explicitamente aprovados no caderno de design correspondente ao perfil; não invente cores, animações, tipografia ou estilo.
+
+---
+
+## 🛠️ Comandos da CLI
+
+```bash
+# Verificar pré-requisitos e aprovação humana antes de construir
+auracode forward --check-prereqs --profile=standard
+
+# Criar o scaffolding das camadas Clean Architecture e contracts.json
+auracode forward --scaffold
+
+# Auditar a qualidade e garantias da aplicação construída
+auracode forward --audit
+```
+

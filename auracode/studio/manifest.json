@@ -13,28 +13,28 @@
   "assets": [
     {
       "path": "server.py",
-      "bytes": 10230,
-      "sha256": "54cfea3b94b8d2f61131e9353994859451e4c745c0ffde36afe593d37bc5c905"
+      "bytes": 18807,
+      "sha256": "96e8a13242352e6f7c0cb420feb2214a06eac395709972ba3e4c10848bd7acca"
     },
     {
       "path": "assets/404.html",
       "bytes": 7611,
-      "sha256": "63117d91f2ce76e0f6bdc02add876d2d3ef7072329c569bf1505fdc4c4951804"
+      "sha256": "57d164c0ed280a9739fe7ca39fc101f3cb05ef76edc03dfa90e3e8bbbaf5b79c"
     },
     {
       "path": "assets/__next.__PAGE__.txt",
       "bytes": 3380,
-      "sha256": "be2bcbff51a6e07a6614b12493939d938ce36bd20c530c7b3ff8e6535b400be5"
+      "sha256": "98a279926103e707d05b9a2fd1c21c6a63a5f6a9b582954986dd30aea520fe1b"
     },
     {
       "path": "assets/__next._full.txt",
       "bytes": 3886,
-      "sha256": "402a21326fa6632605cc368672734d67deb9fba5e61401a362d8c6bcc7e4ad35"
+      "sha256": "8371949a118edca520c099fc116a4c25d45b279da57bf9bb1e3bebfaec4aa77a"
     },
     {
       "path": "assets/__next._tree.txt",
       "bytes": 255,
-      "sha256": "41ce08e6d48cb1c3ff3b67d977d691e9424a1f80a61bfeb8214f28356c3ad4f7"
+      "sha256": "1c2b1d9cbd4899bd42f773ff9b4d6e0ae1e5903866c99662d2de192d7fff48a2"
     },
     {
       "path": "assets/_next/static/auracode-studio-0.3.0-dev.0/_buildManifest.js",
@@ -52,19 +52,19 @@
       "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
     },
     {
-      "path": "assets/_next/static/chunks/01fa1likq_2vg.js",
-      "bytes": 24365,
-      "sha256": "e2fde4825401f41f79afdfcf185e0063dbb87f87cff245b210c88a89479cd454"
-    },
-    {
       "path": "assets/_next/static/chunks/0cz1d0mv5g_q7.js",
       "bytes": 112594,
       "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
     },
     {
-      "path": "assets/_next/static/chunks/0xz-09ztbddg8.css",
-      "bytes": 8505,
-      "sha256": "9063b959fd28342fe9598fe2923741f0893a8cfc8c729649a491d0bb773e4b92"
+      "path": "assets/_next/static/chunks/1wx0u4y0hla_p.js",
+      "bytes": 29962,
+      "sha256": "8ec0af695781691ee029d500e6846d610e5a9f56f5e2a56b1dd800722efab9d9"
+    },
+    {
+      "path": "assets/_next/static/chunks/1xjfktgk27h88.css",
+      "bytes": 9008,
+      "sha256": "aa35ec076a103435990118fde887dce849dc091371a2a5cd256be86b3f8aebd6"
     },
     {
       "path": "assets/_next/static/chunks/27t_qfc-3_lzs.js",
@@ -94,37 +94,37 @@
     {
       "path": "assets/_not-found/__next._full.txt",
       "bytes": 4974,
-      "sha256": "8e7e9ce0e6934393d8ae43d6090cdf39986addba3d44a42d79fede53197c6157"
+      "sha256": "d461f65fc7d784179c1768a8ad49e03c88fd8c7791b6dc801b3212876c6eb059"
     },
     {
       "path": "assets/_not-found/__next._not-found/__PAGE__.txt",
       "bytes": 4078,
-      "sha256": "0197869db7e387866085ce8e96db7b4d9c4316564aac77fbc5567c156fa8c044"
+      "sha256": "c6ca29f2e5543ec18556f02793befecfc070b8c1c68f69d30b94e1d56579af35"
     },
     {
       "path": "assets/_not-found/__next._tree.txt",
       "bytes": 333,
-      "sha256": "75162ace35512af4cfb4cc577e5e7b3f5450f84895e0b993d7fbe5585812980d"
+      "sha256": "74fd344b7dd3e7e85955a12e32a5cf56159f37431768e8e0beed69c6e1bfe8de"
     },
     {
       "path": "assets/_not-found.html",
       "bytes": 7611,
-      "sha256": "63117d91f2ce76e0f6bdc02add876d2d3ef7072329c569bf1505fdc4c4951804"
+      "sha256": "57d164c0ed280a9739fe7ca39fc101f3cb05ef76edc03dfa90e3e8bbbaf5b79c"
     },
     {
       "path": "assets/_not-found.txt",
       "bytes": 4974,
-      "sha256": "8e7e9ce0e6934393d8ae43d6090cdf39986addba3d44a42d79fede53197c6157"
+      "sha256": "d461f65fc7d784179c1768a8ad49e03c88fd8c7791b6dc801b3212876c6eb059"
     },
     {
       "path": "assets/index.html",
-      "bytes": 8513,
-      "sha256": "6848ded2e1fd58f470cb0ab3d7fd3a821857cfc8890bb2c2f41a9534b1854bea"
+      "bytes": 8803,
+      "sha256": "4d84d51471e958d541865369cd63903366791fa32e81ae4275230441b5205137"
     },
     {
       "path": "assets/index.txt",
       "bytes": 3886,
-      "sha256": "402a21326fa6632605cc368672734d67deb9fba5e61401a362d8c6bcc7e4ad35"
+      "sha256": "8371949a118edca520c099fc116a4c25d45b279da57bf9bb1e3bebfaec4aa77a"
     }
   ]
 }

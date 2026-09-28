@@ -43,6 +43,11 @@ from tools import skill_packages
 from tools import iteration
 from tools import generated_artifact
 from tools import studio_package
+from tools import clarify_engine
+from tools import brainstorm_engine
+from tools import forward_engine
+from tools import debugger_engine
+from tools import refactor_engine
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -331,6 +336,43 @@ def main() -> None:
     studio_p = subparsers.add_parser("studio", help="Open the packaged Aura Studio on local loopback")
     studio_p.add_argument("--port", type=int, default=0, help="Loopback port; zero selects a free port")
     studio_p.add_argument("--no-browser", action="store_true", help="Do not open the system browser")
+
+    # Subcommand: clarify
+    clarify_p = subparsers.add_parser("clarify", help="Non-technical requirements clarification and briefing (Aura Clarify)")
+    clarify_p.add_argument("topic", nargs="?", default="Requisitos do Sistema", help="Feature or topic to clarify")
+    clarify_p.add_argument("--save", action="store_true", help="Save clarification to _auracode_sdd/")
+    clarify_p.add_argument("--json", action="store_true", help="Output in JSON format")
+
+    # Subcommand: brainstorm
+    brainstorm_p = subparsers.add_parser("brainstorm", help="Product ideation and feature prioritization (Aura Brainstorm)")
+    brainstorm_p.add_argument("idea", nargs="?", default="Aplicativo de gestão", help="Raw software idea to brainstorm")
+    brainstorm_p.add_argument("--save", action="store_true", help="Save brainstorm synthesis to _auracode_sdd/")
+    brainstorm_p.add_argument("--json", action="store_true", help="Output in JSON format")
+
+    # Subcommand: forward
+    forward_p = subparsers.add_parser("forward", help="Clean Architecture construction & specification execution (Aura Forward)")
+    forward_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    forward_p.add_argument("--profile", "-p", choices=["micro", "lite", "standard", "enterprise"], default="standard", help="Blueprint assurance profile")
+    forward_p.add_argument("--check-prereqs", action="store_true", help="Check Blueprint prerequisites and human approval")
+    forward_p.add_argument("--scaffold", action="store_true", help="Scaffold Clean Architecture layers and base contracts")
+    forward_p.add_argument("--audit", action="store_true", help="Execute AST audit on forward application code")
+    forward_p.add_argument("--json", action="store_true", help="Output in JSON format")
+
+    # Subcommand: debug (alias: debugger)
+    debug_p = subparsers.add_parser("debug", aliases=["debugger"], help="Mandatory bug reproduction and triage engine (Aura Debugger)")
+    debug_p.add_argument("bug_id", nargs="?", default="bug_001", help="Bug identifier")
+    debug_p.add_argument("--desc", "-d", type=str, default="Comportamento inesperado relatado", help="Bug description")
+    debug_p.add_argument("--create-test", action="store_true", help="Generate automated reproduction test in tests/")
+    debug_p.add_argument("--verify-repro", action="store_true", help="Verify that reproduction test fails as expected")
+    debug_p.add_argument("--verify-fix", action="store_true", help="Verify that fix passes test and causes zero regressions")
+    debug_p.add_argument("--json", action="store_true", help="Output in JSON format")
+
+    # Subcommand: refactor
+    refactor_p = subparsers.add_parser("refactor", help="Surgical code improvement and ROI-driven cleanup (Aura Refactor)")
+    refactor_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    refactor_p.add_argument("--plan", action="store_true", help="Generate refactoring plan in _auracode_refactor/")
+    refactor_p.add_argument("--save", action="store_true", help="Save plan to _auracode_refactor/plan.md")
+    refactor_p.add_argument("--json", action="store_true", help="Output in JSON format")
 
     args = parser.parse_args()
 
@@ -676,6 +718,61 @@ def main() -> None:
         except (OSError, ValueError) as exc:
             print(f"Aura Studio could not start: {exc}")
             sys.exit(2)
+        sys.exit(0)
+
+    elif args.command == "clarify":
+        c_argv = ["clarify_engine.py", args.topic]
+        if args.save:
+            c_argv.append("--save")
+        if args.json:
+            c_argv.append("--json")
+        _dispatch_with_argv(c_argv, clarify_engine.main)
+        sys.exit(0)
+
+    elif args.command == "brainstorm":
+        b_argv = ["brainstorm_engine.py", args.idea]
+        if args.save:
+            b_argv.append("--save")
+        if args.json:
+            b_argv.append("--json")
+        _dispatch_with_argv(b_argv, brainstorm_engine.main)
+        sys.exit(0)
+
+    elif args.command == "forward":
+        f_argv = ["forward_engine.py", args.target, f"--profile={args.profile}"]
+        if args.check_prereqs:
+            f_argv.append("--check-prereqs")
+        if args.scaffold:
+            f_argv.append("--scaffold")
+        if args.audit:
+            f_argv.append("--audit")
+        if args.json:
+            f_argv.append("--json")
+        _dispatch_with_argv(f_argv, forward_engine.main)
+        sys.exit(0)
+
+    elif args.command in ("debug", "debugger"):
+        d_argv = ["debugger_engine.py", args.bug_id, f"--desc={args.desc}"]
+        if args.create_test:
+            d_argv.append("--create-test")
+        if args.verify_repro:
+            d_argv.append("--verify-repro")
+        if args.verify_fix:
+            d_argv.append("--verify-fix")
+        if args.json:
+            d_argv.append("--json")
+        _dispatch_with_argv(d_argv, debugger_engine.main)
+        sys.exit(0)
+
+    elif args.command == "refactor":
+        r_argv = ["refactor_engine.py", args.target]
+        if args.plan:
+            r_argv.append("--plan")
+        if args.save:
+            r_argv.append("--save")
+        if args.json:
+            r_argv.append("--json")
+        _dispatch_with_argv(r_argv, refactor_engine.main)
         sys.exit(0)
 
 

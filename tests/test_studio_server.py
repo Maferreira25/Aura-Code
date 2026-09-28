@@ -125,6 +125,17 @@ class StudioServerTests(unittest.TestCase):
                 data = json.loads(resp.read().decode("utf-8"))
                 self.assertEqual(data["total_decisions"], 74)
 
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/agents", timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                data = json.loads(resp.read().decode("utf-8"))
+                self.assertGreaterEqual(data["total_agents"], 15)
+
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/services", timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                data = json.loads(resp.read().decode("utf-8"))
+                self.assertIn("services", data)
+                self.assertGreaterEqual(len(data["services"]), 3)
+
             req = urllib.request.Request(f"http://127.0.0.1:{port}/studio/v1/unknown")
             with self.assertRaises(urllib.error.HTTPError) as raised:
                 urllib.request.urlopen(req, timeout=3)

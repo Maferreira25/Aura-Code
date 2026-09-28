@@ -61,3 +61,19 @@ Opção B: (Como o WhatsApp no celular)
 
 Qual dessas opções você prefere para o seu sistema? Sobrou alguma dúvida sobre como cada uma funciona?
 ```
+
+---
+
+## 🛠️ Comandos da CLI
+
+```bash
+# Executar clarificação com LLM ou motor heurístico offline
+auracode clarify "Autenticação de usuários e permissões"
+
+# Salvar o briefing de clarificação diretamente na Planta Teórica (_auracode_sdd/)
+auracode clarify "Armazenamento de arquivos e relatórios" --save
+
+# Obter as perguntas e opções em formato JSON estruturado
+auracode clarify "Regras de negócio" --json
+```
+

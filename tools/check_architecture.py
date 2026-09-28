@@ -227,8 +227,11 @@ def check_file_architecture(
         # Check allowed imports whitelist (if configured)
         if allowed_imports is not None:
             is_allowed = False
+            intra_layer_top = layer_name if imp.get("level", 0) == 1 else None
+            intra_layer_mod = f"{layer_name}.{mod}" if (imp.get("level", 0) == 1 and mod) else intra_layer_top
             for allowed in allowed_imports:
-                if top == allowed or mod == allowed or mod.startswith(f"{allowed}.") or base_mod == allowed:
+                if (top == allowed or mod == allowed or mod.startswith(f"{allowed}.") or base_mod == allowed
+                        or (intra_layer_top and (intra_layer_top == allowed or intra_layer_mod == allowed or intra_layer_mod.startswith(f"{allowed}.")))):
                     is_allowed = True
                     break
             if not is_allowed and (top or mod):

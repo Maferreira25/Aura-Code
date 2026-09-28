@@ -15,3 +15,16 @@ O `auracode-refactor` limpa e melhora o código da aplicação sem alterar como 
 - **Tipagem Estrita**: Adiciona type hints em funções que estavam genéricas.
 - **Isolamento de Camadas**: Verifica pelo contrato de arquitetura que regras do negócio não dependam diretamente de bibliotecas visuais ou de banco de dados.
 - **ROI Real**: Foca a refatoração onde realmente traz ganho de segurança ou desempenho, sem refatorar código que já funciona perfeitamente.
+
+---
+
+## 🛠️ Comandos da CLI
+
+```bash
+# Analisar oportunidades de refatoração de alto ROI
+auracode refactor .
+
+# Gerar o plano de refatoração cirúrgica em _auracode_refactor/plan.md
+auracode refactor . --plan
+```
+

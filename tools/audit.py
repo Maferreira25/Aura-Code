@@ -27,7 +27,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from tools.multilang_ast import MultiLangASTAnalyzer, SUPPORTED_EXTENSIONS
+from tools.multilang_ast import MultiLangASTAnalyzer, SUPPORTED_EXTENSIONS, HAS_TREE_SITTER
 from tools import check_strict_types
 from tools import check_test_integrity
 from tools import check_architecture
@@ -112,7 +112,7 @@ def discover_source_files(workspace_dir: Path, include_benchmarks: bool = False)
     workspace_dir = workspace_dir.resolve()
     ignored_parts = {
         ".git", "node_modules", "dist", "build", "vendor", "out",
-        "__pycache__", "venv", ".venv", ".agents", ".auracode", ".next", ".turbo"
+        "__pycache__", "venv", ".venv", ".agents", ".auracode", ".next", "_next", ".turbo"
     }
     if not include_benchmarks:
         ignored_parts.update({"validation", "scenarios", "reference"})
@@ -124,14 +124,29 @@ def discover_source_files(workspace_dir: Path, include_benchmarks: bool = False)
             parts = Path(rel).parts
             if any(
                 p in ignored_parts
-                or p.startswith("_auracode_")
+                or (p.startswith("_auracode_") and p != "_auracode_forward")
+                or p.startswith("wheel-")
+                or p.endswith(".dist-info")
                 or p.startswith("_reversa_")
                 for p in parts
             ) or ("auracode" in parts and "studio" in parts and "assets" in parts):
                 continue
 
             fname = Path(f).name.lower()
-            if "tests" in parts or fname.startswith("test_") or fname.endswith("_test.py"):
+            is_test = (
+                "tests" in parts
+                or "__tests__" in parts
+                or fname.startswith("test_")
+                or fname.endswith("_test.py")
+                or fname.endswith(".test.ts")
+                or fname.endswith(".spec.ts")
+                or fname.endswith(".test.js")
+                or fname.endswith(".spec.js")
+                or fname.endswith(".test.tsx")
+                or fname.endswith(".spec.tsx")
+                or fname.endswith("_test.go")
+            )
+            if is_test:
                 test_files.append((f, lang))
             else:
                 app_files.append((f, lang))
@@ -231,25 +246,41 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
     if sdd_dir.is_dir() and any(sdd_dir.glob("*.md")):
         ambiguity_result = check_requirements_ambiguity.analyze_workspace(str(sdd_dir))
 
-    source_method = "python_ast"
-    clean_source_status = "PASS"
-    clean_source_reason = "Structural Python AST checks completed."
     if non_python_app_files:
-        source_method = "python_ast_plus_non_python_heuristics"
-        clean_source_status = "NOT_RUN"
-        clean_source_reason = (
-            "Non-Python checks are heuristic and cannot prove absence of violations. "
-            "A finding still fails the guarantee."
-        )
+        if HAS_TREE_SITTER:
+            source_method = "python_ast_plus_treesitter_cst"
+            clean_source_status = "PASS"
+            clean_source_reason = (
+                "Structural Python AST and Tree-sitter Concrete Syntax Tree (CST) checks completed."
+            )
+        else:
+            source_method = "python_ast_missing_multilang_cst"
+            clean_source_status = "NOT_RUN"
+            clean_source_reason = (
+                "Tree-sitter parser is not installed for non-Python files. "
+                "Install with 'pip install auracode[multilang]' to enable multi-language AST/CST guarantees."
+            )
+    else:
+        source_method = "python_ast"
+        clean_source_status = "PASS"
+        clean_source_reason = "Structural Python AST checks completed."
 
     def source_guarantee(findings: List[Dict[str, Any]]) -> Dict[str, Any]:
-        status = "FAIL" if findings else clean_source_status
+        if any(f.get("type") == "parser_unavailable" for f in findings):
+            status = "NOT_RUN"
+            reason = "Tree-sitter parser unavailable for one or more discovered file types."
+        elif findings:
+            status = "FAIL"
+            reason = clean_source_reason
+        else:
+            status = clean_source_status
+            reason = clean_source_reason
         return _guarantee(
             status,
             source_method,
             files_scanned=len(app_files),
             findings=len(findings),
-            reason=clean_source_reason,
+            reason=reason,
         )
 
     guarantees: Dict[str, Dict[str, Any]] = {

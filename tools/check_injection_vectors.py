@@ -106,7 +106,12 @@ def main() -> None:
     for ext in extensions:
         target_files.extend(glob.glob(os.path.join(workspace_dir, '**', ext), recursive=True))
 
-    ignored = ['.git', 'node_modules', 'venv', '.venv', '__pycache__', '.agents', '.auracode', 'validation/scenarios', 'validation/reference', 'dist', 'build', 'out', 'auracode/studio/assets', '_auracode_forward', '_reversa_', '.next', '.turbo']
+    ignored = [
+        '.git', 'node_modules', 'venv', '.venv', '__pycache__', '.agents',
+        '.auracode', 'validation/scenarios', 'validation/reference', 'dist',
+        'build', 'out', 'auracode/studio/assets', '_reversa_', '.next', '_next', '.turbo',
+        'wheel-', '.dist-info'
+    ]
     target_files = [f for f in target_files if not any(x in f.replace('\\', '/') for x in ignored)]
 
     all_findings = []

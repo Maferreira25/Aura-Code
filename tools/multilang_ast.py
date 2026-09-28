@@ -1,51 +1,98 @@
 #!/usr/bin/env python3
 """
-AuraCode Multi-Language AST Analysis Engine (Phases 1 & 2).
-Provides unified static analysis for:
-- Python (.py)
-- Node.js / TypeScript (.js, .jsx, .ts, .tsx)
-- Go (.go)
-- Java (.java)
-- C# / .NET (.cs)
+AuraCode Multi-Language AST Analysis Engine.
+Provides unified Concrete Syntax Tree (CST) and AST static analysis for:
+- Python (.py) via Python standard `ast`
+- Node.js / TypeScript (.js, .jsx, .ts, .tsx) via Tree-sitter CST
+- Go (.go) via Tree-sitter CST
+- Java (.java) via Tree-sitter CST
+- C# / .NET (.cs) via Tree-sitter CST
 
 Detects AI slop, swallowed exceptions, unclosed resource leaks, and injection vectors across language boundaries.
 """
 
 import os
-import re
 import ast
-import json
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 SUPPORTED_EXTENSIONS = {
     ".py": "python",
     ".js": "javascript",
     ".jsx": "javascript",
     ".ts": "typescript",
-    ".tsx": "typescript",
+    ".tsx": "tsx",
     ".go": "go",
     ".java": "java",
-    ".cs": "csharp"
+    ".cs": "csharp",
 }
-
-# Try importing tree_sitter if grammars are available
-HAS_TREE_SITTER = False
-try:
-    import tree_sitter
-    HAS_TREE_SITTER = True
-except ImportError:
-    HAS_TREE_SITTER = False
 
 PLACEHOLDER_TERMS = [
     "todo: implement",
     "dummy response",
     "fake fallback",
-    "mock data here"
+    "mock data here",
 ]
+
+SQL_KEYWORDS = ["SELECT ", "INSERT INTO ", "UPDATE ", "DELETE FROM ", "DROP TABLE ", "ALTER TABLE "]
+
+
+def _is_sql_injection_vector(text: str) -> bool:
+    """Check if a string appears to be a dynamic SQL query while ignoring HTML tags like <select>."""
+    upper = text.upper()
+    if any(kw in upper for kw in ["INSERT INTO ", "DELETE FROM ", "DROP TABLE ", "ALTER TABLE "]):
+        return True
+    if "UPDATE " in upper and " SET " in upper:
+        return True
+    if "SELECT " in upper and " FROM " in upper:
+        return not ("<SELECT" in upper and upper.count("SELECT ") == upper.count("<SELECT "))
+    return False
+
+HAS_TREE_SITTER = False
+_PARSERS: Dict[str, Any] = {}
+_LANGUAGES: Dict[str, Any] = {}
+
+
+def _init_tree_sitter() -> None:
+    global HAS_TREE_SITTER, _PARSERS, _LANGUAGES
+    try:
+        import tree_sitter
+        import tree_sitter_javascript
+        import tree_sitter_typescript
+        import tree_sitter_go
+        import tree_sitter_java
+        import tree_sitter_c_sharp
+
+        langs = {
+            "javascript": tree_sitter.Language(tree_sitter_javascript.language()),
+            "typescript": tree_sitter.Language(tree_sitter_typescript.language_typescript()),
+            "tsx": tree_sitter.Language(tree_sitter_typescript.language_tsx()),
+            "go": tree_sitter.Language(tree_sitter_go.language()),
+            "java": tree_sitter.Language(tree_sitter_java.language()),
+            "csharp": tree_sitter.Language(tree_sitter_c_sharp.language()),
+        }
+        _LANGUAGES = langs
+        _PARSERS = {k: tree_sitter.Parser(v) for k, v in langs.items()}
+        HAS_TREE_SITTER = True
+    except ImportError:
+        HAS_TREE_SITTER = False
+
+
+_init_tree_sitter()
+
+
+def _walk_cst(root_node: Any) -> Generator[Any, None, None]:
+    if root_node is None:
+        return
+    stack = [root_node]
+    while stack:
+        curr = stack.pop()
+        yield curr
+        if hasattr(curr, "children") and curr.children:
+            stack.extend(reversed(curr.children))
 
 
 class MultiLangASTAnalyzer:
-    """Unified analyzer for Python, JavaScript, TypeScript, Go, Java, and C# files."""
+    """Unified analyzer for Python, JavaScript, TypeScript, Go, Java, and C# files using AST & CST."""
 
     def __init__(self, workspace_dir: Optional[str] = None):
         self.workspace_dir = workspace_dir or os.getcwd()
@@ -53,6 +100,14 @@ class MultiLangASTAnalyzer:
     def get_language(self, filepath: str) -> Optional[str]:
         ext = os.path.splitext(filepath)[1].lower()
         return SUPPORTED_EXTENSIONS.get(ext)
+
+    def _parse_cst(self, content: str, lang: str) -> Optional[Any]:
+        if not HAS_TREE_SITTER or lang not in _PARSERS:
+            return None
+        try:
+            return _PARSERS[lang].parse(content.encode("utf-8", errors="ignore"))
+        except Exception:
+            return None
 
     def analyze_slop(self, filepath: str) -> List[Dict[str, Any]]:
         """Scans Python, JS/TS, Go, Java, or C# files for dead code, swallowed exceptions, and placeholders."""
@@ -72,17 +127,31 @@ class MultiLangASTAnalyzer:
                 "message": f"Failed to read file: {str(e)}"
             }]
 
-        violations = []
         if lang == "python":
-            violations.extend(self._analyze_slop_python(filepath, rel_path, content))
-        elif lang in ("javascript", "typescript"):
-            violations.extend(self._analyze_slop_jsts(filepath, rel_path, content))
-        elif lang == "go":
-            violations.extend(self._analyze_slop_go(filepath, rel_path, content))
-        elif lang in ("java", "csharp"):
-            violations.extend(self._analyze_slop_javacsharp(filepath, rel_path, content, lang))
+            return self._analyze_slop_python(filepath, rel_path, content)
 
-        return violations
+        if not HAS_TREE_SITTER or lang not in _PARSERS:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "parser_unavailable",
+                "message": f"Tree-sitter parser for '{lang}' is not installed. Run 'pip install auracode[multilang]' to enable multi-language AST analysis."
+            }]
+
+        tree = self._parse_cst(content, lang)
+        if tree is None:
+            return []
+
+        if lang in ("javascript", "typescript", "tsx"):
+            return self._analyze_slop_jsts_cst(tree, rel_path, content)
+        elif lang == "go":
+            return self._analyze_slop_go_cst(tree, rel_path, content)
+        elif lang == "java":
+            return self._analyze_slop_java_cst(tree, rel_path, content)
+        elif lang == "csharp":
+            return self._analyze_slop_csharp_cst(tree, rel_path, content)
+
+        return []
 
     def analyze_leaks(self, filepath: str) -> List[Dict[str, Any]]:
         """Scans Python, JS/TS, Go, Java, or C# files for unclosed resource leaks."""
@@ -102,17 +171,31 @@ class MultiLangASTAnalyzer:
                 "message": f"Failed to read file: {str(e)}"
             }]
 
-        violations = []
         if lang == "python":
-            violations.extend(self._analyze_leaks_python(filepath, rel_path, content))
-        elif lang in ("javascript", "typescript"):
-            violations.extend(self._analyze_leaks_jsts(filepath, rel_path, content))
-        elif lang == "go":
-            violations.extend(self._analyze_leaks_go(filepath, rel_path, content))
-        elif lang in ("java", "csharp"):
-            violations.extend(self._analyze_leaks_javacsharp(filepath, rel_path, content, lang))
+            return self._analyze_leaks_python(filepath, rel_path, content)
 
-        return violations
+        if not HAS_TREE_SITTER or lang not in _PARSERS:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "parser_unavailable",
+                "message": f"Tree-sitter parser for '{lang}' is not installed. Run 'pip install auracode[multilang]' to enable multi-language AST analysis."
+            }]
+
+        tree = self._parse_cst(content, lang)
+        if tree is None:
+            return []
+
+        if lang in ("javascript", "typescript", "tsx"):
+            return self._analyze_leaks_jsts_cst(tree, rel_path, content)
+        elif lang == "go":
+            return self._analyze_leaks_go_cst(tree, rel_path, content)
+        elif lang == "java":
+            return self._analyze_leaks_java_cst(tree, rel_path, content)
+        elif lang == "csharp":
+            return self._analyze_leaks_csharp_cst(tree, rel_path, content)
+
+        return []
 
     def analyze_security(self, filepath: str) -> List[Dict[str, Any]]:
         """Scans Python, JS/TS, Go, Java, or C# files for injection vectors and security hazards."""
@@ -132,17 +215,31 @@ class MultiLangASTAnalyzer:
                 "message": f"Failed to read file: {str(e)}"
             }]
 
-        violations = []
         if lang == "python":
-            violations.extend(self._analyze_security_python(filepath, rel_path, content))
-        elif lang in ("javascript", "typescript"):
-            violations.extend(self._analyze_security_jsts(filepath, rel_path, content))
-        elif lang == "go":
-            violations.extend(self._analyze_security_go(filepath, rel_path, content))
-        elif lang in ("java", "csharp"):
-            violations.extend(self._analyze_security_javacsharp(filepath, rel_path, content, lang))
+            return self._analyze_security_python(filepath, rel_path, content)
 
-        return violations
+        if not HAS_TREE_SITTER or lang not in _PARSERS:
+            return [{
+                "file": rel_path,
+                "line": 1,
+                "type": "parser_unavailable",
+                "message": f"Tree-sitter parser for '{lang}' is not installed. Run 'pip install auracode[multilang]' to enable multi-language AST analysis."
+            }]
+
+        tree = self._parse_cst(content, lang)
+        if tree is None:
+            return []
+
+        if lang in ("javascript", "typescript", "tsx"):
+            return self._analyze_security_jsts_cst(tree, rel_path, content)
+        elif lang == "go":
+            return self._analyze_security_go_cst(tree, rel_path, content)
+        elif lang == "java":
+            return self._analyze_security_java_cst(tree, rel_path, content)
+        elif lang == "csharp":
+            return self._analyze_security_csharp_cst(tree, rel_path, content)
+
+        return []
 
     # --- Python Analyzers ---
     def _analyze_slop_python(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
@@ -211,276 +308,418 @@ class MultiLangASTAnalyzer:
                 "message": f"Failed to parse Python file: {str(e)}"
             }]
 
-    # --- JS/TS Analyzers ---
-    def _analyze_slop_jsts(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
+    # --- JS/TS/TSX CST Analyzers ---
+    def _analyze_slop_jsts_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
-        lines = content.splitlines()
-        multiline_empty_catch = re.compile(r"catch\s*(?:\([^)]*\))?\s*\{([^{}]*)\}", re.DOTALL)
-        for m in multiline_empty_catch.finditer(content):
-            body = m.group(1)
-            stripped = re.sub(r"//.*|/\*.*?\*/", "", body, flags=re.DOTALL).strip()
-            if not stripped:
-                line_no = content[:m.start()].count("\n") + 1
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "catch_clause":
+                body = node.child_by_field_name("body")
+                if not body:
+                    for c in node.named_children:
+                        if c.type == "statement_block":
+                            body = c
+                            break
+                if body:
+                    non_comment = [c for c in body.named_children if c.type != "comment"]
+                    if len(non_comment) == 0:
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "silent_exception_swallowing",
+                            "message": "Empty 'catch {}' block swallows errors without logging or re-raising"
+                        })
+            elif node.type in ("string", "template_string", "comment"):
+                text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore").lower()
+                for term in PLACEHOLDER_TERMS:
+                    if term in text:
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "dummy_placeholder_string",
+                            "message": f"Hardcoded placeholder string found: '{term}'"
+                        })
+                        break
+        return violations
+
+    def _analyze_leaks_jsts_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
+        violations = []
+        content_bytes = content.encode("utf-8", errors="ignore")
+        open_nodes = []
+        has_close = False
+        for node in _walk_cst(tree.root_node):
+            if node.type == "call_expression":
+                fn = node.child_by_field_name("function")
+                if fn:
+                    fn_text = content_bytes[fn.start_byte:fn.end_byte].decode("utf-8", errors="ignore")
+                    if fn_text in ("fs.openSync", "fs.open", "net.connect", "tls.connect"):
+                        open_nodes.append(node)
+                    elif fn_text in ("fs.closeSync", "fs.close") or fn_text.endswith(".close") or fn_text.endswith(".destroy"):
+                        has_close = True
+
+        if open_nodes and not has_close:
+            for onode in open_nodes:
                 violations.append({
                     "file": rel_path,
-                    "line": line_no,
-                    "type": "silent_exception_swallowing",
-                    "message": "Empty 'catch {}' block swallows errors without logging or re-raising"
+                    "line": onode.start_point[0] + 1,
+                    "type": "unclosed_resource_leak",
+                    "message": "Resource opened via fs.open/net.connect without corresponding close() call"
                 })
+        return violations
 
-        placeholder_terms = PLACEHOLDER_TERMS
-
-        for idx, line in enumerate(lines, 1):
-            line_lower = line.lower()
-            for term in placeholder_terms:
-                if term in line_lower and ("//" in line or "/*" in line or "'" in line or '"' in line or "`" in line):
+    def _analyze_security_jsts_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
+        violations = []
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "call_expression":
+                fn = node.child_by_field_name("function")
+                if fn:
+                    fn_text = content_bytes[fn.start_byte:fn.end_byte].decode("utf-8", errors="ignore")
+                    if fn_text == "eval":
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "eval_execution",
+                            "message": "Dynamic code execution via eval() detected"
+                        })
+                    elif fn_text in ("child_process.exec", "child_process.execSync", "cp.exec", "cp.execSync"):
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "shell_command_injection",
+                            "message": "Unchecked shell command execution via child_process.exec() detected"
+                        })
+            elif node.type == "binary_expression":
+                left = node.child_by_field_name("left")
+                right = node.child_by_field_name("right")
+                if left and right:
+                    left_text = content_bytes[left.start_byte:left.end_byte].decode("utf-8", errors="ignore")
+                    right_text = content_bytes[right.start_byte:right.end_byte].decode("utf-8", errors="ignore")
+                    combined = left_text + " " + right_text
+                    if _is_sql_injection_vector(combined) and (left.type == "string" or right.type == "string") and not (left.type == "string" and right.type == "string"):
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "sql_injection_vector",
+                            "message": "Potential SQL injection vector via string concatenation detected"
+                        })
+            elif node.type == "template_string":
+                text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
+                has_sub = any(c.type == "template_substitution" for c in node.children)
+                if has_sub and _is_sql_injection_vector(text):
                     violations.append({
                         "file": rel_path,
-                        "line": idx,
-                        "type": "dummy_placeholder_string",
-                        "message": f"Hardcoded placeholder string found: '{term}'"
+                        "line": node.start_point[0] + 1,
+                        "type": "sql_injection_vector",
+                        "message": "Potential SQL injection vector via string concatenation detected"
                     })
-                    break
-
         return violations
 
-    def _analyze_leaks_jsts(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
+    # --- Go CST Analyzers ---
+    def _analyze_slop_go_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
-        lines = content.splitlines()
-
-        open_regex = re.compile(r"\b(fs\.openSync|fs\.open|net\.connect|tls\.connect)\b")
-        close_regex = re.compile(r"\b(fs\.closeSync|fs\.close|\.close\(\)|\.destroy\(\))\b")
-
-        has_open = False
-        open_line = 1
-        for idx, line in enumerate(lines, 1):
-            if open_regex.search(line):
-                has_open = True
-                open_line = idx
-
-        clean_content = re.sub(r"//.*|/\*.*?\*/", "", content, flags=re.DOTALL)
-        if has_open and not close_regex.search(clean_content):
-            violations.append({
-                "file": rel_path,
-                "line": open_line,
-                "type": "unclosed_resource_leak",
-                "message": "Resource opened via fs.open/net.connect without corresponding close() call"
-            })
-
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "assignment_statement":
+                left = node.child_by_field_name("left")
+                right = node.child_by_field_name("right")
+                if left and right:
+                    l_text = content_bytes[left.start_byte:left.end_byte].decode("utf-8", errors="ignore").strip()
+                    r_text = content_bytes[right.start_byte:right.end_byte].decode("utf-8", errors="ignore").strip()
+                    if l_text == "_" and r_text == "err":
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "silent_exception_swallowing",
+                            "message": "Ignored error assignment '_ = err' swallows Go error without handling"
+                        })
+            elif node.type == "if_statement":
+                cond = node.child_by_field_name("condition")
+                consequence = node.child_by_field_name("consequence")
+                if cond and consequence:
+                    c_text = content_bytes[cond.start_byte:cond.end_byte].decode("utf-8", errors="ignore")
+                    if "err" in c_text and "nil" in c_text:
+                        non_comment = [c for c in consequence.named_children if c.type != "comment"]
+                        if len(non_comment) == 0:
+                            violations.append({
+                                "file": rel_path,
+                                "line": node.start_point[0] + 1,
+                                "type": "silent_exception_swallowing",
+                                "message": "Empty 'if err != nil {}' block swallows error silently"
+                            })
+            elif node.type in ("interpreted_string_literal", "raw_string_literal", "comment"):
+                text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore").lower()
+                for term in PLACEHOLDER_TERMS:
+                    if term in text:
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "dummy_placeholder_string",
+                            "message": f"Hardcoded placeholder string found: '{term}'"
+                        })
+                        break
         return violations
 
-    def _analyze_security_jsts(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
+    def _analyze_leaks_go_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
-        lines = content.splitlines()
+        content_bytes = content.encode("utf-8", errors="ignore")
+        open_nodes = []
+        has_defer_close = False
+        for node in _walk_cst(tree.root_node):
+            if node.type == "call_expression":
+                fn = node.child_by_field_name("function")
+                if fn:
+                    fn_text = content_bytes[fn.start_byte:fn.end_byte].decode("utf-8", errors="ignore")
+                    if fn_text in ("http.Get", "http.Post", "http.Head", "http.Do", "os.Open", "os.OpenFile", "os.Create"):
+                        open_nodes.append(node)
+            elif node.type == "defer_statement":
+                d_text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
+                if "Close()" in d_text:
+                    has_defer_close = True
 
-        eval_regex = re.compile(r"\beval\s*\(")
-        exec_regex = re.compile(r"\b(child_process|cp)\.(exec|execSync)\s*\(")
-        sql_concat_regex = re.compile(r"SELECT\s+.*\s+FROM\s+.*\s*\+\s*|INSERT\s+INTO\s+.*\s*\+\s*|UPDATE\s+.*\s+SET\s+.*\s*\+\s*|DELETE\s+FROM\s+.*\s*\+\s*", re.IGNORECASE)
-
-        for idx, line in enumerate(lines, 1):
-            if eval_regex.search(line):
+        if open_nodes and not has_defer_close:
+            for onode in open_nodes:
                 violations.append({
                     "file": rel_path,
-                    "line": idx,
-                    "type": "eval_execution",
-                    "message": "Dynamic code execution via eval() detected"
+                    "line": onode.start_point[0] + 1,
+                    "type": "unclosed_resource_leak",
+                    "message": "Resource opened via http/os without corresponding 'defer Close()' call"
                 })
-            if exec_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "shell_command_injection",
-                    "message": "Unchecked shell command execution via child_process.exec() detected"
-                })
-            if sql_concat_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "sql_injection_vector",
-                    "message": "Potential SQL injection vector via string concatenation detected"
-                })
-
         return violations
 
-    # --- Go Analyzers ---
-    def _analyze_slop_go(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
+    def _analyze_security_go_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
-        lines = content.splitlines()
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "call_expression":
+                fn = node.child_by_field_name("function")
+                if fn:
+                    fn_text = content_bytes[fn.start_byte:fn.end_byte].decode("utf-8", errors="ignore")
+                    if fn_text == "exec.Command":
+                        args = node.child_by_field_name("arguments")
+                        if args:
+                            args_text = content_bytes[args.start_byte:args.end_byte].decode("utf-8", errors="ignore")
+                            if any(sh in args_text for sh in ('"sh"', '"bash"', '"cmd"', '"powershell"')):
+                                violations.append({
+                                    "file": rel_path,
+                                    "line": node.start_point[0] + 1,
+                                    "type": "shell_command_injection",
+                                    "message": "Unchecked shell command invocation via exec.Command(sh/bash) detected"
+                                })
+                    elif fn_text == "fmt.Sprintf":
+                        args = node.child_by_field_name("arguments")
+                        if args:
+                            args_text = content_bytes[args.start_byte:args.end_byte].decode("utf-8", errors="ignore")
+                            if any(kw in args_text.upper() for kw in SQL_KEYWORDS) and len(args.named_children) > 1:
+                                violations.append({
+                                    "file": rel_path,
+                                    "line": node.start_point[0] + 1,
+                                    "type": "sql_injection_vector",
+                                    "message": "Potential SQL injection vector via fmt.Sprintf/string concatenation detected"
+                                })
+            elif node.type == "binary_expression":
+                left = node.child_by_field_name("left")
+                right = node.child_by_field_name("right")
+                if left and right:
+                    left_text = content_bytes[left.start_byte:left.end_byte].decode("utf-8", errors="ignore")
+                    right_text = content_bytes[right.start_byte:right.end_byte].decode("utf-8", errors="ignore")
+                    has_sql = any(kw in left_text.upper() or kw in right_text.upper() for kw in SQL_KEYWORDS)
+                    if has_sql and (left.type.endswith("string_literal") or right.type.endswith("string_literal")):
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "sql_injection_vector",
+                            "message": "Potential SQL injection vector via fmt.Sprintf/string concatenation detected"
+                        })
+        return violations
 
-        ignored_err_regex = re.compile(r"_\s*=\s*err\b")
-        empty_err_if_regex = re.compile(r"if\s+err\s*!=\s*nil\s*\{\s*\}")
-        placeholder_terms = PLACEHOLDER_TERMS
+    # --- Java CST Analyzers ---
+    def _analyze_slop_java_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
+        violations = []
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "catch_clause":
+                body = node.child_by_field_name("body")
+                if body:
+                    non_comment = [c for c in body.named_children if "comment" not in c.type]
+                    if len(non_comment) == 0:
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "silent_exception_swallowing",
+                            "message": "Empty catch block swallows Java exception without logging or re-raising"
+                        })
+            elif node.type in ("string_literal", "line_comment", "block_comment"):
+                text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore").lower()
+                for term in PLACEHOLDER_TERMS:
+                    if term in text:
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "dummy_placeholder_string",
+                            "message": f"Hardcoded placeholder string found: '{term}'"
+                        })
+                        break
+        return violations
 
-        for idx, line in enumerate(lines, 1):
-            if ignored_err_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "silent_exception_swallowing",
-                    "message": "Ignored error assignment '_ = err' swallows Go error without handling"
-                })
-            if empty_err_if_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "silent_exception_swallowing",
-                    "message": "Empty 'if err != nil {}' block swallows error silently"
-                })
+    def _analyze_leaks_java_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
+        violations = []
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "object_creation_expression":
+                type_node = node.child_by_field_name("type")
+                if type_node:
+                    t_name = content_bytes[type_node.start_byte:type_node.end_byte].decode("utf-8", errors="ignore")
+                    if t_name in ("FileInputStream", "FileOutputStream", "FileReader", "FileWriter", "Socket", "ServerSocket"):
+                        curr = node.parent
+                        inside_try_with_res = False
+                        while curr:
+                            if curr.type == "try_with_resources_statement":
+                                inside_try_with_res = True
+                                break
+                            curr = curr.parent
+                        if not inside_try_with_res and b".close()" not in content_bytes:
+                            violations.append({
+                                "file": rel_path,
+                                "line": node.start_point[0] + 1,
+                                "type": "unclosed_resource_leak",
+                                "message": "Java resource initialized without try-with-resources / using / Dispose() call"
+                            })
+        return violations
 
-            line_lower = line.lower()
-            for term in placeholder_terms:
-                if term in line_lower:
+    def _analyze_security_java_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
+        violations = []
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "method_invocation":
+                m_text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
+                if "Runtime.getRuntime().exec" in m_text:
                     violations.append({
                         "file": rel_path,
-                        "line": idx,
-                        "type": "dummy_placeholder_string",
-                        "message": f"Hardcoded placeholder string found: '{term}'"
+                        "line": node.start_point[0] + 1,
+                        "type": "shell_command_injection",
+                        "message": "Unchecked system command execution in Java detected"
                     })
-                    break
-
+            elif node.type == "object_creation_expression":
+                type_node = node.child_by_field_name("type")
+                if type_node:
+                    t_name = content_bytes[type_node.start_byte:type_node.end_byte].decode("utf-8", errors="ignore")
+                    if t_name == "ProcessBuilder":
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "shell_command_injection",
+                            "message": "Unchecked system command execution in Java detected"
+                        })
+            elif node.type == "binary_expression":
+                left = node.child_by_field_name("left")
+                right = node.child_by_field_name("right")
+                if left and right:
+                    left_text = content_bytes[left.start_byte:left.end_byte].decode("utf-8", errors="ignore")
+                    right_text = content_bytes[right.start_byte:right.end_byte].decode("utf-8", errors="ignore")
+                    has_sql = any(kw in left_text.upper() or kw in right_text.upper() for kw in SQL_KEYWORDS)
+                    if has_sql and (left.type == "string_literal" or right.type == "string_literal") and not (left.type == "string_literal" and right.type == "string_literal"):
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "sql_injection_vector",
+                            "message": "Potential SQL injection vector via string concatenation in Java detected"
+                        })
         return violations
 
-    def _analyze_leaks_go(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
+    # --- C# CST Analyzers ---
+    def _analyze_slop_csharp_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
-        lines = content.splitlines()
-
-        open_http_regex = re.compile(r"http\.(Get|Post|Head|Do)\s*\(")
-        open_file_regex = re.compile(r"os\.(Open|OpenFile|Create)\s*\(")
-        defer_close_regex = re.compile(r"defer\s+.*\.(Close\(\)|Body\.Close\(\))")
-
-        has_http_open = False
-        has_file_open = False
-        open_line = 1
-
-        for idx, line in enumerate(lines, 1):
-            if open_http_regex.search(line):
-                has_http_open = True
-                open_line = idx
-            if open_file_regex.search(line):
-                has_file_open = True
-                open_line = idx
-
-        content_no_comments = re.sub(r"//.*", "", content)
-        if (has_http_open or has_file_open) and not defer_close_regex.search(content_no_comments):
-            violations.append({
-                "file": rel_path,
-                "line": open_line,
-                "type": "unclosed_resource_leak",
-                "message": "Resource opened via http/os without corresponding 'defer Close()' call"
-            })
-
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "catch_clause":
+                body = node.child_by_field_name("body")
+                if body:
+                    non_comment = [c for c in body.named_children if "comment" not in c.type]
+                    if len(non_comment) == 0:
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "silent_exception_swallowing",
+                            "message": "Empty catch block swallows Csharp exception without logging or re-raising"
+                        })
+            elif node.type in ("string_literal", "verbatim_string_literal", "comment"):
+                text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore").lower()
+                for term in PLACEHOLDER_TERMS:
+                    if term in text:
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "dummy_placeholder_string",
+                            "message": f"Hardcoded placeholder string found: '{term}'"
+                        })
+                        break
         return violations
 
-    def _analyze_security_go(self, filepath: str, rel_path: str, content: str) -> List[Dict[str, Any]]:
+    def _analyze_leaks_csharp_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
-        lines = content.splitlines()
-
-        exec_cmd_regex = re.compile(r"exec\.Command\s*\(\s*\"(sh|bash|cmd|powershell)\"")
-        sql_concat_regex = re.compile(r"SELECT\s+.*\s+FROM\s+.*\s*\+\s*|INSERT\s+INTO\s+.*\s*\+\s*|fmt\.Sprintf\s*\(\s*\"SELECT", re.IGNORECASE)
-
-        for idx, line in enumerate(lines, 1):
-            if exec_cmd_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "shell_command_injection",
-                    "message": "Unchecked shell command invocation via exec.Command(sh/bash) detected"
-                })
-            if sql_concat_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "sql_injection_vector",
-                    "message": "Potential SQL injection vector via fmt.Sprintf/string concatenation detected"
-                })
-
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "object_creation_expression":
+                type_node = node.child_by_field_name("type")
+                if type_node:
+                    t_name = content_bytes[type_node.start_byte:type_node.end_byte].decode("utf-8", errors="ignore")
+                    if t_name in ("FileStream", "StreamReader", "StreamWriter", "TcpClient", "DbContext"):
+                        curr = node.parent
+                        inside_using = False
+                        while curr:
+                            if curr.type == "using_statement":
+                                inside_using = True
+                                break
+                            if curr.type == "local_declaration_statement":
+                                if any(c.type == "using" for c in curr.children):
+                                    inside_using = True
+                                    break
+                            curr = curr.parent
+                        if not inside_using and (b".Dispose()" not in content_bytes and b".Close()" not in content_bytes):
+                            violations.append({
+                                "file": rel_path,
+                                "line": node.start_point[0] + 1,
+                                "type": "unclosed_resource_leak",
+                                "message": "Csharp resource initialized without try-with-resources / using / Dispose() call"
+                            })
         return violations
 
-    # --- Java & C# Analyzers ---
-    def _analyze_slop_javacsharp(self, filepath: str, rel_path: str, content: str, lang: str) -> List[Dict[str, Any]]:
+    def _analyze_security_csharp_cst(self, tree: Any, rel_path: str, content: str) -> List[Dict[str, Any]]:
         violations = []
-        lines = content.splitlines()
-
-        empty_catch_regex = re.compile(r"catch\s*\([^)]*\)\s*\{\s*\}|catch\s*\{\s*\}")
-        placeholder_terms = PLACEHOLDER_TERMS
-
-        for idx, line in enumerate(lines, 1):
-            if empty_catch_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "silent_exception_swallowing",
-                    "message": f"Empty catch block swallows {lang.title()} exception without logging or re-raising"
-                })
-
-            line_lower = line.lower()
-            for term in placeholder_terms:
-                if term in line_lower:
+        content_bytes = content.encode("utf-8", errors="ignore")
+        for node in _walk_cst(tree.root_node):
+            if node.type == "invocation_expression":
+                m_text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
+                if "Process.Start" in m_text:
                     violations.append({
                         "file": rel_path,
-                        "line": idx,
-                        "type": "dummy_placeholder_string",
-                        "message": f"Hardcoded placeholder string found: '{term}'"
+                        "line": node.start_point[0] + 1,
+                        "type": "shell_command_injection",
+                        "message": "Unchecked system command execution in Csharp detected"
                     })
-                    break
-
-        return violations
-
-    def _analyze_leaks_javacsharp(self, filepath: str, rel_path: str, content: str, lang: str) -> List[Dict[str, Any]]:
-        violations = []
-        lines = content.splitlines()
-
-        if lang == "java":
-            open_res_regex = re.compile(r"new\s+(FileInputStream|FileOutputStream|FileReader|FileWriter|Socket|ServerSocket)\s*\(")
-            safe_try_regex = re.compile(r"try\s*\([^)]*(FileInputStream|FileOutputStream|FileReader|FileWriter|Socket|AutoCloseable)[^)]*\)")
-            close_regex = re.compile(r"\.close\(\)")
-        else:  # csharp
-            open_res_regex = re.compile(r"new\s+(FileStream|StreamReader|StreamWriter|TcpClient|DbContext)\s*\(")
-            safe_try_regex = re.compile(r"\busing\s*\([^)]+\)|\busing\s+var\s+")
-            close_regex = re.compile(r"\.(Dispose|Close)\(\)")
-
-        has_open = False
-        open_line = 1
-        for idx, line in enumerate(lines, 1):
-            if open_res_regex.search(line):
-                has_open = True
-                open_line = idx
-
-        if has_open and not (safe_try_regex.search(content) or close_regex.search(content)):
-            violations.append({
-                "file": rel_path,
-                "line": open_line,
-                "type": "unclosed_resource_leak",
-                "message": f"{lang.title()} resource initialized without try-with-resources / using / Dispose() call"
-            })
-
-        return violations
-
-    def _analyze_security_javacsharp(self, filepath: str, rel_path: str, content: str, lang: str) -> List[Dict[str, Any]]:
-        violations = []
-        lines = content.splitlines()
-
-        if lang == "java":
-            exec_regex = re.compile(r"Runtime\.getRuntime\(\)\.exec\s*\(|ProcessBuilder\s*\(")
-        else:  # csharp
-            exec_regex = re.compile(r"Process\.Start\s*\(")
-
-        sql_concat_regex = re.compile(r"SELECT\s+.*\s+FROM\s+.*\s*\+\s*|INSERT\s+INTO\s+.*\s*\+\s*|String\.format\s*\(\s*\"SELECT", re.IGNORECASE)
-
-        for idx, line in enumerate(lines, 1):
-            if exec_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "shell_command_injection",
-                    "message": f"Unchecked system command execution in {lang.title()} detected"
-                })
-            if sql_concat_regex.search(line):
-                violations.append({
-                    "file": rel_path,
-                    "line": idx,
-                    "type": "sql_injection_vector",
-                    "message": f"Potential SQL injection vector via string concatenation in {lang.title()} detected"
-                })
-
+            elif node.type == "binary_expression":
+                left = node.child_by_field_name("left")
+                right = node.child_by_field_name("right")
+                if left and right:
+                    left_text = content_bytes[left.start_byte:left.end_byte].decode("utf-8", errors="ignore")
+                    right_text = content_bytes[right.start_byte:right.end_byte].decode("utf-8", errors="ignore")
+                    has_sql = any(kw in left_text.upper() or kw in right_text.upper() for kw in SQL_KEYWORDS)
+                    if has_sql and (left.type in ("string_literal", "verbatim_string_literal") or right.type in ("string_literal", "verbatim_string_literal")) and not (left.type.endswith("string_literal") and right.type.endswith("string_literal")):
+                        violations.append({
+                            "file": rel_path,
+                            "line": node.start_point[0] + 1,
+                            "type": "sql_injection_vector",
+                            "message": "Potential SQL injection vector via string concatenation in Csharp detected"
+                        })
+            elif node.type == "interpolated_string_expression":
+                text = content_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="ignore")
+                has_sql = any(kw in text.upper() for kw in SQL_KEYWORDS)
+                if has_sql:
+                    violations.append({
+                        "file": rel_path,
+                        "line": node.start_point[0] + 1,
+                        "type": "sql_injection_vector",
+                        "message": "Potential SQL injection vector via string concatenation in Csharp detected"
+                    })
         return violations

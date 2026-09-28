@@ -41,6 +41,26 @@ class AuditTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
+    def test_discovery_includes_auracode_forward_application_code(self):
+        """Application code inside _auracode_forward must be discovered and audited, never bypassed."""
+        temp_dir = Path(tempfile.mkdtemp())
+        try:
+            forward_app = temp_dir / "_auracode_forward" / "my_project" / "domain"
+            forward_app.mkdir(parents=True)
+            (forward_app / "entity.py").write_text("x: int = 1\n", encoding="utf-8")
+            forward_tests = temp_dir / "_auracode_forward" / "my_project" / "tests"
+            forward_tests.mkdir(parents=True)
+            (forward_tests / "test_entity.py").write_text("def test_x(): assert True\n", encoding="utf-8")
+
+            app_files, test_files = discover_source_files(temp_dir)
+            app_names = [Path(path).name for path, _ in app_files]
+            test_names = [Path(path).name for path, _ in test_files]
+
+            self.assertIn("entity.py", app_names)
+            self.assertIn("test_entity.py", test_names)
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
     def test_audit_workspace_structure(self):
         """Verify report exposes explicit guarantees instead of a score."""
         res = audit_workspace(ROOT)
@@ -136,6 +156,24 @@ class AuditTests(unittest.TestCase):
             self.assertGreater(res["violations_summary"]["slop_and_swallowed_errors"], 0)
             self.assertEqual(res["guarantees"]["resource_leaks"]["status"], "FAIL")
             self.assertEqual(res["guarantees"]["slop"]["status"], "FAIL")
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def test_audit_multilang_cst_clean_project_guarantees_pass(self):
+        """Clean multi-language project with Tree-sitter CST yields PASS for slop, leaks, and sec."""
+        temp_dir = Path(tempfile.mkdtemp())
+        try:
+            (temp_dir / "index.ts").write_text(
+                "export function add(a: number, b: number): number {\n"
+                "  return a + b;\n"
+                "}\n",
+                encoding="utf-8"
+            )
+            res = audit_workspace(temp_dir)
+            self.assertEqual(res["guarantees"]["slop"]["status"], "PASS")
+            self.assertEqual(res["guarantees"]["resource_leaks"]["status"], "PASS")
+            self.assertEqual(res["guarantees"]["security"]["status"], "PASS")
+            self.assertEqual(res["guarantees"]["slop"]["method"], "python_ast_plus_treesitter_cst")
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 

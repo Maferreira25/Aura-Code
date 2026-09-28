@@ -32,3 +32,19 @@ O resultado de uma sessão de brainstorming no Aura Code é gravado em `_auracod
 - A lista de funcionalidades essenciais confirmadas pelo usuário.
 - O escopo do primeiro lançamento.
 - Próximo passo recomendado: invocar `/auracode-new` ou `/auracode-clarify` para preencher os detalhes da Planta Teórica.
+
+---
+
+## 🛠️ Comandos da CLI
+
+```bash
+# Executar sessão de ideação sobre uma ideia bruta de software
+auracode brainstorm "Aplicativo para agendamento de barbearia"
+
+# Salvar a síntese priorizada diretamente em _auracode_sdd/
+auracode brainstorm "Gestão de estoque para pequenos comércios" --save
+
+# Obter a estrutura de funcionalidades e riscos em JSON
+auracode brainstorm "Plataforma de cursos online" --json
+```
+
