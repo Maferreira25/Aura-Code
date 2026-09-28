@@ -11,10 +11,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 MANIFEST_EXCLUDE_DIRS = {
     ".git", "__pycache__", "graphify-out", "dist", "build", ".venv", ".pytest_cache",
-    "auracode.egg-info", ".auracode", ".reversa", "framework_audit"
+    "auracode.egg-info", ".auracode", ".reversa", "framework_audit", ".next", "node_modules",
+    ".turbo", ".vscode", ".idea", "workspaces"
 }
-MANIFEST_EXCLUDE_EXTS = {".pyc", ".pyo", ".pyd"}
-MANIFEST_EXCLUDE_FILES = {".DS_Store", "Thumbs.db"}
+MANIFEST_EXCLUDE_EXTS = {".pyc", ".pyo", ".pyd", ".tsbuildinfo", ".log"}
+MANIFEST_EXCLUDE_FILES = {".DS_Store", "Thumbs.db", ".env"}
 MANIFEST_EXCLUDE_ROOT_FILES = {"MANIFEST.json", ".cursorrules", "AGENTS.md", ".gitattributes"}
 
 
