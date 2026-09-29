@@ -157,13 +157,17 @@ def main() -> None:
     do_audit = "--audit" in args
 
     profile = "standard"
+    clean_positionals = []
     for i, a in enumerate(args):
         if a.startswith("--profile="):
             profile = a.split("=", 1)[1]
         elif a in ("--profile", "-p") and i + 1 < len(args):
             profile = args[i + 1]
+        elif not a.startswith("-"):
+            clean_positionals.append(a)
 
-    engine = ForwardEngine()
+    target_dir = Path(clean_positionals[0]).resolve() if clean_positionals else Path.cwd()
+    engine = ForwardEngine(workspace_dir=target_dir)
 
     if check_prereqs or (not do_scaffold and not do_audit):
         prereqs = engine.check_prerequisites(profile=profile)
@@ -185,6 +189,8 @@ def main() -> None:
                 print("\n>> Autorização concedida: Pode iniciar scaffolding e programação.")
             else:
                 print("\n>> AVISO: Construção pausada até que a Planta Teórica seja aprovada.")
+                if check_prereqs:
+                    sys.exit(1)
 
     if do_scaffold:
         scaffold_res = engine.scaffold_clean_architecture()

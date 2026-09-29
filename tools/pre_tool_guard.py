@@ -386,7 +386,9 @@ def inspect_command(command: str) -> Dict[str, Any]:
 
 def generate_hooks_config(workspace_root: Path) -> Dict[str, Any]:
     """Generates standard hooks.json configuration for Antigravity and Agent IDEs."""
-    guard_script = "tools/pre_tool_guard.py"
+    has_local_tool = (workspace_root / "tools" / "pre_tool_guard.py").is_file()
+    guard_cmd = "python tools/pre_tool_guard.py check" if has_local_tool else "auracode guard check"
+    diff_cmd = "python -m tools.assurance diff . --max-lines 500" if has_local_tool else "auracode diff . --max-lines 500"
     return {
         "$schema": "https://json-schemas.org/draft/2020-12/schema",
         "version": "1.0.0",
@@ -399,7 +401,7 @@ def generate_hooks_config(workspace_root: Path) -> Dict[str, Any]:
                     "description": "Intercepts terminal commands before execution to block destructive actions and secret exfiltration.",
                     "match_tools": ["run_command", "bash", "terminal", "execute_command", "shell"],
                     "action": "execute",
-                    "command": f"python {guard_script} check",
+                    "command": guard_cmd,
                     "input_field": "CommandLine",
                     "fail_closed": True,
                 }
@@ -410,7 +412,7 @@ def generate_hooks_config(workspace_root: Path) -> Dict[str, Any]:
                     "description": "Verifies that surgical diff and repository integrity were preserved after tool execution.",
                     "match_tools": ["write_to_file", "replace_file_content", "multi_replace_file_content"],
                     "action": "execute",
-                    "command": "python -m tools.assurance diff . --max-lines 500",
+                    "command": diff_cmd,
                     "fail_closed": False,
                 }
             ]

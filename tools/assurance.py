@@ -250,6 +250,8 @@ def main() -> None:
     loop_run_p.add_argument("--tasks-file", "-t", type=str, default=None, help="Path to custom tasks JSON backlog")
     loop_run_p.add_argument("--dry-run", action="store_true", help="Simulate loop execution without running full suites")
     loop_run_p.add_argument("--continue-on-fail", action="store_true", help="Do not stop loop on verification failure")
+    loop_run_p.add_argument("--agent-cmd", "-a", type=str, default=None, help="Agent CLI command to invoke per iteration")
+    loop_run_p.add_argument("--require-churn", action="store_true", help="Require genuine git file modifications before verification")
     loop_run_p.add_argument("--json", action="store_true", help="Output summary in JSON format")
 
     loop_status_p = loop_sub.add_parser("status", help="Display telemetry and current progress of the loop")
@@ -568,6 +570,10 @@ def main() -> None:
             loop_argv.append("--dry-run")
         if getattr(args, "continue_on_fail", False):
             loop_argv.append("--continue-on-fail")
+        if getattr(args, "agent_cmd", None):
+            loop_argv.extend(["--agent-cmd", args.agent_cmd])
+        if getattr(args, "require_churn", False):
+            loop_argv.append("--require-churn")
         if getattr(args, "json", False):
             loop_argv.append("--json")
         sys.exit(loop_runner.main(loop_argv))

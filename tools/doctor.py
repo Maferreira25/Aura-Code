@@ -5,6 +5,7 @@ import importlib.util
 import json
 import platform
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
@@ -71,9 +72,23 @@ def _verifier_check() -> Dict[str, object]:
     return _check("verifiers", "PASS", True, "Required assurance modules are importable.")
 
 
+def _is_docker_daemon_running(docker_path: str) -> bool:
+    try:
+        proc = subprocess.run(
+            [docker_path, "info"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=2.0,
+        )
+        return proc.returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
 def run_doctor(
     package_root: Path = PACKAGE_ROOT,
     executable_lookup: Optional[Callable[[str], Optional[str]]] = None,
+    docker_daemon_check: Optional[Callable[[str], bool]] = None,
 ) -> Dict[str, object]:
     """Inspect internal package completeness and relevant host capabilities."""
     root = Path(package_root).resolve()
@@ -155,15 +170,30 @@ def run_doctor(
         )
     )
     docker_path = lookup("docker")
-    checks.append(
-        _check(
-            "docker",
-            "PASS" if docker_path else "NOT_APPLICABLE",
-            False,
-            f"Docker found at {docker_path}." if docker_path else "Docker is optional until cage, preview, or deployment is requested.",
-            "Install Docker before using container-dependent workflows." if not docker_path else "",
+    daemon_checker = docker_daemon_check or _is_docker_daemon_running
+    if docker_path:
+        daemon_ok = daemon_checker(docker_path)
+        checks.append(
+            _check(
+                "docker",
+                "PASS" if daemon_ok else "NOT_RUN",
+                False,
+                f"Docker found at {docker_path} and daemon is responsive."
+                if daemon_ok
+                else f"Docker CLI found at {docker_path}, but daemon is not running.",
+                "" if daemon_ok else "Start Docker Desktop or dockerd if containerized workflows are needed.",
+            )
         )
-    )
+    else:
+        checks.append(
+            _check(
+                "docker",
+                "NOT_APPLICABLE",
+                False,
+                "Docker is optional until cage, preview, or deployment is requested.",
+                "Install Docker before using container-dependent workflows.",
+            )
+        )
 
     required_states = {str(item["status"]) for item in checks if item["required"]}
     if "ERROR" in required_states or "FAIL" in required_states:
@@ -185,10 +215,13 @@ def print_doctor_report(report: Dict[str, object], as_json: bool = False) -> Non
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return
     print(f"AuraCode doctor: {report['status']}")
-    for item in report["checks"]:
-        print(f"[{item['status']}] {item['id']}: {item['reason']}")
-        if item["remedy"]:
-            print(f"  Next step: {item['remedy']}")
+    raw_checks = report.get("checks", [])
+    checks = raw_checks if isinstance(raw_checks, list) else []
+    for item in checks:
+        if isinstance(item, dict):
+            print(f"[{item.get('status')}] {item.get('id')}: {item.get('reason')}")
+            if item.get("remedy"):
+                print(f"  Next step: {item.get('remedy')}")
 
 
 def main(argv: Optional[List[str]] = None) -> int:

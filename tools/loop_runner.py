@@ -231,6 +231,8 @@ def run_loop(
             agent_rc, _, agent_err = _run_cmd(cmd_parts, workspace_root, env=env)
             if agent_rc != 0:
                 print(f"[AURA LOOP AGENT WARNING] Agent returned code {agent_rc}: {agent_err}")
+        elif not dry_run:
+            print(f"[AURA LOOP NOTICE] No --agent-cmd specified. Verifying workspace state for task [{task_id}].")
 
         churn_rc, churn_stdout, _ = _run_cmd(["git", "status", "--porcelain"], workspace_root)
         has_churn = churn_rc == 0 and bool(churn_stdout.strip())

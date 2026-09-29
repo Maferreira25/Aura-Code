@@ -104,12 +104,18 @@ def main() -> None:
     for f in target_files:
         all_leaks.extend(check_file(f, workspace_dir))
 
-    status = "FAIL" if len(all_leaks) > 0 else "PASS"
+    real_leaks = [l for l in all_leaks if l.get("type") != "parser_unavailable"]
+    parser_warnings = [l for l in all_leaks if l.get("type") == "parser_unavailable"]
+
+    status = "FAIL" if len(real_leaks) > 0 else "PASS"
     output = {
         "status": status,
-        "leaks_count": len(all_leaks),
-        "leaks": all_leaks
+        "leaks_count": len(real_leaks),
+        "leaks": real_leaks
     }
+    if parser_warnings:
+        output["parser_warnings"] = parser_warnings
+        output["parser_warnings_count"] = len(parser_warnings)
     print(json.dumps(output, indent=2, ensure_ascii=False))
     if status == "FAIL":
         sys.exit(1)

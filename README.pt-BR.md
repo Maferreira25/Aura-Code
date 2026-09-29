@@ -202,7 +202,11 @@ python --version
 Enquanto não houver distribuição oficial assinada, a instalação abaixo usa diretamente o repositório de desenvolvimento e não deve ser tratada como release estável:
 
 ```bash
+# Garantias padrão focadas em Python:
 pip install git+https://github.com/Maferreira25/Aura-Code.git
+
+# Opcional: Com suporte AST multilíngue via Tree-sitter (TypeScript, JavaScript, Go, Java, C#):
+pip install "auracode[multilang] @ git+https://github.com/Maferreira25/Aura-Code.git"
 ```
 
 Para verificar o que foi realmente instalado:
@@ -210,7 +214,7 @@ Para verificar o que foi realmente instalado:
 auracode doctor
 auracode skills verify
 ```
-Na versão atual, o `doctor` informa `studio=PASS` para a integridade do pacote, mas mantém o resultado geral como `NOT_RUN` porque `studio_workflows=NOT_RUN`: os fluxos guiados ainda não foram implementados e validados. Isso é uma limitação conhecida, não um sucesso completo.
+Na versão atual, o `doctor` informa `studio=PASS` para a integridade do pacote, mas mantém o resultado geral como `NOT_RUN` porque `studio_workflows=NOT_RUN`: os fluxos guiados ainda não foram implementados e validados. Isso é uma limitação conhecida, não um sucesso completo. Adicionalmente, o `doctor` verifica se o daemon do Docker está ativo (apontando `NOT_RUN` caso o executável do Docker exista mas o serviço esteja desligado).
 
 Para copiar as skills oficiais verificadas para o projeto sem sobrescrever alterações locais:
 ```bash
@@ -338,31 +342,36 @@ auracode cage init .
 auracode cage verify
 
 # 19. Runner de execução autônoma sob a Arquitetura Ralph (Aura Loop)
-auracode loop run --max-turns 10
+auracode loop run --agent-cmd "python meu_agente.py" --max-turns 10 --require-churn
 auracode loop status
 auracode loop reset
 
-# 20. Debate agêntico adversarial estruturado em 3 fases com contenção (Party Mode Seguro)
+# 20. Motores de Geração de Código e Refatoração (Suporte a diretório-alvo)
+auracode forward . --check-prereqs
+auracode refactor . --check-prereqs
+auracode debugger . --check-prereqs
+
+# 21. Debate agêntico adversarial estruturado em 3 fases com contenção (Party Mode Seguro)
 auracode debate "Sistema de Armazenamento de Arquivos"
 
-# 21. Verificação Preflight Local e Espelho do CI/CD (Executa todos os 10 gates localmente antes do push)
+# 22. Verificação Preflight Local e Espelho do CI/CD (Executa todos os 10 gates localmente antes do push)
 auracode preflight
 
-# 22. Auditoria por evidências com estados PASS/FAIL/NOT_RUN/NOT_APPLICABLE/ERROR
+# 23. Auditoria por evidências com estados PASS/FAIL/NOT_RUN/NOT_APPLICABLE/ERROR
 auracode audit .
 auracode audit . --output laudo_auditoria.txt
 auracode audit . --json
 
-# 23. Diagnosticar a prévia instalada e expor componentes ausentes
+# 24. Diagnosticar a prévia instalada e expor componentes ausentes
 auracode doctor
 auracode doctor --json
 
-# 24. Verificar, listar ou instalar com segurança as skills oficiais empacotadas
+# 25. Verificar, listar ou instalar com segurança as skills oficiais empacotadas
 auracode skills verify
 auracode skills list
 auracode skills install .
 
-# 25. Abrir, verificar e selar uma linha de base temporal da iteração (máximo de 500 linhas)
+# 26. Abrir, verificar e selar uma linha de base temporal da iteração (máximo de 500 linhas)
 auracode iteration begin . --id ac-f01-wizard --requirement AC-F01 --scope "tools/wizard.py,tests/test_wizard.py" --allow-tests
 auracode iteration verify . --id ac-f01-wizard
 auracode iteration seal . --id ac-f01-wizard

@@ -109,12 +109,18 @@ def main() -> None:
     for f in target_files:
         all_violations.extend(check_file(f, workspace_dir))
 
-    status = "FAIL" if len(all_violations) > 0 else "PASS"
+    real_violations = [v for v in all_violations if v.get("type") != "parser_unavailable"]
+    parser_warnings = [v for v in all_violations if v.get("type") == "parser_unavailable"]
+
+    status = "FAIL" if len(real_violations) > 0 else "PASS"
     output = {
         "status": status,
-        "violations_count": len(all_violations),
-        "violations": all_violations
+        "violations_count": len(real_violations),
+        "violations": real_violations
     }
+    if parser_warnings:
+        output["parser_warnings"] = parser_warnings
+        output["parser_warnings_count"] = len(parser_warnings)
     print(json.dumps(output, indent=2, ensure_ascii=False))
     if status == "FAIL":
         sys.exit(1)

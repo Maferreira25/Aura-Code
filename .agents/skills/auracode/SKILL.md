@@ -54,8 +54,26 @@ Quando acionado, apresente o menu ao usuário e auxilie-o a escolher o fluxo cor
 7. **`/auracode-refactor`** (ou `auracode-refactor`):
    - Limpeza e otimização de código sem alterar o comportamento do sistema.
 
-8. **`/auracode-agents-help`** (ou `auracode-agents-help`):
-   - Explicação detalhada sobre a função de cada agente especializado do Aura Code.
+8. **`/auracode-guard`** (ou `auracode-guard`):
+   - Proteção ativa em tempo de execução via hooks contra comandos destrutivos e vazamentos (`auracode guard`).
+
+9. **`/auracode-worktree`** (ou `auracode-worktree`):
+   - Isolamento físico de branches em pastas temporárias para agentes (`auracode worktree`).
+
+10. **`/auracode-cage`** (ou `auracode-cage`):
+    - Sandbox DevContainer com firewall Default-Deny para modo YOLO seguro (`auracode cage`).
+
+11. **`/auracode-loop`** (ou `auracode-loop`):
+    - Runner autônomo baseado na Arquitetura Ralph com anti-dumb-zone e anti-reward-hacking (`auracode loop`).
+
+12. **`/auracode-debate`** (ou `auracode-debate`):
+    - Orquestrador de debate agêntico com contenção em subagentes isolados.
+
+13. **`/auracode-adversary`** (ou `auracode-adversary`):
+    - Agente auditor contestador para testar segurança, vazamentos e oráculos viciados.
+
+14. **`/auracode-agents-help`** (ou `auracode-agents-help`):
+    - Explicação detalhada sobre a função de cada agente especializado do Aura Code com analogias didáticas.
 
 ---
 

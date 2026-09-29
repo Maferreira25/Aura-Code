@@ -140,7 +140,10 @@ def main() -> None:
     is_json = "--json" in args
     save_plan = "--save" in args or "--plan" in args
 
-    engine = RefactorEngine()
+    clean_positionals = [a for a in args if not a.startswith("-")]
+    target_dir = Path(clean_positionals[0]).resolve() if clean_positionals else Path.cwd()
+
+    engine = RefactorEngine(workspace_dir=target_dir)
     analysis = engine.analyze_opportunities()
 
     if save_plan:

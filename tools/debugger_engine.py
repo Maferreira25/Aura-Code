@@ -77,12 +77,14 @@ class DebuggerEngine:
         if not test_content:
             test_content = (
                 f'#!/usr/bin/env python3\n'
-                f'"""Reproduction test for bug {bug_id}. Must fail until fix is implemented."""\n'
+                f'"""Reproduction test for bug {bug_id}. Must fail with a concrete assertion until fix is implemented."""\n'
                 f'import unittest\n\n'
                 f'class TestReproduce_{bug_id}(unittest.TestCase):\n'
                 f'    def test_failure_reproduction(self):\n'
-                f'        # TODO: Alinhe as asserções com a falha relatada\n'
-                f'        self.fail("Defeito {bug_id} reproduzido com sucesso: aguardando correcao cirurgica.")\n\n'
+                f'        # Alinhe as variaveis abaixo com o cenario real do defeito:\n'
+                f'        resultado_obtido = "defeito_{bug_id}_nao_corrigido"\n'
+                f'        comportamento_esperado = "sucesso"\n'
+                f'        self.assertEqual(resultado_obtido, comportamento_esperado, "Defeito {bug_id} reproduzido: aguardando correcao.")\n\n'
                 f'if __name__ == "__main__":\n'
                 f'    unittest.main()\n'
             )
@@ -124,7 +126,7 @@ class DebuggerEngine:
         test_passed = proc.returncode == 0
         audit_res = audit_workspace(self.workspace_dir)
 
-        fixed = test_passed and audit_res.get("status") in ("PASS", "NOT_RUN")
+        fixed = test_passed and audit_res.get("status") == "PASS"
         return {
             "status": "RESOLVED" if fixed else "STILL_FAILING",
             "test_passed": test_passed,
@@ -142,6 +144,7 @@ def main() -> None:
 
     bug_id = "bug_001"
     desc = "Comportamento inesperado relatado"
+    target_dir = Path.cwd()
 
     clean_args = []
     i = 0
@@ -152,6 +155,11 @@ def main() -> None:
         elif a in ("--desc", "-d") and i + 1 < len(args):
             i += 1
             desc = args[i]
+        elif a.startswith("--target="):
+            target_dir = Path(a.split("=", 1)[1]).resolve()
+        elif a in ("--target", "-t") and i + 1 < len(args):
+            i += 1
+            target_dir = Path(args[i]).resolve()
         elif not a.startswith("-"):
             clean_args.append(a)
         i += 1
@@ -159,7 +167,7 @@ def main() -> None:
     if clean_args:
         bug_id = clean_args[0]
 
-    engine = DebuggerEngine()
+    engine = DebuggerEngine(workspace_dir=target_dir)
 
     if verify_fix:
         res = engine.verify_fix(bug_id)

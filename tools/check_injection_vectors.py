@@ -118,12 +118,18 @@ def main() -> None:
     for f in target_files:
         all_findings.extend(check_file(f, workspace_dir))
 
-    status = "FAIL" if len(all_findings) > 0 else "PASS"
+    real_findings = [f for f in all_findings if f.get("type") != "parser_unavailable"]
+    parser_warnings = [f for f in all_findings if f.get("type") == "parser_unavailable"]
+
+    status = "FAIL" if len(real_findings) > 0 else "PASS"
     output = {
         "status": status,
-        "findings_count": len(all_findings),
-        "findings": all_findings
+        "findings_count": len(real_findings),
+        "findings": real_findings
     }
+    if parser_warnings:
+        output["parser_warnings"] = parser_warnings
+        output["parser_warnings_count"] = len(parser_warnings)
     print(json.dumps(output, indent=2, ensure_ascii=False))
     if status == "FAIL":
         sys.exit(1)

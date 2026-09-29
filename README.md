@@ -202,7 +202,11 @@ python --version
 Until an official signed distribution exists, the command below installs directly from the development repository and must not be treated as a stable release:
 
 ```bash
+# Standard Python-focused assurance:
 pip install git+https://github.com/Maferreira25/Aura-Code.git
+
+# Optional: With Tree-sitter multi-language AST support (TypeScript, JavaScript, Go, Java, C#):
+pip install "auracode[multilang] @ git+https://github.com/Maferreira25/Aura-Code.git"
 ```
 
 Verify what was actually installed:
@@ -210,7 +214,7 @@ Verify what was actually installed:
 auracode doctor
 auracode skills verify
 ```
-In the current preview, `doctor` reports `studio=PASS` for package integrity but keeps the overall result at `NOT_RUN` because `studio_workflows=NOT_RUN`: the guided workflows have not been implemented and validated yet. This is a known limitation, not a complete success.
+In the current preview, `doctor` reports `studio=PASS` for package integrity but keeps the overall result at `NOT_RUN` because `studio_workflows=NOT_RUN`: the guided workflows have not been implemented and validated yet. This is a known limitation, not a complete success. Additionally, `doctor` verifies whether the Docker daemon is responding (flagged `NOT_RUN` if Docker is installed but daemon is offline).
 
 To copy the verified official skills into the current project without overwriting local changes:
 ```bash
@@ -339,31 +343,36 @@ auracode cage init .
 auracode cage verify
 
 # 19. Autonomous Loop Runner based on Ralph Architecture (Aura Loop)
-auracode loop run --max-turns 10
+auracode loop run --agent-cmd "python my_agent.py" --max-turns 10 --require-churn
 auracode loop status
 auracode loop reset
 
-# 20. Structured 3-Phase Adversarial Agentic Debate (Party Mode with Containment)
+# 20. Code Generation & Refactoring Engines (Target directory support)
+auracode forward . --check-prereqs
+auracode refactor . --check-prereqs
+auracode debugger . --check-prereqs
+
+# 21. Structured 3-Phase Adversarial Agentic Debate (Party Mode with Containment)
 auracode debate "Sistema de Armazenamento de Arquivos"
 
-# 21. Local Preflight & CI/CD Pipeline Mirror (Executes all 10 assurance gates locally before push)
+# 22. Local Preflight & CI/CD Pipeline Mirror (Executes all 10 assurance gates locally before push)
 auracode preflight
 
-# 22. Evidence-based audit with explicit PASS/FAIL/NOT_RUN/NOT_APPLICABLE/ERROR states
+# 23. Evidence-based audit with explicit PASS/FAIL/NOT_RUN/NOT_APPLICABLE/ERROR states
 auracode audit .
 auracode audit . --output audit_report.txt
 auracode audit . --json
 
-# 23. Diagnose the installed preview and disclose missing components
+# 24. Diagnose the installed preview and disclose missing components
 auracode doctor
 auracode doctor --json
 
-# 24. Verify, list, or safely install the packaged official skills
+# 25. Verify, list, or safely install the packaged official skills
 auracode skills verify
 auracode skills list
 auracode skills install .
 
-# 25. Open, verify, and seal a temporal iteration baseline (500 lines maximum)
+# 26. Open, verify, and seal a temporal iteration baseline (500 lines maximum)
 auracode iteration begin . --id ac-f01-wizard --requirement AC-F01 --scope "tools/wizard.py,tests/test_wizard.py" --allow-tests
 auracode iteration verify . --id ac-f01-wizard
 auracode iteration seal . --id ac-f01-wizard

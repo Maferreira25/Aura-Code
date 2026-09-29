@@ -14,6 +14,15 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@42375524fd43b562d3b99b51e65d24b619727407 # v5.4.0
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ".[test,multilang]"
       - name: Run Complete AuraCode Preflight Battery (10 Gates)
-        run: python3 tools/assurance.py preflight
+        run: python tools/assurance.py preflight
 
