@@ -17,6 +17,9 @@ class TestMultiLangRunner(unittest.TestCase):
     """Test suite for multi-language AST workspace scanner."""
 
     def setUp(self):
+        from tools.multilang_ast import HAS_TREE_SITTER
+        if not HAS_TREE_SITTER:
+            self.skipTest("Tree-sitter optional multi-language dependencies are not installed")
         self.temp_dir = Path(tempfile.mkdtemp()).resolve()
 
     def tearDown(self):

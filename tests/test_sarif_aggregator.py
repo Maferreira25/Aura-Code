@@ -15,6 +15,9 @@ from tools.sarif_aggregator import SarifAggregator
 class TestSarifAggregatorAndPhase2(unittest.TestCase):
 
     def test_java_slop_leaks_and_security(self):
+        from tools.multilang_ast import HAS_TREE_SITTER
+        if not HAS_TREE_SITTER:
+            self.skipTest("Tree-sitter optional multi-language dependencies are not installed")
         analyzer = MultiLangASTAnalyzer()
         with tempfile.NamedTemporaryFile("w", suffix=".java", delete=False) as tmp:
             tmp.write("""
@@ -48,6 +51,9 @@ class TestSarifAggregatorAndPhase2(unittest.TestCase):
             os.unlink(tmp_path)
 
     def test_csharp_slop_leaks_and_security(self):
+        from tools.multilang_ast import HAS_TREE_SITTER
+        if not HAS_TREE_SITTER:
+            self.skipTest("Tree-sitter optional multi-language dependencies are not installed")
         analyzer = MultiLangASTAnalyzer()
         with tempfile.NamedTemporaryFile("w", suffix=".cs", delete=False) as tmp:
             tmp.write("""

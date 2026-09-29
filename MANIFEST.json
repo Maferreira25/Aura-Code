@@ -892,8 +892,8 @@
       "bytes": 8310
     },
     "tests/test_multilang_runner.py": {
-      "sha256": "bd5c82605300395d87e0a76908789d10c188f10ae46509e13736c0277be187dc",
-      "bytes": 3391
+      "sha256": "d945c8f55723258b0705d2514486b6e66993cdb094d33bc96404352a9a0f455d",
+      "bytes": 3575
     },
     "tests/test_mutation_engine.py": {
       "sha256": "3360a753c34167fc9c4921a0972f2b625d7469070e299f21ce1fa32e36340171",
@@ -912,8 +912,8 @@
       "bytes": 7531
     },
     "tests/test_sarif_aggregator.py": {
-      "sha256": "f3fd5e29a20b3a52e917a4038477a9c401b56dca74ec77ed442d55b38d29df88",
-      "bytes": 4940
+      "sha256": "98a4693418948a59a670069a4fef3c956d2c25561738eb43a748d3a756d8e9d2",
+      "bytes": 5308
     },
     "tests/test_sdd_enterprise.py": {
       "sha256": "1c86b0ca151d1dd8ffcd610c1445115bfb24b2c2597bca24e9ee01b7b2cdf0aa",
