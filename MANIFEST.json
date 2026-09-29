@@ -1,32 +1,8 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 429,
+  "file_count": 423,
   "files": {
-    ".github/dependabot.yml": {
-      "sha256": "99307ad09aeeb4cbc30cc1fccb245f29b8a3fa1718b7cb1ea83d1ef8666c2934",
-      "bytes": 206
-    },
-    ".github/ISSUE_TEMPLATE/bug_report.md": {
-      "sha256": "33e9b103b691c5cf0c2d96cf32980f1f5ee69c8b595a2b258ed8e89882e9d2f7",
-      "bytes": 334
-    },
-    ".github/ISSUE_TEMPLATE/control_proposal.md": {
-      "sha256": "1974f8314ca05ae0d54cf5c246532ff60089d5f85061ae1d983cdc3305e67c1c",
-      "bytes": 375
-    },
-    ".github/ISSUE_TEMPLATE/evidence_proposal.md": {
-      "sha256": "0645ed2f2c40a0ef8f4a27e3016b295bc5fb3d122dd8c511b5e97aa3fe2c5ad0",
-      "bytes": 331
-    },
-    ".github/PULL_REQUEST_TEMPLATE.md": {
-      "sha256": "ed227d7ca9864c18d2de593e8c6b62c95839953c99afd85914771f258308d3bc",
-      "bytes": 587
-    },
-    ".github/workflows/validate.yml": {
-      "sha256": "34c7f34503c3ae58cb9abd23a32df73f125e90d60d5330a0c5cbfb6f8a7b84d4",
-      "bytes": 710
-    },
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
       "bytes": 304
@@ -1100,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "a8491986786cf413e1da5ea1cedbcfec99d989f2f28c99b12ff75c1984edc4be",
-      "bytes": 14638
+      "sha256": "269563cb3e028f1e500de7948275bcec0ccd3492bce8eeb30593ca8262f83672",
+      "bytes": 14649
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",

@@ -47,7 +47,7 @@ def is_ignored_by_framework(rel_path: Path, gitignore_patterns: Optional[List[st
     # 1. Directory exclusions
     if any(p in MANIFEST_EXCLUDE_DIRS or p.startswith("_auracode_") or p.startswith("_reversa_") for p in parts):
         return True
-    if parts and parts[0] in {".agents", ".reversa"}:
+    if parts and parts[0] in {".agents", ".reversa", ".github"}:
         return True
 
     # 2. Extension and filename exclusions
