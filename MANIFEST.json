@@ -24,7 +24,7 @@
       "bytes": 587
     },
     ".github/workflows/validate.yml": {
-      "sha256": "059cc1f9bd6d5cb657fc1d8c955a79a1fed80290b764e1d1f9516b12645b70ab",
+      "sha256": "34c7f34503c3ae58cb9abd23a32df73f125e90d60d5330a0c5cbfb6f8a7b84d4",
       "bytes": 710
     },
     ".gitignore": {
