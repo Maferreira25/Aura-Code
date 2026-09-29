@@ -228,12 +228,12 @@
       "bytes": 3886
     },
     "auracode/studio/manifest.json": {
-      "sha256": "2e94ae097d5fb0caa8825af89d22fcc65afad6099ead8ae48d6693596a83b1cc",
+      "sha256": "9a5a7fca242cedf319ba52597807b0a874a2b7dbd6d20bdeceb79639d3435bdb",
       "bytes": 4328
     },
     "auracode/studio/server.py": {
-      "sha256": "e7b7420e3248a4a45fc3474415e97a3e13b224a38f17ffe8f7f6780cf14096e0",
-      "bytes": 20886
+      "sha256": "6a093c9291ef3440093ca908a58924302c909541bd2291359f268e71dead6a97",
+      "bytes": 20991
     },
     "CHANGELOG.md": {
       "sha256": "a650588b77aa5210a92ed3958806edafb48b90ea9f479df94a49ab142bc64f5a",
@@ -388,8 +388,8 @@
       "bytes": 2394
     },
     "README.md": {
-      "sha256": "545094394c1d929fbc647c705d50ce0ba9842390920d0430f011df51a68e456f",
-      "bytes": 29818
+      "sha256": "962bf970d9a0993a6a9aabaa65b943f67dbec6f7fd04371abad86644ea1dcafe",
+      "bytes": 30048
     },
     "README.pt-BR.md": {
       "sha256": "dd8785ab915196715923c003d1c0b44ec3a6c430f00c076ad1be7649a69e464e",
@@ -876,8 +876,8 @@
       "bytes": 5168
     },
     "tests/test_pre_tool_guard.py": {
-      "sha256": "fe5c302799cb3759c9a99cfa247e75e6e0d9bb7c7ecf288360fdea501f5d8523",
-      "bytes": 6704
+      "sha256": "9cedd1454ce24e049b5aaeeeabf4aeb466742414791016cd8a807ba3c7140d51",
+      "bytes": 7754
     },
     "tests/test_preflight.py": {
       "sha256": "9f6a5484219894f0fd875d08bd9023f74b03213413c223de587743e700865725",
@@ -920,8 +920,8 @@
       "bytes": 4276
     },
     "tests/test_studio_server.py": {
-      "sha256": "9783350600c53adc011b7b17a8835a379ec70bfa3e8b5d7e0978d073aa952e10",
-      "bytes": 7936
+      "sha256": "37fead525e2afb3a0e08e3115100613ad71f1dd634411552b7412b693ce89e94",
+      "bytes": 8929
     },
     "tests/test_studio_source.py": {
       "sha256": "54e7208bb1930dbb7bb3cffdd2e4c6205f824d0a7c21fdb2933715b459b9409c",
@@ -968,8 +968,8 @@
       "bytes": 9205
     },
     "tools/check_architecture.py": {
-      "sha256": "ef7fbafeebb96219a4b1874da937fcd7438f405438869990ef20f435bf83f33e",
-      "bytes": 20660
+      "sha256": "979a35765e67b18c9d1f29b8d7646777ed0a82527e04f7b9692fd4f26883d304",
+      "bytes": 19575
     },
     "tools/check_injection_vectors.py": {
       "sha256": "7b79c21362cd923db91be09a8871cb694ac1d78b888ea08a68faf54aa0f3020a",
@@ -1048,8 +1048,8 @@
       "bytes": 21833
     },
     "tools/pre_tool_guard.py": {
-      "sha256": "a3e2d2a197422a3dbdb94169365b2a0b16074647203ff09f71f6c0e19af95f52",
-      "bytes": 21357
+      "sha256": "cf0f8874d74e5ab8ff1df2f3933768adc5d8fdb4f77af8deb23fe24f72e1fe22",
+      "bytes": 23621
     },
     "tools/preflight.py": {
       "sha256": "5e5e7fc350f3a41a313343fd384ee635586cb3749315ff01fba302a4c80dec14",

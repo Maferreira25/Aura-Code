@@ -13,8 +13,8 @@
   "assets": [
     {
       "path": "server.py",
-      "bytes": 20886,
-      "sha256": "e7b7420e3248a4a45fc3474415e97a3e13b224a38f17ffe8f7f6780cf14096e0"
+      "bytes": 20991,
+      "sha256": "6a093c9291ef3440093ca908a58924302c909541bd2291359f268e71dead6a97"
     },
     {
       "path": "assets/404.html",

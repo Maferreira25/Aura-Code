@@ -390,7 +390,7 @@ AuraCode defines 15 specialized IDE skills enforcing non-technical dialogue prot
 4. **`auracode-brainstorm`**: Ideation and scope framing agent translating raw user concepts into plain-language feature menus.
 5. **`auracode-forward`**: Spec-driven execution agent implementing Clean Architecture code (`domain/`, `usecases/`, `adapters/`, `infrastructure/`, `tests/`) strictly from approved blueprints.
 6. **`auracode-adversary`**: Red-team assurance challenger identifying architectural risks, edge cases, and vitiated tests before production deployment.
-7. **`auracode-debate`**: Structured 3-phase adversarial debate orchestrator ensuring balanced trade-off analysis with lay-user physical analogies.
+7. **`auracode-debate`**: Structured 3-phase adversarial debate orchestrator ensuring balanced trade-off analysis with lay-user physical analogies. Runs genuine LLM subagents when `OPENAI_API_KEY`/`AURA_LLM_BASE_URL` is configured; otherwise transparently falls back to a deterministic, topic-aware rule engine (`engine_mode: "contextual_rules"`) instead of silently degrading.
 8. **`auracode-guard`**: Pattern-based command safety gate for integrations that invoke its hook.
 9. **`auracode-worktree`**: Git physical directory isolation manager for agent workflows.
 10. **`auracode-cage`**: DevContainer and Default-Deny firewall configuration assistant with explicit verification.

@@ -120,7 +120,9 @@ class StudioServerTests(unittest.TestCase):
                 self.assertEqual(resp.headers["Content-Type"], "application/json; charset=utf-8")
                 data = json.loads(resp.read().decode("utf-8"))
                 self.assertEqual(data["status"], "PASS")
-                self.assertEqual(data["workflow_status"], "PASS")
+                # Empty workspace: no source files were audited yet, so this must
+                # truthfully report NOT_RUN rather than a hardcoded PASS.
+                self.assertEqual(data["workflow_status"], "NOT_RUN")
 
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/projects", timeout=3) as resp:
                 self.assertEqual(resp.status, 200)
@@ -153,6 +155,19 @@ class StudioServerTests(unittest.TestCase):
                 self.assertEqual(data["total_decisions"], 4)
                 self.assertEqual(data["status"], "PASS")
                 self.assertEqual(len(data["decisions"]), 2)
+
+            # Writing source files with audit violations must flip workflow_status
+            # away from the empty-workspace NOT_RUN state, proving it is computed
+            # live from the actual audit rather than a second hardcoded constant.
+            (self.assets / "app.py").write_text("def add(a, b):\n    return a + b\n", encoding="utf-8")
+            (self.assets / "test_app.py").write_text(
+                "from app import add\n\n\ndef test_add():\n    assert add(1, 2) == 3\n",
+                encoding="utf-8",
+            )
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/status", timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                data = json.loads(resp.read().decode("utf-8"))
+                self.assertNotEqual(data["workflow_status"], "NOT_RUN")
 
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/agents", timeout=3) as resp:
                 self.assertEqual(resp.status, 200)

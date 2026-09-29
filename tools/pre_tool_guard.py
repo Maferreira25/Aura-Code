@@ -35,7 +35,7 @@ PROTECTED_BRANCHES = {"main", "master", "develop", "prod", "production", "releas
 INSPECTION_BINARIES = {
     "cat", "type", "more", "less", "head", "tail",
     "grep", "egrep", "fgrep", "awk", "sed", "strings",
-    "base64", "xxd", "hexdump", "od"
+    "base64", "xxd", "hexdump", "od", "gc", "get-content"
 }
 
 # Regex heuristics for direct script and command line patterns
@@ -89,12 +89,37 @@ DIRECT_DANGER_PATTERNS = [
     ),
     # Secret exfiltration pipeline into network tools
     (
-        r"\b(?:cat|type)\s+.*(?:\.env|id_rsa|credentials).*\|\s*(?:curl|wget|nc|netcat)\b",
+        r"\b(?:cat|type|gc|get-content)\s+.*(?:\.env|id_rsa|credentials).*\|\s*(?:curl|wget|nc|netcat|iwr|irm|invoke-webrequest|invoke-restmethod)\b",
         "CRITICAL",
         "SECRET_LEAK",
         "Exfiltration pipeline detected: streaming sensitive file into network tool",
     ),
+    # PowerShell disk formatting or partitioning cmdlets
+    (
+        r"(?i)\b(?:format-volume|clear-disk|remove-partition|initialize-disk)\b",
+        "CRITICAL",
+        "DESTRUCTIVE_OS",
+        "PowerShell disk formatting or partitioning cmdlet detected",
+    ),
+    # PowerShell system shutdown or restart
+    (
+        r"(?i)\b(?:stop-computer|restart-computer)\b",
+        "HIGH",
+        "DESTRUCTIVE_OS",
+        "PowerShell system shutdown or restart cmdlet detected",
+    ),
 ]
+
+# PowerShell aliases/cmdlets that recursively and forcibly delete filesystem entries
+POWERSHELL_DELETE_COMMANDS = re.compile(r"\b(?:remove-item|ri|rmdir|rd|del|erase)\b", re.IGNORECASE)
+
+# Drive roots, home directory, and system environment variables that must never be
+# targeted by a recursive, forced PowerShell delete
+POWERSHELL_DANGEROUS_TARGET = re.compile(
+    r"(?:^|[\s'\"])(?:[a-zA-Z]:\\?['\"]?|[a-zA-Z]:/?['\"]?|~[\\/]?|"
+    r"\$env:(?:systemroot|windir|userprofile|homedrive|programfiles(?:\(x86\))?)\b)(?:[\s'\"]|$)",
+    re.IGNORECASE,
+)
 
 
 def split_shell_pipeline(cmd_str: str) -> List[str]:
@@ -271,6 +296,28 @@ def inspect_subcommand(sub_cmd: str) -> Optional[Dict[str, Any]]:
                     "severity": "CRITICAL",
                     "command": sub_clean,
                 }
+
+    # --- Check PowerShell Remove-Item / rd / del aliases used recursively and forced ---
+    if POWERSHELL_DELETE_COMMANDS.search(sub_clean):
+        lower_sub = sub_clean.lower()
+        has_recurse = "-recurse" in lower_sub or "-r " in lower_sub
+        has_force = "-force" in lower_sub or "-f " in lower_sub or "-confirm:$false" in lower_sub
+        if has_recurse and has_force and POWERSHELL_DANGEROUS_TARGET.search(sub_clean):
+            return {
+                "safe": False,
+                "rule": "DESTRUCTIVE_OS",
+                "reason": "Destructive PowerShell recursive/forced delete targeting a drive root, home, or system environment path detected",
+                "severity": "CRITICAL",
+                "command": sub_clean,
+            }
+        if has_force and (".git" in lower_sub) and re.search(r"\.git\b(?!\w)", lower_sub):
+            return {
+                "safe": False,
+                "rule": "DESTRUCTIVE_GIT",
+                "reason": "Destruction of internal .git metadata directory detected via PowerShell",
+                "severity": "CRITICAL",
+                "command": sub_clean,
+            }
 
     # --- Check GIT Operations ---
     if bin_name == "git":

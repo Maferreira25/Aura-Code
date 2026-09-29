@@ -427,38 +427,6 @@ def check_architecture(
         "errors": errors,
     }
 
-
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Verify source code against architectural boundary contracts."
-    )
-    parser.add_argument(
-        "target", nargs="?", default=".", help="Directory to inspect (default: current dir)"
-    )
-    parser.add_argument(
-        "--contracts", "-c", type=str, help="Path to contracts.json specification"
-    )
-    parser.add_argument(
-        "--json", action="store_true", help="Output results in machine-readable JSON format"
-    )
-    parser.add_argument(
-        "--max-files", type=int, default=1000, help="Maximum number of files to inspect (default: 1000)"
-    )
-    parser.add_argument(
-        "--max-file-bytes", type=int, default=1000000, help="Maximum bytes per file (default: 1000000)"
-    )
-    args = parser.parse_args()
-
-    target_path = Path(args.target).resolve()
-    cpath = Path(args.contracts).resolve() if args.contracts else None
-
-    result = check_architecture(
-        target_path,
-        cpath,
-        max_files=args.max_files,
-        max_file_bytes=args.max_file_bytes,
-    )
-
 def print_architecture_result(result: dict, target_path: Path, is_json: bool = False) -> int:
     """Format and print architecture inspection result. Returns exit code."""
     if is_json:

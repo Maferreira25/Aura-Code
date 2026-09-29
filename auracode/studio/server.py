@@ -30,11 +30,12 @@ class StudioWorkspaceService:
         self.server_port = server_port
 
     def get_status(self) -> Dict[str, Any]:
-        """Return framework status and operating mode."""
+        """Return framework status and the truthful state of the workspace audit."""
+        workflow_status = self.get_audits().get("status", "NOT_RUN")
         return {
             "status": "PASS",
             "framework_version": FRAMEWORK_VERSION,
-            "workflow_status": "PASS",
+            "workflow_status": workflow_status,
             "read_only": True,
             "api_version": "v1",
         }
