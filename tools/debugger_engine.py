@@ -68,26 +68,47 @@ class DebuggerEngine:
             "description": description
         }
 
-    def generate_reproduction_test(self, bug_id: str, test_content: Optional[str] = None) -> Path:
+    def generate_reproduction_test(
+        self,
+        bug_id: str,
+        test_content: Optional[str] = None,
+        target_module: Optional[str] = None,
+        target_function: Optional[str] = None,
+        expected_result: Optional[Any] = None,
+    ) -> Path:
         """Create automated reproduction test file in tests/."""
         tests_dir = self.workspace_dir / "tests"
         tests_dir.mkdir(parents=True, exist_ok=True)
         test_file = tests_dir / f"test_reproduce_{bug_id}.py"
 
         if not test_content:
-            test_content = (
-                f'#!/usr/bin/env python3\n'
-                f'"""Reproduction test for bug {bug_id}. Must fail with a concrete assertion until fix is implemented."""\n'
-                f'import unittest\n\n'
-                f'class TestReproduce_{bug_id}(unittest.TestCase):\n'
-                f'    def test_failure_reproduction(self):\n'
-                f'        # Alinhe as variaveis abaixo com o cenario real do defeito:\n'
-                f'        resultado_obtido = "defeito_{bug_id}_nao_corrigido"\n'
-                f'        comportamento_esperado = "sucesso"\n'
-                f'        self.assertEqual(resultado_obtido, comportamento_esperado, "Defeito {bug_id} reproduzido: aguardando correcao.")\n\n'
-                f'if __name__ == "__main__":\n'
-                f'    unittest.main()\n'
-            )
+            if target_module and target_function:
+                test_content = (
+                    f'#!/usr/bin/env python3\n'
+                    f'"""Reproduction test for bug {bug_id} targeting {target_module}.{target_function}."""\n'
+                    f'import unittest\n'
+                    f'import {target_module}\n\n'
+                    f'class TestReproduce_{bug_id}(unittest.TestCase):\n'
+                    f'    def test_{bug_id}_reproduction(self):\n'
+                    f'        resultado = getattr({target_module}, "{target_function}")()\n'
+                    f'        esperado = {repr(expected_result)}\n'
+                    f'        self.assertEqual(resultado, esperado, "Defeito {bug_id} ainda nao corrigido no modulo real.")\n\n'
+                    f'if __name__ == "__main__":\n'
+                    f'    unittest.main()\n'
+                )
+            else:
+                test_content = (
+                    f'#!/usr/bin/env python3\n'
+                    f'"""Reproduction test for bug {bug_id}. Must fail until the fix is implemented in real code."""\n'
+                    f'import unittest\n\n'
+                    f'class TestReproduce_{bug_id}(unittest.TestCase):\n'
+                    f'    def test_{bug_id}_reproduction(self):\n'
+                    f'        # Conecte esta assercao a chamada do modulo ou endpoint real do sistema.\n'
+                    f'        # O teste falha aqui para comprovar a presenca do defeito antes da correcao.\n'
+                    f'        self.fail("Defeito {bug_id} reproduzido ativamente: aguardando correcao no codigo real.")\n\n'
+                    f'if __name__ == "__main__":\n'
+                    f'    unittest.main()\n'
+                )
 
         test_file.write_text(test_content, encoding="utf-8")
         return test_file

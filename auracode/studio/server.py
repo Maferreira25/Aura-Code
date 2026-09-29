@@ -11,6 +11,7 @@ Architecture:
 
 import functools
 import json
+import re
 import socket
 import subprocess
 import webbrowser
@@ -24,8 +25,9 @@ from tools.version import FRAMEWORK_VERSION
 class StudioWorkspaceService:
     """Domain service responsible for inspecting workspace state, specs, and audits."""
 
-    def __init__(self, workspace_root: Path) -> None:
+    def __init__(self, workspace_root: Path, server_port: Optional[int] = None) -> None:
         self.workspace_root = workspace_root.resolve()
+        self.server_port = server_port
 
     def get_status(self) -> Dict[str, Any]:
         """Return framework status and operating mode."""
@@ -67,9 +69,21 @@ class StudioWorkspaceService:
                     assurance_level = "AL3"
                     break
 
-        detected_stack = "FastAPI + Next.js + PostgreSQL + Docker + Kubernetes"
-        if (self.workspace_root / "pyproject.toml").is_file() and not (self.workspace_root / "package.json").is_file():
-            detected_stack = "Python Library / CLI (Zero External Dependencies)"
+        detected_parts = []
+        if (self.workspace_root / "pyproject.toml").is_file() or (self.workspace_root / "requirements.txt").is_file():
+            detected_parts.append("Python")
+        if (self.workspace_root / "package.json").is_file():
+            detected_parts.append("Node.js / TypeScript")
+        if (self.workspace_root / "Dockerfile").is_file() or (self.workspace_root / "docker-compose.yml").is_file():
+            detected_parts.append("Docker")
+        if (self.workspace_root / "saas.db").is_file():
+            detected_parts.append("SQLite")
+        if (self.workspace_root / "go.mod").is_file():
+            detected_parts.append("Go")
+        if (self.workspace_root / "pom.xml").is_file():
+            detected_parts.append("Java")
+
+        detected_stack = " + ".join(detected_parts) if detected_parts else "General Application Workspace"
 
         return {
             "workspace_root": str(self.workspace_root),
@@ -108,29 +122,50 @@ class StudioWorkspaceService:
     def get_specifications(self) -> Dict[str, Any]:
         """Inspect theoretical blueprint specification notebooks in _auracode_sdd."""
         sdd_dir = self.workspace_root / "_auracode_sdd"
+        if not sdd_dir.is_dir() and (self.workspace_root / "_reversa_sdd").is_dir():
+            sdd_dir = self.workspace_root / "_reversa_sdd"
         notebooks: List[Dict[str, Any]] = []
+        approved_count = 0
         if sdd_dir.is_dir():
             for p in sorted(sdd_dir.glob("*.md")):
+                content_lower = ""
+                try:
+                    content_lower = p.read_text(encoding="utf-8", errors="ignore").lower()
+                except OSError as exc:
+                    content_lower = f"unreadable: {exc}"
+                is_this_approved = any(
+                    marker in content_lower
+                    for marker in ("status: aprovado", "status: approved", "planta aprovada")
+                )
+                if is_this_approved:
+                    approved_count += 1
                 notebooks.append({
                     "file": p.name,
                     "title": p.stem,
                     "bytes": p.stat().st_size,
-                    "status": "APPROVED",
+                    "status": "APPROVED" if is_this_approved else "DRAFT",
                 })
 
-        is_approved = (len(notebooks) in (1, 3, 7, 15) or len(notebooks) >= 1) if notebooks else False
+        is_approved = (len(notebooks) > 0 and approved_count == len(notebooks))
         return {
-            "status": "PASS" if notebooks else "NOT_RUN",
+            "status": "PASS" if is_approved else ("DRAFT" if notebooks else "NOT_RUN"),
             "sdd_directory": str(sdd_dir) if sdd_dir.is_dir() else None,
             "count": len(notebooks),
             "approved": is_approved,
+            "approved_count": approved_count,
             "notebooks": notebooks,
         }
 
     def get_decisions(self) -> Dict[str, Any]:
-        """Read traceability decisions from PRD specification or return baseline decisions."""
+        """Read traceability decisions from PRD specification or report uninitialized state."""
         decisions: List[Dict[str, str]] = []
+        total_count = 0
         prd_file = self.workspace_root / "_auracode_sdd" / "01_PRD.md"
+        if not prd_file.is_file():
+            cand = self.workspace_root / "_reversa_sdd" / "01_PRD.md"
+            if cand.is_file():
+                prd_file = cand
+
         if prd_file.is_file():
             try:
                 lines = prd_file.read_text(encoding="utf-8").splitlines()
@@ -145,8 +180,15 @@ class StudioWorkspaceService:
                     if in_table and stripped.startswith("|"):
                         cols = [c.strip() for c in stripped.strip("|").split("|")]
                         if len(cols) >= 3:
+                            id_col = cols[0]
+                            range_match = re.search(r"(\d+)\s*[–\-]\s*[A-Za-z]*(\d+)", id_col)
+                            if range_match:
+                                start_n, end_n = int(range_match.group(1)), int(range_match.group(2))
+                                total_count += max(1, end_n - start_n + 1)
+                            else:
+                                total_count += 1
                             decisions.append({
-                                "id": cols[0],
+                                "id": id_col,
                                 "topic": cols[1],
                                 "choice": cols[2],
                                 "status": "CONFIRMED",
@@ -156,23 +198,21 @@ class StudioWorkspaceService:
                             in_table = False
             except OSError:
                 decisions = []
+                total_count = 0
 
         if not decisions:
-            decisions = [
-                {"id": "D001", "topic": "Pilha e Interface", "choice": "FastAPI + Next.js + PostgreSQL + Docker", "status": "CONFIRMED"},
-                {"id": "D003", "topic": "Garantia de Qualidade", "choice": "Perfil AL3 (Uso Comercial com AST)", "status": "CONFIRMED"},
-                {"id": "D004", "topic": "Provedor de IA", "choice": "Porta neutra compatível com API OpenAI", "status": "CONFIRMED"},
-                {"id": "D016", "topic": "Controle de Acesso", "choice": "4 papéis: Proprietário, Admin, Membro, Visitante", "status": "CONFIRMED"},
-                {"id": "D021", "topic": "Exclusão e Retenção", "choice": "Lixeira segura retida por 30 dias", "status": "CONFIRMED"},
-                {"id": "D046", "topic": "Arquitetura do SaaS", "choice": "Monólito modular sob Clean Architecture", "status": "CONFIRMED"},
-                {"id": "D073", "topic": "Rigor de Autovalidação", "choice": "Zero contornos; falhas corrigem o construtor", "status": "CONFIRMED"},
-                {"id": "D074", "topic": "Limite de Iteração", "choice": "Máximo 500 linhas de diff autoral por etapa", "status": "CONFIRMED"},
-            ]
+            return {
+                "status": "NOT_RUN",
+                "total_decisions": 0,
+                "confirmed": 0,
+                "pending": 0,
+                "decisions": [],
+            }
 
         return {
             "status": "PASS",
-            "total_decisions": 74,
-            "confirmed": 74,
+            "total_decisions": total_count,
+            "confirmed": total_count,
             "pending": 0,
             "decisions": decisions,
         }
@@ -261,6 +301,7 @@ class StudioWorkspaceService:
 
         db_status = "ONLINE (:5432 PostgreSQL)" if postgres_online else ("ONLINE (saas.db)" if saas_db_found else "READY")
 
+        db_healthy = postgres_online or saas_db_found
         return {
             "status": "PASS",
             "services": [
@@ -268,23 +309,23 @@ class StudioWorkspaceService:
                     "name": "FastAPI REST Server",
                     "endpoint": "http://127.0.0.1:8000",
                     "status": "ONLINE" if fastapi_online else "STANDBY",
-                    "healthy": True,
+                    "healthy": fastapi_online,
                 },
                 {
                     "name": "SQL Database",
                     "endpoint": ":5432 (PostgreSQL) / saas.db (SQLite)",
                     "status": db_status,
-                    "healthy": True,
+                    "healthy": db_healthy,
                 },
                 {
                     "name": "SaaS Web (Next.js / React)",
                     "endpoint": "http://127.0.0.1:3000",
                     "status": "ONLINE" if web_online else "STANDBY",
-                    "healthy": True,
+                    "healthy": web_online,
                 },
                 {
                     "name": "Aura Studio API",
-                    "endpoint": "http://127.0.0.1:4300",
+                    "endpoint": f"http://127.0.0.1:{self.server_port}",
                     "status": "ONLINE",
                     "healthy": True,
                 },
@@ -307,9 +348,20 @@ ROUTE_DISPATCH: Dict[str, Callable[[StudioWorkspaceService], Dict[str, Any]]] = 
 class StudioRequestHandler(SimpleHTTPRequestHandler):
     """Serve immutable Studio assets and local inspection API without write methods."""
 
-    def __init__(self, *args: object, workspace_root: Optional[Path] = None, **kwargs: object) -> None:
+    def __init__(
+        self,
+        *args: object,
+        workspace_root: Optional[Path] = None,
+        server_port: Optional[int] = None,
+        **kwargs: object,
+    ) -> None:
         self.workspace_root = Path(workspace_root).resolve() if workspace_root is not None else Path.cwd().resolve()
-        self.service = StudioWorkspaceService(self.workspace_root)
+        port = server_port
+        if port is None and len(args) >= 3 and hasattr(args[2], "server_address"):
+            server_obj = args[2]
+            if isinstance(server_obj.server_address, tuple) and len(server_obj.server_address) >= 2:  # type: ignore
+                port = int(server_obj.server_address[1])  # type: ignore
+        self.service = StudioWorkspaceService(self.workspace_root, server_port=port or 4300)
         super().__init__(*args, **kwargs)  # type: ignore
 
     def end_headers(self) -> None:
@@ -323,33 +375,41 @@ class StudioRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
-    def _send_json(self, status_code: int, data: object) -> None:
+    def _send_json(self, status_code: int, data: object, send_body: bool = True) -> None:
         body = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(body)
+        if send_body:
+            self.wfile.write(body)
 
-    def _handle_api(self, url_path: str) -> None:
+    def _handle_api(self, url_path: str, send_body: bool = True) -> None:
         normalized = url_path.rstrip("/")
         handler = ROUTE_DISPATCH.get(normalized)
         if handler is not None:
             try:
                 data = handler(self.service)
-                self._send_json(200, data)
+                self._send_json(200, data, send_body=send_body)
             except Exception as exc:
-                self._send_json(500, {"error": f"Handler error on '{url_path}': {exc}"})
+                self._send_json(500, {"error": f"Handler error on '{url_path}': {exc}"}, send_body=send_body)
             return
 
-        self._send_json(404, {"error": f"Endpoint '{url_path}' not found"})
+        self._send_json(404, {"error": f"Endpoint '{url_path}' not found"}, send_body=send_body)
 
     def do_GET(self) -> None:
         url_path = self.path.split("?", 1)[0]
         if url_path.startswith("/studio/v1/"):
-            self._handle_api(url_path)
+            self._handle_api(url_path, send_body=True)
             return
         super().do_GET()
+
+    def do_HEAD(self) -> None:
+        url_path = self.path.split("?", 1)[0]
+        if url_path.startswith("/studio/v1/"):
+            self._handle_api(url_path, send_body=False)
+            return
+        super().do_HEAD()
 
     def _reject_write(self) -> None:
         try:

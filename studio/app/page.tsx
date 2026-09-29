@@ -518,7 +518,7 @@ export default function Home() {
                         <td>{d.topic}</td>
                         <td>{d.choice}</td>
                         <td>
-                          <span className="badge pass-badge">{d.status}</span>
+                          <span className={renderBadgeClass(d.status)}>{d.status}</span>
                         </td>
                       </tr>
                     ))}
@@ -670,78 +670,11 @@ export default function Home() {
                         </tr>
                       ))
                     ) : (
-                      <>
-                        <tr>
-                          <td>
-                            <strong>Portaria e fechaduras (segurança)</strong>
-                          </td>
-                          <td>python_ast_plus_treesitter_cst</td>
-                          <td>70</td>
-                          <td>
-                            <span className="badge pass-badge">PASS</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Instalação hidráulica (recursos)</strong>
-                          </td>
-                          <td>python_ast_plus_treesitter_cst</td>
-                          <td>70</td>
-                          <td>
-                            <span className="badge pass-badge">PASS</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Alvenaria e limpeza (slop)</strong>
-                          </td>
-                          <td>python_ast_plus_treesitter_cst</td>
-                          <td>70</td>
-                          <td>
-                            <span className="badge pass-badge">PASS</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Sinalização (tipos)</strong>
-                          </td>
-                          <td>python_ast</td>
-                          <td>65</td>
-                          <td>
-                            <span className="badge pass-badge">PASS</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Testes de resistência</strong>
-                          </td>
-                          <td>python_ast</td>
-                          <td>34</td>
-                          <td>
-                            <span className="badge pass-badge">PASS</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Estrutura mestra (arquitetura)</strong>
-                          </td>
-                          <td>architecture_contract</td>
-                          <td>70</td>
-                          <td>
-                            <span className="badge pass-badge">PASS</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Planta da casa (requisitos)</strong>
-                          </td>
-                          <td>requirements_supported_marker_scan</td>
-                          <td>15</td>
-                          <td>
-                            <span className="badge pass-badge">PASS</span>
-                          </td>
-                        </tr>
-                      </>
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: "center", padding: "1.5rem", color: "var(--muted)" }}>
+                          Nenhuma auditoria executada ou aguardando sincronização com a workspace. (Status: NOT_RUN)
+                        </td>
+                      </tr>
                     )}
                   </tbody>
                 </table>
@@ -804,26 +737,10 @@ export default function Home() {
                     </div>
                   ))
                 ) : (
-                  <>
-                    <div className="service-row">
-                      <span>
-                        FastAPI REST Server: <code>http://127.0.0.1:8000</code>
-                      </span>
-                      <span className="badge pass-badge">{messages.healthyBadge}</span>
-                    </div>
-                    <div className="service-row">
-                      <span>
-                        SQL Database (SQLite / PostgreSQL): <code>saas.db / :5432</code>
-                      </span>
-                      <span className="badge pass-badge">{messages.healthyBadge}</span>
-                    </div>
-                    <div className="service-row">
-                      <span>
-                        Aura Studio Inspection API: <code>http://127.0.0.1:4300</code>
-                      </span>
-                      <span className="badge pass-badge">{messages.healthyBadge}</span>
-                    </div>
-                  </>
+                  <div className="service-row" style={{ color: "var(--muted)" }}>
+                    <span>Nenhum serviço detectado em execução no momento ou aguardando conexão...</span>
+                    <span className="badge notrun-badge">STANDBY</span>
+                  </div>
                 )}
               </div>
               <button type="button" className="btn secondary-btn" style={{ marginTop: "1.5rem" }}>

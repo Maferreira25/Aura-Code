@@ -107,6 +107,14 @@ class StudioServerTests(unittest.TestCase):
         thread.start()
         try:
             port = server.server_address[1]
+
+            # HEAD request test
+            head_req = urllib.request.Request(f"http://127.0.0.1:{port}/studio/v1/status", method="HEAD")
+            with urllib.request.urlopen(head_req, timeout=3) as head_resp:
+                self.assertEqual(head_resp.status, 200)
+                self.assertEqual(head_resp.headers["Content-Type"], "application/json; charset=utf-8")
+                self.assertEqual(len(head_resp.read()), 0)
+
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/status", timeout=3) as resp:
                 self.assertEqual(resp.status, 200)
                 self.assertEqual(resp.headers["Content-Type"], "application/json; charset=utf-8")
@@ -120,10 +128,31 @@ class StudioServerTests(unittest.TestCase):
                 self.assertIn("active_project", data)
                 self.assertEqual(data["guarantee_level"], "AL3")
 
+            # In empty directory, decisions must truthfully be 0 and NOT_RUN
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/decisions", timeout=3) as resp:
                 self.assertEqual(resp.status, 200)
                 data = json.loads(resp.read().decode("utf-8"))
-                self.assertEqual(data["total_decisions"], 74)
+                self.assertEqual(data["total_decisions"], 0)
+                self.assertEqual(data["status"], "NOT_RUN")
+
+            # Now write a PRD and test dynamic parsing
+            sdd_dir = self.assets / "_auracode_sdd"
+            sdd_dir.mkdir(parents=True, exist_ok=True)
+            prd_content = (
+                "# 01 PRD\n\n"
+                "| Decisões | Tópico | Escolha |\n"
+                "|---|---|---|\n"
+                "| D001–D003 | Auth | JWT |\n"
+                "| D004 | DB | PostgreSQL |\n"
+            )
+            (sdd_dir / "01_PRD.md").write_text(prd_content, encoding="utf-8")
+
+            with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/decisions", timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                data = json.loads(resp.read().decode("utf-8"))
+                self.assertEqual(data["total_decisions"], 4)
+                self.assertEqual(data["status"], "PASS")
+                self.assertEqual(len(data["decisions"]), 2)
 
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/agents", timeout=3) as resp:
                 self.assertEqual(resp.status, 200)

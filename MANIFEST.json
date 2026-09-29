@@ -228,12 +228,12 @@
       "bytes": 3886
     },
     "auracode/studio/manifest.json": {
-      "sha256": "874ba13769ee8c55d8f1781813f6b4bfd627a7dbfeb6597dc2abaf90dfe67ab4",
+      "sha256": "2e94ae097d5fb0caa8825af89d22fcc65afad6099ead8ae48d6693596a83b1cc",
       "bytes": 4328
     },
     "auracode/studio/server.py": {
-      "sha256": "96e8a13242352e6f7c0cb420feb2214a06eac395709972ba3e4c10848bd7acca",
-      "bytes": 18807
+      "sha256": "e7b7420e3248a4a45fc3474415e97a3e13b224a38f17ffe8f7f6780cf14096e0",
+      "bytes": 20886
     },
     "CHANGELOG.md": {
       "sha256": "a650588b77aa5210a92ed3958806edafb48b90ea9f479df94a49ab142bc64f5a",
@@ -440,8 +440,8 @@
       "bytes": 411
     },
     "studio/app/page.tsx": {
-      "sha256": "f910bfebeea0b5e515379bad4c0ddec1d4e0c1d0e92b96b9373c17cae7cc48f2",
-      "bytes": 35039
+      "sha256": "a7f8120166c94eed9d5274b1d924e08d02acb0308e5aba756e3e7088abe7aed2",
+      "bytes": 31615
     },
     "studio/build.recipe.json": {
       "sha256": "b3f30f20dd989886076794ddb9ce7480c9ef47f237fe0f7420f1b7639258002e",
@@ -920,8 +920,8 @@
       "bytes": 4276
     },
     "tests/test_studio_server.py": {
-      "sha256": "0b47ca6aaac183d8687b8862853580d715e6991a1667d810bbf354a3481c4fb8",
-      "bytes": 6468
+      "sha256": "9783350600c53adc011b7b17a8835a379ec70bfa3e8b5d7e0978d073aa952e10",
+      "bytes": 7936
     },
     "tests/test_studio_source.py": {
       "sha256": "54e7208bb1930dbb7bb3cffdd2e4c6205f824d0a7c21fdb2933715b459b9409c",
@@ -1004,8 +1004,8 @@
       "bytes": 12925
     },
     "tools/debugger_engine.py": {
-      "sha256": "fb491a7c72c1454549027f3b2e68603b5795e8cc0ebb51131b81e7565aead9f1",
-      "bytes": 7383
+      "sha256": "98c41aec6c91599498d136abde35b22d4760b3a9895695835a7b549c19ea3336",
+      "bytes": 8441
     },
     "tools/doctor.py": {
       "sha256": "fbada32ff5624f5c94d75fe9e64d1a7cba2602a8b28adc6efbf50eec2756d5be",
