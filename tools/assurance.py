@@ -10,7 +10,7 @@ import argparse
 import sys
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Any, Callable, Dict, List, Optional
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -87,7 +87,7 @@ def setup_auracode_environment(profile: str = "standard", copy_templates: bool =
             if tpl_contracts.is_file():
                 shutil.copy2(tpl_contracts, auracode_contracts)
 
-def _dispatch_with_argv(argv: list, fn: object) -> None:
+def _dispatch_with_argv(argv: list, fn: Callable[[], Any]) -> None:
     """Invoke a module's main() with a temporary sys.argv, then restore the original."""
     original = sys.argv
     try:
@@ -655,28 +655,42 @@ def main() -> None:
     elif args.command == "skills":
         import json
 
+        result: Dict[str, Any]
         if args.skills_action == "verify":
             result = skill_packages.verify_skill_bundle()
         elif args.skills_action == "install":
             result = skill_packages.install_bundled_skills(Path(args.target))
         else:
             bundle = skill_packages.load_skill_bundle()
-            packaged = bundle.get("skills", [])
+            raw_skills = bundle.get("skills", [])
+            packaged = raw_skills if isinstance(raw_skills, list) else []
+            manifests_list = [
+                item["manifest"]
+                for item in packaged
+                if isinstance(item, dict) and isinstance(item.get("manifest"), dict)
+            ]
             result = {
                 "status": "PASS",
-                "skills": [item["manifest"] for item in packaged],
+                "skills": manifests_list,
             }
         if args.json:
             print(json.dumps(result, ensure_ascii=False, indent=2))
         elif args.skills_action == "list":
-            for manifest in result["skills"]:
-                print(f"{manifest['id']} {manifest['version']} [{manifest['origin']}]")
+            skills_list = result.get("skills")
+            if isinstance(skills_list, list):
+                for manifest in skills_list:
+                    if isinstance(manifest, dict):
+                        print(f"{manifest.get('id', '')} {manifest.get('version', '')} [{manifest.get('origin', '')}]")
         else:
-            print(f"AuraCode skills {args.skills_action}: {result['status']}")
-            for finding in result.get("findings", []):
-                print(f"- {finding}")
-            for conflict in result.get("conflicts", []):
-                print(f"- conflict: {conflict}")
+            print(f"AuraCode skills {args.skills_action}: {result.get('status')}")
+            findings_list = result.get("findings")
+            if isinstance(findings_list, list):
+                for finding in findings_list:
+                    print(f"- {finding}")
+            conflicts_list = result.get("conflicts")
+            if isinstance(conflicts_list, list):
+                for conflict in conflicts_list:
+                    print(f"- conflict: {conflict}")
         sys.exit(0 if result.get("status") == "PASS" else 2)
 
     elif args.command == "iteration":

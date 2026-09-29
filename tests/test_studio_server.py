@@ -33,7 +33,7 @@ class StudioServerTests(unittest.TestCase):
         thread.start()
         try:
             host = str(server.server_address[0])
-            port = int(server.server_address[1])
+            port = server.server_address[1]
             self.assertEqual(host, "127.0.0.1")
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=3) as response:
                 body = response.read().decode("utf-8")
@@ -51,7 +51,7 @@ class StudioServerTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            port = int(server.server_address[1])
+            port = server.server_address[1]
             request = urllib.request.Request(f"http://127.0.0.1:{port}/", data=b"change", method="POST")
             with self.assertRaises(urllib.error.HTTPError) as raised:
                 urllib.request.urlopen(request, timeout=3)
@@ -106,7 +106,7 @@ class StudioServerTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            port = int(server.server_address[1])
+            port = server.server_address[1]
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/studio/v1/status", timeout=3) as resp:
                 self.assertEqual(resp.status, 200)
                 self.assertEqual(resp.headers["Content-Type"], "application/json; charset=utf-8")

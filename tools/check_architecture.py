@@ -12,7 +12,7 @@ import fnmatch
 import json
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class ImportVisitor(ast.NodeVisitor):
@@ -159,7 +159,8 @@ def check_file_architecture(
     rel_path = str(file_path.relative_to(base_dir)).replace("\\", "/")
 
     # Check max file lines
-    max_lines = layer_config.get("max_file_lines", global_rules.get("max_file_lines"))
+    max_lines_val = layer_config.get("max_file_lines", global_rules.get("max_file_lines"))
+    max_lines = max_lines_val if isinstance(max_lines_val, int) else None
     if max_lines and line_count > max_lines:
         violations.append({
             "file": rel_path,
@@ -189,9 +190,15 @@ def check_file_architecture(
     visitor = ImportVisitor()
     visitor.visit(tree)
 
-    forbidden_imports = layer_config.get("forbidden_imports", [])
-    allowed_imports = layer_config.get("allowed_imports")
-    allow_wildcard = layer_config.get("allow_wildcard_imports", global_rules.get("allow_wildcard_imports", False))
+    raw_forbidden = layer_config.get("forbidden_imports", [])
+    forbidden_imports: List[str] = (
+        [str(f) for f in raw_forbidden] if isinstance(raw_forbidden, list) else []
+    )
+    raw_allowed = layer_config.get("allowed_imports")
+    allowed_imports: Optional[List[str]] = (
+        [str(a) for a in raw_allowed] if isinstance(raw_allowed, list) else None
+    )
+    allow_wildcard = bool(layer_config.get("allow_wildcard_imports", global_rules.get("allow_wildcard_imports", False)))
 
     for imp in visitor.imports:
         if imp["is_wildcard"] and not allow_wildcard:
@@ -205,11 +212,11 @@ def check_file_architecture(
                 "severity": "error",
             })
 
-        top = imp["top_level"]
-        mod = imp["module"]
+        top = str(imp.get("top_level", ""))
+        mod = str(imp.get("module", ""))
 
         # Check forbidden imports
-        base_mod = imp.get("base_module", "")
+        base_mod = str(imp.get("base_module", ""))
         for forbidden in forbidden_imports:
             if top == forbidden or mod == forbidden or mod.startswith(f"{forbidden}.") or base_mod == forbidden:
                 violations.append({
@@ -227,11 +234,12 @@ def check_file_architecture(
         # Check allowed imports whitelist (if configured)
         if allowed_imports is not None:
             is_allowed = False
-            intra_layer_top = layer_name if imp.get("level", 0) == 1 else None
-            intra_layer_mod = f"{layer_name}.{mod}" if (imp.get("level", 0) == 1 and mod) else intra_layer_top
+            imp_level = imp.get("level", 0)
+            intra_layer_top = layer_name if imp_level == 1 else None
+            intra_layer_mod = f"{layer_name}.{mod}" if (imp_level == 1 and mod) else intra_layer_top
             for allowed in allowed_imports:
                 if (top == allowed or mod == allowed or mod.startswith(f"{allowed}.") or base_mod == allowed
-                        or (intra_layer_top and (intra_layer_top == allowed or intra_layer_mod == allowed or intra_layer_mod.startswith(f"{allowed}.")))):
+                        or (intra_layer_top and (intra_layer_top == allowed or intra_layer_mod == allowed or (intra_layer_mod is not None and intra_layer_mod.startswith(f"{allowed}."))))):
                     is_allowed = True
                     break
             if not is_allowed and (top or mod):
@@ -287,7 +295,20 @@ def check_architecture(
             }
         
         try:
-            contract_data = json.loads(contracts_path.read_text(encoding="utf-8"))
+            loaded_data = json.loads(contracts_path.read_text(encoding="utf-8"))
+            if not isinstance(loaded_data, dict):
+                return {
+                    "success": False,
+                    "complete": False,
+                    "limit_reasons": [],
+                    "error": f"Failed to parse contract JSON at {contracts_path}: expected JSON object",
+                    "target_directory": str(target_dir),
+                    "violations_count": 0,
+                    "violations": [],
+                    "files_inspected": 0,
+                    "files_discovered": 0,
+                }
+            contract_data = loaded_data
         except Exception as e:
             return {
                 "success": False,
@@ -301,8 +322,23 @@ def check_architecture(
                 "files_discovered": 0,
             }
 
-    layers = contract_data.get("layers", {})
-    global_rules = contract_data.get("global_rules", {})
+    if not isinstance(contract_data, dict):
+        return {
+            "success": False,
+            "complete": False,
+            "limit_reasons": [],
+            "error": "Contract data must be a dictionary",
+            "target_directory": str(target_dir),
+            "violations_count": 0,
+            "violations": [],
+            "files_inspected": 0,
+            "files_discovered": 0,
+        }
+
+    raw_layers = contract_data.get("layers", {})
+    layers: Dict[str, Dict[str, object]] = raw_layers if isinstance(raw_layers, dict) else {}
+    raw_global_rules = contract_data.get("global_rules", {})
+    global_rules: Dict[str, object] = raw_global_rules if isinstance(raw_global_rules, dict) else {}
     all_violations: List[Dict[str, object]] = []
     inspected_files = set()
     errors = []
@@ -311,8 +347,10 @@ def check_architecture(
 
     file_to_layers: Dict[Path, List[Tuple[str, Dict[str, object]]]] = {}
 
-    for layer_name, layer_cfg in layers.items():
-        pattern = layer_cfg.get("path", "")
+    for layer_name, raw_layer_cfg in layers.items():
+        layer_cfg: Dict[str, object] = raw_layer_cfg if isinstance(raw_layer_cfg, dict) else {}
+        pattern_val = layer_cfg.get("path", "")
+        pattern = str(pattern_val) if pattern_val else ""
         if not pattern:
             continue
 

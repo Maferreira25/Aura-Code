@@ -189,8 +189,10 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
             print(">> O envio para o repositorio remoto DEVE SER CANCELADO para evitar quebra da esteira.")
             print("-" * 80)
             print("Detalhes do Erro:")
-            output_msg = failed_step["stdout"] or failed_step["stderr"]
-            for line in output_msg.splitlines()[:20]:
+            output_msg = failed_step["stderr"] if failed_step["stderr"] else failed_step["stdout"]
+            lines = [l for l in output_msg.splitlines() if l.strip()]
+            display_lines = lines[-25:] if len(lines) > 25 else lines
+            for line in display_lines:
                 print(f"   {line}")
             print("-" * 80)
             print("Como Resolver:")

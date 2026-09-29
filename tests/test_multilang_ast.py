@@ -13,6 +13,8 @@ from tools.multilang_ast import MultiLangASTAnalyzer, HAS_TREE_SITTER
 class TestMultiLangAST(unittest.TestCase):
 
     def setUp(self):
+        if not HAS_TREE_SITTER:
+            self.skipTest("Tree-sitter optional multi-language dependencies are not installed")
         self.analyzer = MultiLangASTAnalyzer()
 
     def test_jsts_slop_and_empty_catch(self):

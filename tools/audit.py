@@ -326,7 +326,8 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
             reason="No architecture contract was found or supplied.",
         )
     else:
-        arch_findings = int(arch_result.get("violations_count", 0))
+        raw_count = arch_result.get("violations_count", 0)
+        arch_findings = int(raw_count) if isinstance(raw_count, (int, str)) else 0
         guarantees["architecture"] = _guarantee(
             "PASS" if arch_result.get("success", False) else "FAIL",
             "architecture_contract",

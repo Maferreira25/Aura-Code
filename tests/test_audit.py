@@ -161,6 +161,9 @@ class AuditTests(unittest.TestCase):
 
     def test_audit_multilang_cst_clean_project_guarantees_pass(self):
         """Clean multi-language project with Tree-sitter CST yields PASS for slop, leaks, and sec."""
+        from tools.multilang_ast import HAS_TREE_SITTER
+        if not HAS_TREE_SITTER:
+            self.skipTest("Tree-sitter optional multi-language dependencies are not installed")
         temp_dir = Path(tempfile.mkdtemp())
         try:
             (temp_dir / "index.ts").write_text(
