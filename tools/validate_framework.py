@@ -73,6 +73,12 @@ def is_ignored_by_framework(rel_path: Path, gitignore_patterns: Optional[List[st
     return False
 
 
+
+def is_stable_release_version(raw_version: str) -> bool:
+    """Return True only for stable numeric major>=1 versions such as 1.0.0."""
+    return re.fullmatch(r"([1-9][0-9]*)\.[0-9]+\.[0-9]+", raw_version.strip()) is not None
+
+
 def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
     """Execute complete internal integrity and governance checks.
 
@@ -182,8 +188,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
     version_file = root_dir / "VERSION"
     if version_file.exists():
         raw_version = version_file.read_text(encoding="utf-8").strip()
-        stable_match = re.match(r"^([1-9][0-9]*)\\.[0-9]+\\.[0-9]+$", raw_version)
-        if stable_match:
+        if is_stable_release_version(raw_version):
             try:
                 from tools.maturity_gate import evaluate_maturity
                 maturity = evaluate_maturity(root_dir)
