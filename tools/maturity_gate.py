@@ -12,8 +12,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from validation.tools.validate_experiment_evidence import evaluate_p1, load_results
-
 
 def _load_json(path: Path) -> Dict[str, Any]:
     try:
@@ -74,12 +72,23 @@ def evaluate_maturity(root: Path = ROOT) -> Dict[str, Any]:
     evidence_map_raw = evidence_data.get("criteria", {})
     evidence_map = evidence_map_raw if isinstance(evidence_map_raw, dict) else {}
 
-    rows, result_load_errors = load_results(root / "validation" / "results")
-    p1 = evaluate_p1(rows)
-    if result_load_errors:
-        p1["errors"] = list(p1.get("errors", [])) + result_load_errors
-        p1["formal_p1_complete"] = False
-        p1["comparative_signal_interpretable"] = False
+    try:
+        from validation.tools.validate_experiment_evidence import evaluate_p1, load_results
+        rows, result_load_errors = load_results(root / "validation" / "results")
+        p1 = evaluate_p1(rows)
+        if result_load_errors:
+            p1["errors"] = list(p1.get("errors", [])) + result_load_errors
+            p1["formal_p1_complete"] = False
+            p1["comparative_signal_interpretable"] = False
+    except ImportError as exc:
+        p1 = {
+            "formal_p1_complete": False,
+            "comparative_signal_interpretable": False,
+            "ceiling_effect": False,
+            "automated_runs": 0,
+            "automated_expected": 90,
+            "errors": [f"P1 evaluator unavailable: {exc}"],
+        }
 
     results: List[Dict[str, Any]] = []
     blockers: List[str] = []
