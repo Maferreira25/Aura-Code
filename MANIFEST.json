@@ -932,8 +932,8 @@
       "bytes": 18902
     },
     "tests/test_validation_suite.py": {
-      "sha256": "fbdc6c68754d3894422c1975a5250dd7415518309583b97fdc70a434367c6fcb",
-      "bytes": 2861
+      "sha256": "ce9ffec4b4d85895f1e6d142fb46e01a7486835207b06ea27284d4b8ce210e9f",
+      "bytes": 2856
     },
     "tests/test_wizard.py": {
       "sha256": "d007d12e4fde4239e1c85165c314a46e387154c3baf233b1aa8ec63d44cf054d",
