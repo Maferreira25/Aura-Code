@@ -59,6 +59,10 @@ class TestProtectedAssurancePlane(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertFalse(can_write(path, self.policy, actor="developer"))
 
+    def test_differential_engine_is_protected(self):
+        self.assertEqual(classify_path("tools/differential_engine.py", self.policy), PLANE_PROTECTED)
+        self.assertFalse(can_write("tools/differential_engine.py", self.policy, actor="developer"))
+
     def test_metamorphic_engine_is_protected(self):
         self.assertEqual(classify_path("tools/metamorphic_engine.py", self.policy), PLANE_PROTECTED)
         self.assertFalse(can_write("tools/metamorphic_engine.py", self.policy, actor="developer"))
