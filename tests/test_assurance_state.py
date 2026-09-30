@@ -19,6 +19,7 @@ from tools.assurance_state import (
     record_control,
     register_finding,
     start_remediation,
+    validate_state,
     mark_remediation_implemented,
     revalidate_finding,
 )
@@ -296,6 +297,24 @@ class AssuranceStateTests(unittest.TestCase):
         reasons = "\n".join(report["transitions"][-1]["reasons"])
         self.assertIn("missing actor provenance for 'implementer'", reasons)
         self.assertIn("missing actor provenance for 'verifier'", reasons)
+
+    def test_validate_state_rejects_malformed_findings(self):
+        state = new_state("demo", "AL2")
+        state["open_findings"] = [{"id": "X", "severity": "HIGH", "status": "INVALID"}]
+        errors = validate_state(state)
+        self.assertTrue(any("invalid status" in error for error in errors))
+
+    def test_validate_state_rejects_non_array_audit_history(self):
+        state = new_state("demo", "AL2")
+        state["audit_history"] = {}
+        errors = validate_state(state)
+        self.assertIn("audit_history must be an array", errors)
+
+    def test_validate_state_rejects_malformed_transition_history(self):
+        state = new_state("demo", "AL2")
+        state["transition_history"] = ["not-an-object"]
+        errors = validate_state(state)
+        self.assertIn("transition_history entries must be objects", errors)
 
 
 if __name__ == "__main__":
