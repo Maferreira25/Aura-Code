@@ -872,8 +872,8 @@
       "bytes": 3575
     },
     "tests/test_mutation_engine.py": {
-      "sha256": "bbb995fe1fe62ee1806a4655620860484927075755423d5b236f55ef4ddcdb7c",
-      "bytes": 7334
+      "sha256": "b4362ecda3de96e65b05f7ff443705e1e3a92da3afc6d8d76320f56fa46bb0b4",
+      "bytes": 7616
     },
     "tests/test_pre_tool_guard.py": {
       "sha256": "9cedd1454ce24e049b5aaeeeabf4aeb466742414791016cd8a807ba3c7140d51",
@@ -888,8 +888,8 @@
       "bytes": 7531
     },
     "tests/test_sarif_aggregator.py": {
-      "sha256": "98a4693418948a59a670069a4fef3c956d2c25561738eb43a748d3a756d8e9d2",
-      "bytes": 5308
+      "sha256": "ebac2a9bece66bad295896cda86cf12cd240e9b78da714f0ba67c34b4305dc82",
+      "bytes": 6392
     },
     "tests/test_sdd_enterprise.py": {
       "sha256": "1c86b0ca151d1dd8ffcd610c1445115bfb24b2c2597bca24e9ee01b7b2cdf0aa",
@@ -1044,8 +1044,8 @@
       "bytes": 4691
     },
     "tools/mutation_engine.py": {
-      "sha256": "10426c489a2488ae7093085de5718ba6b2fd06c562b28b019e76e949f01a7980",
-      "bytes": 22416
+      "sha256": "d44899a534f16b24d87e2f7dc714e1b79cc699ce793906c56576569b35b8b742",
+      "bytes": 24613
     },
     "tools/pre_tool_guard.py": {
       "sha256": "cf0f8874d74e5ab8ff1df2f3933768adc5d8fdb4f77af8deb23fe24f72e1fe22",
@@ -1060,8 +1060,8 @@
       "bytes": 6799
     },
     "tools/sarif_aggregator.py": {
-      "sha256": "ac903a2fce047cf02b3f5237113f9b59851f0965e4a195270226ff486d862755",
-      "bytes": 3581
+      "sha256": "33aea98fde315abd1b5c7df222a4fbd857e0361c69ba6dff3a537b723970d2fb",
+      "bytes": 5191
     },
     "tools/skill_packages.py": {
       "sha256": "91495a0a67d5cd4bac30609a9791e840a605880772083aa092a63bbdd6a98b32",
