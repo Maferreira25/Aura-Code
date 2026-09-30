@@ -215,3 +215,42 @@ The command validates and hashes the package but does **not** modify validation/
 MAT-09 uses docs/audit/INDEPENDENT-SECURITY-REVIEW-GUIDE.md. The assessor must attest independence and must not have had an implementation role in the reviewed change. Threat-model and supply-chain review evidence are both required, with zero open Critical/High blockers.
 
 MAT-10 is intentionally not self-completable by an agent. docs/GOVERNANCE-1.0-PROPOSAL.md is a draft decision package only. A PASS requires explicit human adoption, identified human authority, adopted roles, and frozen governance evidence.
+
+
+## Execution queues and global readiness
+
+AuraCode now separates two kinds of queue.
+
+### Study execution queues
+
+validation/tools/maturity_queue.py materializes the frozen execution design for P2, P3 and P4.
+
+Examples:
+
+~~~text
+python validation/tools/maturity_queue.py p2 <p2-plan.json> --missing-only --json
+python validation/tools/maturity_queue.py p3 <p3-plan.json> \
+  --registry validation/benchmark-registry.json --missing-only --json
+python validation/tools/maturity_queue.py p4 <p4-plan.json> --json
+~~~
+
+A queue entry marked COMPLETE means only that the planned execution/evidence slot exists. It does not mean Qualified Success, PASS, or maturity approval.
+
+### Stable-maturity readiness queue
+
+validation/tools/maturity_readiness.py combines:
+- the authoritative maturity gate;
+- the MAT-01 through MAT-10 workplan;
+- current P1 completion/missing-run counts.
+
+Run:
+
+~~~text
+python validation/tools/maturity_readiness.py . --json
+~~~
+
+The workplan at validation/maturity-workplan.json defines owner-role type, prerequisites, validator command, evidence package and next action for every MAT criterion.
+
+The workplan is explicitly **not** a status source. PASS/FAIL/UNKNOWN continues to come only from the maturity gate and validated evidence ledger.
+
+This distinction prevents an operational checklist from silently becoming evidence.
