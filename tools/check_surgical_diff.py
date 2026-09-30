@@ -15,6 +15,8 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
+from tools.protected_assurance_plane import evaluate_changes, load_policy
+
 
 SAFE_GIT_ARGS = [
     "-c", "core.fsmonitor=",
@@ -184,6 +186,7 @@ def check_surgical_diff(
     direct_stats: Optional[Dict[str, object]] = None,
     block_on_excessive_churn: bool = True,
     selected_scope_only: bool = False,
+    protected_policy_path: Optional[Path] = None,
 ) -> Dict[str, object]:
     """Audit repository diff against surgical change and evaluation integrity rules."""
     repo_dir = Path(repo_dir).resolve()
@@ -237,6 +240,28 @@ def check_surgical_diff(
             "stats": {}
         }
 
+    try:
+        protected_policy = load_policy(protected_policy_path)
+        protected_evaluation = evaluate_changes(changes, protected_policy, actor="developer")
+    except (OSError, ValueError) as exc:
+        return {
+            "success": False,
+            "error": f"Protected Assurance Plane policy could not be evaluated: {exc}",
+            "repo_dir": str(repo_dir),
+            "total_files_changed": len(changes),
+            "total_lines_added": 0,
+            "total_lines_deleted": 0,
+            "violations_count": 1,
+            "violations": [{
+                "file": "*",
+                "rule": "protected_plane_unavailable",
+                "severity": "critical",
+                "message": str(exc),
+            }],
+            "files_changed": changes,
+            "stats": {},
+        }
+
     stats = direct_stats if direct_stats is not None else get_git_diff_stats(repo_dir, changes=changes)
     ignored_files: List[str] = []
     scope_mode = "repository"
@@ -263,7 +288,9 @@ def check_surgical_diff(
             "total_added": sum(int(item.get("added", 0)) for item in selected_file_stats.values()),
             "total_deleted": sum(int(item.get("deleted", 0)) for item in selected_file_stats.values()),
         }
-    violations: List[Dict[str, object]] = []
+    violations: List[Dict[str, object]] = [
+        dict(item) for item in protected_evaluation.get("violations", [])
+    ]
 
     if not stats.get("complete", True):
         violations.append({
@@ -322,6 +349,7 @@ def check_surgical_diff(
         "violations": violations,
         "files_changed": changes,
         "ignored_files": sorted(ignored_files),
+        "protected_assurance_plane": protected_evaluation,
     }
 
 
