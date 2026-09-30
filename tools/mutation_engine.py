@@ -55,6 +55,94 @@ def validate_mutant_status(status: str) -> str:
     return status
 
 
+CRITICAL_MUTATION_TYPES = {
+    "SECURITY_GUARD_BYPASS",
+    "EXCEPTION_SUPPRESSION",
+}
+
+
+def evaluate_mutation_assurance(result: Dict[str, Any], assurance_level: str = "AL2") -> Dict[str, Any]:
+    """Evaluate Mutation 2.0 outcomes without averaging away critical survivors."""
+    level = assurance_level.upper().strip()
+    if level not in {"AL1", "AL2", "AL3", "AL4"}:
+        return {
+            "status": "ERROR",
+            "blocking": True,
+            "reason": f"Unknown assurance level: {assurance_level!r}",
+            "critical_survivors": [],
+            "unresolved_mutants": [],
+        }
+
+    mutants = result.get("mutants", [])
+    if not isinstance(mutants, list):
+        return {
+            "status": "ERROR",
+            "blocking": True,
+            "reason": "Mutation report is malformed.",
+            "critical_survivors": [],
+            "unresolved_mutants": [],
+        }
+
+    critical_survivors = [
+        item for item in mutants
+        if isinstance(item, dict)
+        and item.get("type") in CRITICAL_MUTATION_TYPES
+        and item.get("status") in {"SURVIVED", "NO_COVERAGE", "LIKELY_EQUIVALENT"}
+    ]
+    runtime_errors = [
+        item for item in mutants
+        if isinstance(item, dict) and item.get("status") in {"TIMEOUT", "ERROR"}
+    ]
+    unresolved = [
+        item for item in mutants
+        if isinstance(item, dict)
+        and item.get("status") in {"SURVIVED", "NO_COVERAGE", "LIKELY_EQUIVALENT"}
+    ]
+    waived = [
+        item for item in mutants
+        if isinstance(item, dict) and item.get("status") == "WAIVED"
+    ]
+
+    if runtime_errors or result.get("status") == "ERROR":
+        status = "ERROR"
+        reason = "Mutation evaluator did not complete reliably."
+    elif critical_survivors:
+        status = "FAIL"
+        reason = (
+            f"{len(critical_survivors)} critical security/rejection-path mutant(s) remain unresolved. "
+            "Mutation score cannot override critical survivor evidence."
+        )
+    elif unresolved:
+        status = "INCONCLUSIVE"
+        reason = f"{len(unresolved)} non-critical mutant(s) remain unresolved."
+    elif waived:
+        status = "WAIVED"
+        reason = f"{len(waived)} mutant(s) were explicitly waived; policy authorization remains required."
+    elif int(result.get("total_mutants", 0) or 0) == 0:
+        status = "NOT_APPLICABLE"
+        reason = "No mutable sites were produced for this target."
+    else:
+        status = "PASS"
+        reason = "All evaluated mutation outcomes are resolved without survivors."
+
+    blocking = status not in {"PASS", "NOT_APPLICABLE"}
+    # Mutation assurance becomes a required gate from AL2 upward. AL1 may record
+    # the result without making mutation coverage itself mandatory, but any
+    # critical security survivor remains blocking at every level.
+    if level == "AL1" and status == "NOT_APPLICABLE":
+        blocking = False
+
+    return {
+        "status": status,
+        "blocking": blocking,
+        "assurance_level": level,
+        "reason": reason,
+        "critical_survivors": critical_survivors,
+        "unresolved_mutants": unresolved,
+        "waived_mutants": waived,
+    }
+
+
 def disposition_survivor(
     mutant: Dict[str, Any],
     disposition: str,
@@ -671,7 +759,7 @@ def execute_mutation_analysis(
     passed = survived == 0 or score >= 75.0
     execution_failed = timed_out > 0 or evaluator_errors > 0
 
-    return _attach_canonical_result({
+    raw_result = {
         "status": "ERROR" if execution_failed else ("PASS" if passed else "WARN"),
         "target_file": str(target_file),
         "total_mutants": total,
@@ -686,8 +774,10 @@ def execute_mutation_analysis(
         "mutation_score": round(score, 1),
         "vitiated_oracles_detected": survived > 0,
         "mutants": mutants_report,
-        "remediations": remediations
-    }, target_file)
+        "remediations": remediations,
+    }
+    raw_result["policy_evaluation"] = evaluate_mutation_assurance(raw_result, assurance_level="AL2")
+    return _attach_canonical_result(raw_result, target_file)
 
 
 def format_prescriptive_report(res: Dict[str, Any]) -> str:
