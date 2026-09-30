@@ -182,11 +182,28 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "validation/maturity-evidence.json",
         "validation/maturity-workplan.json",
         "validation/tools/maturity_readiness.py",
+        "tools/maturity_cli.py",
+        "validation/tools/validate_maturity_infrastructure.py",
+        "validation/tools/maturity_handoff.py",
+        "validation/tools/maturity_queue.py",
+        "validation/schemas/maturity-workplan.schema.json",
         "tools/maturity_gate.py",
         "MANIFEST.json",
     ]:
         if not (root_dir / rel).exists():
             errors.append(f"Missing repository file: {rel}")
+
+    # Stable-maturity infrastructure coverage
+    try:
+        from validation.tools.validate_maturity_infrastructure import validate_maturity_infrastructure
+        maturity_infra = validate_maturity_infrastructure(root_dir)
+        if maturity_infra.get("status") != "VALID":
+            for item in maturity_infra.get("errors", []):
+                errors.append(f"maturity infrastructure: {item}")
+        for item in maturity_infra.get("warnings", []):
+            warnings.append(f"maturity infrastructure: {item}")
+    except Exception as exc:
+        errors.append(f"maturity infrastructure validation failed: {exc}")
 
     # Stable-release maturity enforcement
     version_file = root_dir / "VERSION"
