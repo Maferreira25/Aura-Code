@@ -57,3 +57,26 @@ As specified normatively in `contracts.json`, AuraCode maintains strict separati
 
 - AST architectural linter operates efficiently on repositories with up to 100,000 lines of code within standard CI timeouts (< 10 seconds).
 - Diff linter limits maximum single-turn churn to configurable thresholds (default 500 lines) to prevent unreviewable large-scale hallucinated modifications.
+
+
+## 6. Assurance State and Decision Engine
+
+AuraCode now includes a persistent fail-closed assurance state and decision layer.
+
+The normative control catalog and AL1-AL4 profiles remain the source of applicable requirements. The Decision Engine consumes those controls through controls/gates.json and determines whether a lifecycle transition may advance.
+
+Core components:
+- tools/assurance_state.py — state and decision core;
+- tools/assurance_state_cli.py — CLI adapter;
+- schemas/assurance-state.schema.json — persisted-state contract;
+- tools/continuous_assurance.py — cross-revision drift/regression detection;
+- tools/dogfood_assurance.py — framework dogfooding;
+- docs/ASSURANCE-STATE.md — full design specification.
+
+The engine uses PASS, FAIL, UNKNOWN, NOT_APPLICABLE and WAIVED as explicit control states. UNKNOWN is not treated as success.
+
+Independent verification is enforced through actor provenance. Where required by the assurance profile, implementer and verifier/auditor cannot be the same actor or prohibited same session. For AL3/AL4 AI-to-AI verification, the current policy also requires distinct model identities.
+
+Remediation and revalidation are deliberately separated. A remediation can reach IMPLEMENTED, but only an independent revalidator can move the finding to RESOLVED.
+
+The stable-1.0 maturity gate is separate from lifecycle assurance. It governs whether AuraCode itself has enough empirical/governance evidence to make a stable-release maturity claim; it does not replace the lifecycle Decision Engine.
