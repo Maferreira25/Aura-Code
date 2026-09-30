@@ -1,6 +1,8 @@
 import json, unittest
 from pathlib import Path
 
+from validation.tools.validate_experiment_evidence import evaluate_p1, load_results
+
 ROOT=Path(__file__).resolve().parents[1]
 SCROOT=ROOT/"validation"/"scenarios"/"public"
 
@@ -43,6 +45,18 @@ class ValidationSuiteTests(unittest.TestCase):
             for line in body.splitlines():
                 if "Planning Mode" in line or "Fast Mode" in line:
                     self.assertTrue(any(k in line.lower() for k in ["do not","não","histor","lagging","not use"]), (path,line))
+
+    def test_p1_report_does_not_overclaim_current_completion(self):
+        rows, errors = load_results(ROOT / "validation" / "results")
+        self.assertEqual(errors, [])
+        status = evaluate_p1(rows)
+        report = (ROOT / "validation" / "RESULTS-P1-REPORT.md").read_text(encoding="utf-8")
+        if not status["formal_p1_complete"]:
+            self.assertIn("P1 FORMAL ATUAL: INCOMPLETO", report)
+            self.assertIn("36/114", report)
+            self.assertIn("faltam 78", report)
+            self.assertIn("não representa a conclusão formal", report)
+
 
 if __name__=="__main__":
     unittest.main()
