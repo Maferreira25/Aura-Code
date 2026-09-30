@@ -1776,8 +1776,8 @@
       "bytes": 6149
     },
     "validation/tools/maturity_studies.py": {
-      "sha256": "d44545fd723800779339ac68003dffc7aa26d3353e2b99132404f6a8fb4ce6d2",
-      "bytes": 34750
+      "sha256": "ae25e9a1d0a62d57141fb3916b68777ae939db062bd4de0c147bfacb92991137",
+      "bytes": 34642
     },
     "tests/test_maturity_studies.py": {
       "sha256": "59d09fd509b62f11f5795c1f05f421d39fe2759d6634021e19c5a19f50963c04",
