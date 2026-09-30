@@ -256,12 +256,12 @@
       "bytes": 33
     },
     "controls/catalog.json": {
-      "sha256": "f213bb5b9df6e62fdaaa91c0bb422fce7eb9589c2322d0dd90032d6bfd2c77e1",
-      "bytes": 69390
+      "sha256": "45781c5b537d1af8dbd9116878c14d5fad91209657086d74260a5e78a28115ad",
+      "bytes": 70452
     },
     "controls/CATALOG.md": {
-      "sha256": "4594389a354975b9e45403768956dd92d3fc504efa93eaf5960be7c3fc6402d7",
-      "bytes": 48267
+      "sha256": "45bbe4809e6ed49c5c40ec237178040f59d53410e6b2733509b8e381ecb6a448",
+      "bytes": 49207
     },
     "controls/domains.md": {
       "sha256": "958a5548a5a87ef2b72b120843f369a20f0ec7c928158a414fce96af7318d398",
@@ -1708,8 +1708,8 @@
       "bytes": 6260
     },
     "tests/test_assurance_state.py": {
-      "sha256": "16a1e9db1eaae00f66e83470b23c65b4a5e27d9d15cb5914fbf6d693eae35579",
-      "bytes": 14328
+      "sha256": "02236a6699863ea1ed341d2eddf2f129895c6f63192548b12cfa5da4e6776be7",
+      "bytes": 16550
     },
     "adapters/antigravity/.agents/agents/auracode-remediator/agent.md": {
       "sha256": "2e108e662d89cd9c938c96e0ae7237667085c48fd26118b102fe16dfcabc8b20",
