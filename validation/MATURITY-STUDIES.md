@@ -317,3 +317,18 @@ auracode maturity infrastructure . --json
 ~~~
 
 The unified CLI does not change the evidence model: plans are not results, completed runs are not automatically successful, and a prepared ledger entry is not automatically accepted into project governance.
+
+
+## External review handoff
+
+Before an independent maturity/security/governance review, export a frozen handoff package:
+
+~~~text
+auracode maturity handoff . \
+  --revision <immutable-commit-sha> \
+  --output-dir <review-package-directory> --json
+~~~
+
+The export contains the frozen revision, current maturity blockers, P1 progress, selected review-file hashes, and the MANIFEST hash. It intentionally excludes private/fresh scenario contents and hidden evaluator material.
+
+The handoff is not an approval and does not alter validation/maturity-evidence.json.
