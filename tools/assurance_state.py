@@ -357,9 +357,6 @@ def check_actor_independence(
     left = _actor(state, left_role)
     right = _actor(state, right_role)
     reasons: List[str] = []
-    assurance_status = str(state.get("assurance_status", "ACTIVE")).upper()
-    if assurance_status != "ACTIVE":
-        reasons.append(f"assurance status is {assurance_status}; unresolved material findings require revalidation")
     if left is None:
         reasons.append(f"missing actor provenance for '{left_role}'")
     if right is None:
@@ -614,6 +611,11 @@ def evaluate_gate(state: Mapping[str, Any], target_stage: str, root: Path = ROOT
         raise ValueError(f"Invalid current stage '{current}'")
 
     reasons: List[str] = []
+    assurance_status = str(state.get("assurance_status", "ACTIVE")).upper()
+    if assurance_status != "ACTIVE":
+        reasons.append(
+            f"assurance status is {assurance_status}; unresolved material findings require revalidation"
+        )
     current_index = STAGES.index(current)
     expected = STAGES[current_index + 1] if current_index + 1 < len(STAGES) else None
     if STAGES.index(target) != current_index + 1:
