@@ -52,6 +52,7 @@ from tools import traceability_engine
 from tools import heldout_runner
 from tools import property_engine
 from tools import metamorphic_engine
+from tools import differential_engine
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -304,6 +305,12 @@ def main() -> None:
     metamorphic_p.add_argument("manifest", help="Path to metamorphic-suite manifest")
     metamorphic_p.add_argument("--target", default=".", help="Target workspace directory")
     metamorphic_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: differential
+    differential_p = subparsers.add_parser("differential", help="Compare candidate and independent reference behavior")
+    differential_p.add_argument("manifest", help="Path to differential-suite manifest")
+    differential_p.add_argument("--target", default=".", help="Target workspace directory")
+    differential_p.add_argument("--json", action="store_true", help="Output result in JSON format")
 
     # Subcommand: traceability
     trace_p = subparsers.add_parser("traceability", help="Verify Requirement -> Invariant -> Implementation -> Test -> Evidence chains")
@@ -578,6 +585,25 @@ def main() -> None:
                 print(
                     f"Suite: {res['suite_id']} | "
                     f"Relations: {res.get('relations_pass', 0)}/{res.get('relations_total', 0)} PASS"
+                )
+        sys.exit(0 if res.get("status") == "PASS" else 1)
+
+    elif args.command == "differential":
+        import json
+        workspace = Path(args.target).resolve()
+        manifest_path = Path(args.manifest)
+        if not manifest_path.is_absolute():
+            manifest_path = (workspace / manifest_path).resolve()
+        res = differential_engine.evaluate_differential_suite(workspace, manifest_path)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Differential Testing: {res.get('status')}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+            if res.get("suite_id"):
+                print(
+                    f"Suite: {res['suite_id']} | "
+                    f"Matches: {res.get('matches', 0)}/{res.get('cases_total', 0)}"
                 )
         sys.exit(0 if res.get("status") == "PASS" else 1)
 
