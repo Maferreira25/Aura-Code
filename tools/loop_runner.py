@@ -188,11 +188,22 @@ def run_5_level_verification(workspace_root: Path, allow_tests: bool = False) ->
     code_d, out_d, err_d = _run_cmd(diff_args, workspace_root)
     l4_passed = (code_d == 0)
     if not l4_passed:
-        if "potential reward-hacking" in out_d or "without explicit authorization" in out_d:
+        protected_tamper_markers = (
+            "potential reward-hacking",
+            "without explicit authorization",
+            "protected assurance asset",
+            "held-out evaluator asset",
+            "evidence plane is append-only",
+            "public test/evaluator modification",
+        )
+        if any(marker in out_d.lower() for marker in protected_tamper_markers):
             results["reward_hacking_detected"] = True
-            results["errors"].append("CRITICAL: Reward hacking detected (agent modified test files to bypass verification)")
+            results["errors"].append(
+                "CRITICAL: Assurance-plane tampering detected; the implementing agent attempted "
+                "to modify tests, evaluators, policy, held-out assets, or existing evidence."
+            )
         else:
-            results["errors"].append("Level 4 Surgical diff check failed (exceeded churn limit)")
+            results["errors"].append("Level 4 Surgical diff check failed (scope/churn/integrity violation)")
     record_canonical(
         "surgical-diff",
         "PASS" if l4_passed else ("FAIL" if results["reward_hacking_detected"] else "INCONCLUSIVE"),
