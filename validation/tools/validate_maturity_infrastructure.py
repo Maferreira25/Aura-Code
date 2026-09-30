@@ -66,6 +66,7 @@ COMMON_ARTIFACTS = [
     "validation/maturity-workplan.json",
     "validation/schemas/maturity-workplan.schema.json",
     "validation/tools/maturity_readiness.py",
+    "validation/tools/maturity_queue.py",
     "tools/maturity_cli.py",
     "validation/tools/validate_maturity_infrastructure.py",
     "validation/tools/maturity_handoff.py",
