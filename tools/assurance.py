@@ -51,6 +51,7 @@ from tools import refactor_engine
 from tools import assurance_state
 from tools import continuous_assurance
 from tools import maturity_gate
+from tools import dogfood_assurance
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -287,6 +288,10 @@ def main() -> None:
     # Subcommand: maturity
     maturity_p = subparsers.add_parser("maturity", help="Evaluate stable 1.0 evidence readiness", add_help=False)
     maturity_p.add_argument("maturity_args", nargs=argparse.REMAINDER)
+
+    # Subcommand: dogfood
+    dogfood_p = subparsers.add_parser("dogfood", help="Run fail-closed self-assurance against a repository", add_help=False)
+    dogfood_p.add_argument("dogfood_args", nargs=argparse.REMAINDER)
 
     # Subcommand: continuous
     continuous_p = subparsers.add_parser("continuous", help="Continuous assurance snapshots and drift detection", add_help=False)
@@ -658,6 +663,9 @@ def main() -> None:
 
     elif args.command == "maturity":
         sys.exit(maturity_gate.main(args.maturity_args))
+
+    elif args.command == "dogfood":
+        sys.exit(dogfood_assurance.main(args.dogfood_args))
 
     elif args.command == "continuous":
         sys.exit(continuous_assurance.main(args.continuous_args))
