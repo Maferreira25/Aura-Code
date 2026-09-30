@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 440,
+  "file_count": 441,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "103a0537c646bf55d74479afb62c52ca4466a1a54bd3157e8b596fe1dc17c9ca",
-      "bytes": 45200
+      "sha256": "cab49a7b584f26f93e1ca857219211480a2020cfd2d6d48940beb66bfb14bfdc",
+      "bytes": 45554
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1708,8 +1708,8 @@
       "bytes": 6260
     },
     "tests/test_assurance_state.py": {
-      "sha256": "7fa3f72ca4b788e78ef9b926e605c001a7871b3a99289a159d0a19ff2ad13d72",
-      "bytes": 13296
+      "sha256": "16a1e9db1eaae00f66e83470b23c65b4a5e27d9d15cb5914fbf6d693eae35579",
+      "bytes": 14328
     },
     "adapters/antigravity/.agents/agents/auracode-remediator/agent.md": {
       "sha256": "2e108e662d89cd9c938c96e0ae7237667085c48fd26118b102fe16dfcabc8b20",
@@ -1762,6 +1762,10 @@
     "tests/test_maturity_gate.py": {
       "sha256": "a3023f9ae1a1dc567f04c5f979f745b13e0f2062558f54f3681031e21ac3b44d",
       "bytes": 2642
+    },
+    "tools/dogfood_assurance.py": {
+      "sha256": "4f77e302a782fb75b3b474c5377d7d77b9ac120b6c04fb4b0cde5442ee75d4e6",
+      "bytes": 4732
     }
   }
 }
