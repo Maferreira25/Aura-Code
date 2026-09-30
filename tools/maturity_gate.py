@@ -189,7 +189,7 @@ def _semantic_validate_evidence(root: Path, criterion_id: str, evidence: object)
         registry = None
         if criterion_id == "MAT-04":
             registry = _load_json(root / "validation" / "benchmark-registry.json")
-        result = validate_evidence_for_criterion(criterion_id, data, registry)
+        result = validate_evidence_for_criterion(criterion_id, data, registry, root=root)
     except (ImportError, ValueError) as exc:
         return {"valid": False, "reason": f"semantic validator unavailable/invalid: {exc}"}
     finally:
