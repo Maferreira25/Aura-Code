@@ -51,6 +51,24 @@ class TestLoopRunner(unittest.TestCase):
         self.assertEqual(len(loaded_tasks), 1)
         self.assertEqual(loaded_tasks[0]["id"], "t1")
 
+    @patch("tools.loop_runner._run_cmd")
+    def test_canonical_verification_pass_is_ready(self, mock_run_cmd):
+        mock_run_cmd.return_value = (0, "OK", "")
+        res = run_5_level_verification(self.temp_dir)
+        self.assertTrue(res["passed"])
+        self.assertEqual(res["canonical_status"], "PASS")
+        self.assertEqual(res["canonical_progression"]["state"], "READY")
+
+    @patch("tools.loop_runner._run_cmd")
+    def test_canonical_verification_blocks_on_uncertain_gate(self, mock_run_cmd):
+        calls = [(1, "", "scanner failed")] + [(0, "OK", "")] * 7
+        mock_run_cmd.side_effect = calls
+        res = run_5_level_verification(self.temp_dir)
+        self.assertFalse(res["passed"])
+        self.assertEqual(res["canonical_status"], "INCONCLUSIVE")
+        self.assertEqual(res["canonical_progression"]["state"], "BLOCKED")
+        self.assertTrue(any(item["status"] == "INCONCLUSIVE" for item in res["canonical_results"]))
+
     def test_run_loop_no_tasks(self):
         res = run_loop(self.temp_dir)
         self.assertEqual(res["status"], "NO_TASKS")
