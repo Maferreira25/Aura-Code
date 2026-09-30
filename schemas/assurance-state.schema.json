@@ -15,6 +15,7 @@
     "actors",
     "controls",
     "open_findings",
+    "audit_history",
     "material_decisions",
     "transition_history"
   ],
@@ -253,6 +254,43 @@
         "REOPENED",
         "BLOCKED"
       ]
+    },
+    "audit_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "status",
+          "guarantees",
+          "evidence",
+          "at"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "ERROR",
+              "NOT_RUN"
+            ]
+          },
+          "guarantees": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "at": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }
