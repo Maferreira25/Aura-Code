@@ -63,6 +63,9 @@ COMMON_ARTIFACTS = [
     "validation/MATURITY-STUDIES.md",
     "validation/maturity-criteria.json",
     "validation/maturity-evidence.json",
+    "validation/maturity-workplan.json",
+    "validation/schemas/maturity-workplan.schema.json",
+    "validation/tools/maturity_readiness.py",
     "validation/schemas/maturity-evidence.schema.json",
     "validation/tools/maturity_studies.py",
     "validation/tools/maturity_reviews.py",
@@ -141,6 +144,18 @@ def validate_maturity_infrastructure(root: Path = ROOT) -> Dict[str, Any]:
         for rel in required:
             if not (root / rel).is_file():
                 errors.append(f"{cid}: missing maturity artifact {rel}")
+
+    # The operational workplan must map exactly onto MAT-01..MAT-10 but never grant status.
+    try:
+        from validation.tools.maturity_readiness import validate_workplan
+        workplan = _read_json(root / "validation" / "maturity-workplan.json")
+        workplan_errors = validate_workplan(workplan, EXPECTED_CRITERIA)
+        errors.extend(f"maturity workplan: {item}" for item in workplan_errors)
+        for item in workplan.get("criteria", []):
+            if isinstance(item, dict) and "status" in item:
+                errors.append(f"{item.get('id', '<unknown>')}: workplan must not contain status")
+    except (ImportError, ValueError) as exc:
+        errors.append(f"maturity workplan validation failed: {exc}")
 
     # Prove that MAT-02..MAT-10 all resolve to a semantic validator.
     try:
