@@ -1,6 +1,9 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+
+from tools.dogfood_assurance import dogfood_repository
 
 from tools.assurance_state import (
     advance_state,
@@ -271,6 +274,28 @@ class AssuranceStateTests(unittest.TestCase):
         self.assertEqual(finding["severity"], "HIGH")
         self.assertEqual(finding["source"], "AUDIT_ENGINE")
         self.assertEqual(finding["failed_guarantees"], ["security"])
+
+    @patch("tools.dogfood_assurance.audit_workspace")
+    def test_dogfood_blocks_at_verification_without_actor_provenance(self, mock_audit):
+        mock_audit.return_value = {
+            "status": "PASS",
+            "guarantees": {
+                "architecture": {"status": "PASS"},
+                "security": {"status": "PASS"},
+                "test_integrity": {"status": "PASS"},
+            },
+        }
+        report = dogfood_repository(
+            ROOT,
+            ROOT / "self-assessment.json",
+            ROOT,
+        )
+        self.assertEqual(report["status"], "BLOCKED")
+        self.assertEqual(report["blocked_at"], "VERIFICATION")
+        self.assertEqual(report["current_stage"], "IMPLEMENTATION")
+        reasons = "\n".join(report["transitions"][-1]["reasons"])
+        self.assertIn("missing actor provenance for 'implementer'", reasons)
+        self.assertIn("missing actor provenance for 'verifier'", reasons)
 
 
 if __name__ == "__main__":
