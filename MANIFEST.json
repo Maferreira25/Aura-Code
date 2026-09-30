@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 451,
+  "file_count": 455,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "fc4b8e103dfc7a9014dc7772653bdce525e3e3f90837406519cf4643a4bdb2b8",
-      "bytes": 50217
+      "sha256": "ca95bcc458f0c7b32d9f7f031b658b2dbe7900e09da825f977334d26be7a53a7",
+      "bytes": 51571
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "337190c573968a4889d25905ff05d5ed2c695cba49b3e2266f634f8b2eb962df",
-      "bytes": 15476
+      "sha256": "87528976bacafc6499346b2a9eba6d6e7384fa4313c79ccf8fe5060873bbf9fa",
+      "bytes": 15560
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,16 +1748,16 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "3db73eb7750513561ed69d42872b9ea37819a6c21354db7fb60220ba2aadb10e",
-      "bytes": 1179
+      "sha256": "eb89a9b9f6418d31efe9bc4418d8148d2810d8483717c346dc3b1675cea8bcb6",
+      "bytes": 1215
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
       "bytes": 7182
     },
     "tests/test_protected_assurance_plane.py": {
-      "sha256": "64f3e6a06c0967d764b8bbebbba473b93971763932add29a5c90c8403d062146",
-      "bytes": 4249
+      "sha256": "481456931c0312c79900b84eda105e4d063f6d8d79c7ee6aa726a92946c10e4f",
+      "bytes": 4505
     },
     "schemas/held-out-suite.schema.json": {
       "sha256": "22359b62ba7e2a0e68de66ce96bc5becc1a4a895b3235e5ec8b659cd52c51505",
@@ -1806,6 +1806,22 @@
     "tests/test_metamorphic_engine.py": {
       "sha256": "4d0549c7d133dd0fae575aec320ea311ba741a23ecfae554c80a13e96cae5db1",
       "bytes": 5674
+    },
+    "schemas/differential-suite.schema.json": {
+      "sha256": "1b3ba74053893d0e366616da4c1b845ab88ba5728f283791e1c3d8a26cf3ab0f",
+      "bytes": 1253
+    },
+    "templates/differential-suite.json": {
+      "sha256": "1138b3c7da8a104ad8bfe3be308d15482d79b4f66c53795b0a7153157870d7e8",
+      "bytes": 379
+    },
+    "tools/differential_engine.py": {
+      "sha256": "d02b46438a42d1f916cf45375a9de13b16238b82c8fa2178e8a43f7d315b7455",
+      "bytes": 8754
+    },
+    "tests/test_differential_engine.py": {
+      "sha256": "cf66824ec0a0901ec76076a23630a200922b30f2ac16bd472f32b13a2d2946f5",
+      "bytes": 4602
     }
   }
 }
