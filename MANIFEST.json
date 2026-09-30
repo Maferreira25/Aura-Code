@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 447,
+  "file_count": 451,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "28d6f9139066bc7c91baa9fc126f8418eb0e50e78646ab2cfe70247d09961aba",
-      "bytes": 48871
+      "sha256": "fc4b8e103dfc7a9014dc7772653bdce525e3e3f90837406519cf4643a4bdb2b8",
+      "bytes": 50217
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "944f3f872f3d9b97bb6e80aec9bb497fa58e60b7e7cc1c2c50530899e372a965",
-      "bytes": 15378
+      "sha256": "337190c573968a4889d25905ff05d5ed2c695cba49b3e2266f634f8b2eb962df",
+      "bytes": 15476
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,16 +1748,16 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "ca13f84fdb96b7cdda006af2d106b226d4a5a939d6016d0ade5d29e5c944ce07",
-      "bytes": 1144
+      "sha256": "3db73eb7750513561ed69d42872b9ea37819a6c21354db7fb60220ba2aadb10e",
+      "bytes": 1179
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
       "bytes": 7182
     },
     "tests/test_protected_assurance_plane.py": {
-      "sha256": "e0b6ddd8b7075d5f8c73e792a6ca3c0a7c42d3ad7be4e67112619f5a6733a99b",
-      "bytes": 3996
+      "sha256": "64f3e6a06c0967d764b8bbebbba473b93971763932add29a5c90c8403d062146",
+      "bytes": 4249
     },
     "schemas/held-out-suite.schema.json": {
       "sha256": "22359b62ba7e2a0e68de66ce96bc5becc1a4a895b3235e5ec8b659cd52c51505",
@@ -1790,6 +1790,22 @@
     "tests/test_property_engine.py": {
       "sha256": "048d19c18f6581ba50a80598dd951327cf4dd303e0b7329bdea52c7a3f177fac",
       "bytes": 5330
+    },
+    "schemas/metamorphic-suite.schema.json": {
+      "sha256": "75e782a655f4fea92c0e0672ac6ea3cf92711c8c3b8ad83df6530990e75c5bc8",
+      "bytes": 1623
+    },
+    "templates/metamorphic-suite.json": {
+      "sha256": "12a68314abc80980e75627aad9cb23c9fc028918aa0562aacee971f6a1b53467",
+      "bytes": 553
+    },
+    "tools/metamorphic_engine.py": {
+      "sha256": "e416b806693afbf7f41a91d7e8770c2af7baecc3cbb30d3082e26ff5e8ed3e9b",
+      "bytes": 9106
+    },
+    "tests/test_metamorphic_engine.py": {
+      "sha256": "4d0549c7d133dd0fae575aec320ea311ba741a23ecfae554c80a13e96cae5db1",
+      "bytes": 5674
     }
   }
 }
