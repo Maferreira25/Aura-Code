@@ -59,6 +59,16 @@ class TestProtectedAssurancePlane(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertFalse(can_write(path, self.policy, actor="developer"))
 
+    def test_taint_engines_are_protected(self):
+        for path in (
+            "tools/taint_engine.py",
+            "tools/detector_diversity.py",
+            "tools/static_analyzer_adapters.py",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(classify_path(path, self.policy), PLANE_PROTECTED)
+                self.assertFalse(can_write(path, self.policy, actor="developer"))
+
     def test_differential_engine_is_protected(self):
         self.assertEqual(classify_path("tools/differential_engine.py", self.policy), PLANE_PROTECTED)
         self.assertFalse(can_write("tools/differential_engine.py", self.policy, actor="developer"))
