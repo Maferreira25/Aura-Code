@@ -108,7 +108,7 @@ The included GitHub Actions workflow pins `actions/checkout` to an immutable ful
 
 ## Current P1 evidence status
 
-The repository currently contains 36 A0/A1/A2 result records from the public P1 smoke suite:
+**Snapshot: 2026-09-30.** At this snapshot, the repository contains 36 A0/A1/A2 result records from the public P1 smoke suite:
 
 - 30 automated results: 10 scenarios x 3 arms x 1 repetition;
 - 3 manual ambiguity results: 1 per arm;
