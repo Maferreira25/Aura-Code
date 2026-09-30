@@ -169,6 +169,8 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/contracts.schema.json", "schemas/evidence.schema.json",
         "schemas/assurance-result.schema.json", "schemas/requirement.schema.json",
         "schemas/invariant.schema.json", "schemas/traceability.schema.json",
+        "schemas/protected-assurance-plane.schema.json",
+        "policies/protected-assurance-plane.json",
         "MANIFEST.json",
     ]:
         if not (root_dir / rel).exists():
@@ -219,6 +221,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/contracts.schema.json", "schemas/evidence.schema.json",
         "schemas/assurance-result.schema.json", "schemas/requirement.schema.json",
         "schemas/invariant.schema.json", "schemas/traceability.schema.json",
+        "schemas/protected-assurance-plane.schema.json",
         "validation/schemas/result.schema.json", "validation/schemas/scenario.schema.json"
     ]:
         sp = root_dir / s_rel
