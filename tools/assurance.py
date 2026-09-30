@@ -51,6 +51,7 @@ from tools import refactor_engine
 from tools import assurance_state
 from tools import continuous_assurance
 from tools import maturity_gate
+from tools import maturity_cli
 from tools import dogfood_assurance
 
 
@@ -662,7 +663,7 @@ def main() -> None:
         _dispatch_with_argv(argv, preflight.main)
 
     elif args.command == "maturity":
-        sys.exit(maturity_gate.main(args.maturity_args))
+        sys.exit(maturity_cli.main(args.maturity_args))
 
     elif args.command == "dogfood":
         sys.exit(dogfood_assurance.main(args.dogfood_args))
