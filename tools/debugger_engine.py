@@ -136,7 +136,12 @@ class DebuggerEngine:
         }
 
     def verify_fix(self, bug_id: str) -> Dict[str, Any]:
-        """Verify that the reproduction test now passes and run audit for zero regressions."""
+        """Verify implementation evidence without self-declaring the defect RESOLVED.
+
+        A passing reproduction test plus regression audit proves only that remediation
+        was implemented. Final RESOLVED status belongs to an independent revalidator
+        recorded by the Assurance State engine.
+        """
         test_file = self.workspace_dir / "tests" / f"test_reproduce_{bug_id}.py"
         if not test_file.exists():
             return {"status": "ERROR", "message": "Test file does not exist"}
@@ -149,10 +154,11 @@ class DebuggerEngine:
 
         fixed = test_passed and audit_res.get("status") == "PASS"
         return {
-            "status": "RESOLVED" if fixed else "STILL_FAILING",
+            "status": "IMPLEMENTED_PENDING_REVALIDATION" if fixed else "STILL_FAILING",
             "test_passed": test_passed,
             "audit_status": audit_res.get("status"),
-            "guarantees": audit_res.get("guarantees")
+            "guarantees": audit_res.get("guarantees"),
+            "requires_independent_revalidation": fixed,
         }
 
 
