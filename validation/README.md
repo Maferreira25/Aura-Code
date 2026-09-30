@@ -82,6 +82,7 @@ python validation/tools/harness.py evaluate SEC-AUTHZ-001 /tmp/run-authz --isola
 
 python validation/tools/analyze_results.py validation/results
 python validation/tools/validate_experiment_evidence.py validation/results
+python validation/tools/p1_matrix.py validation/results --missing-only
 ```
 
 ## External benchmark adapters
@@ -102,3 +103,10 @@ See `EXTERNAL-BENCHMARKS.md`.
 Benchmark scores are not sufficient by themselves. `validate_experiment_evidence.py` checks the frozen P1 sample plan, matched execution environment, Qualified Success formula, repetition coverage, and ceiling effects.
 
 The current historical public-smoke dataset is intentionally reported as incomplete and non-discriminative rather than being upgraded into an effectiveness claim.
+
+
+## Frozen P1 work queue
+
+Use `p1_matrix.py` instead of manually counting or inventing reruns. It reconstructs the preregistered execution matrix, marks existing run IDs as complete, preserves the frozen arm order for each repetition, and emits the exact remaining work.
+
+At the current repository state the matrix contains 114 expected records: 90 automated, 15 ambiguity, and 9 architecture-sequence records. The historical dataset has 36, leaving 78 missing.
