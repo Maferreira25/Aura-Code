@@ -50,6 +50,7 @@ from tools import debugger_engine
 from tools import refactor_engine
 from tools import traceability_engine
 from tools import heldout_runner
+from tools import property_engine
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -291,6 +292,12 @@ def main() -> None:
     heldout_p.add_argument("--strict", action="store_true", help="Require strong container isolation when auto mode is used")
     heldout_p.add_argument("--json", action="store_true", help="Output redacted result in JSON format")
 
+    # Subcommand: property
+    property_p = subparsers.add_parser("property", help="Execute declared property-based tests with reproducible seed")
+    property_p.add_argument("manifest", help="Path to property-suite manifest")
+    property_p.add_argument("--target", default=".", help="Target workspace directory")
+    property_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
     # Subcommand: traceability
     trace_p = subparsers.add_parser("traceability", help="Verify Requirement -> Invariant -> Implementation -> Test -> Evidence chains")
     trace_p.add_argument("manifest", nargs="?", default="_auracode_sdd/traceability.json", help="Path to traceability manifest")
@@ -530,6 +537,22 @@ def main() -> None:
                 print(disclosure["message"])
             if res.get("failure_category"):
                 print(f"Failure category: {res['failure_category']}")
+        sys.exit(0 if res.get("status") == "PASS" else 1)
+
+    elif args.command == "property":
+        import json
+        workspace = Path(args.target).resolve()
+        manifest_path = Path(args.manifest)
+        if not manifest_path.is_absolute():
+            manifest_path = (workspace / manifest_path).resolve()
+        res = property_engine.evaluate_property_suite(workspace, manifest_path)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Property Testing: {res.get('status')}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+            if res.get("suite_id"):
+                print(f"Suite: {res['suite_id']} | Seed: {res.get('seed', 'n/a')}")
         sys.exit(0 if res.get("status") == "PASS" else 1)
 
     elif args.command == "traceability":
