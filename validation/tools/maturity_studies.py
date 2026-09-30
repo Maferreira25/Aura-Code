@@ -312,10 +312,16 @@ def validate_p2_result(data: Mapping[str, Any], root: Optional[Path] = None) -> 
 
 
 def validate_p3_plan(data: Mapping[str, Any], benchmark_registry: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate a frozen external/ecological P3 plan before outcome collection."""
     errors: List[str] = []
     warnings: List[str] = []
+    if not str(data.get("study_id", "")).strip():
+        errors.append("study_id is required")
     if not bool(data.get("preregistered")):
         errors.append("preregistered must be true before P3 execution")
+    arms = tuple(str(x) for x in _nonempty_list(data.get("arms")))
+    if arms != ARMS:
+        errors.append("arms must be exactly A0, A1, A2 in canonical order")
 
     known = {
         str(item.get("id", "")): item
@@ -326,6 +332,7 @@ def validate_p3_plan(data: Mapping[str, Any], benchmark_registry: Mapping[str, A
     if not selections:
         errors.append("at least one external benchmark must be selected")
 
+    seen = set()
     for index, selected in enumerate(selections):
         if not isinstance(selected, dict):
             errors.append(f"benchmarks[{index}] must be an object")
@@ -334,12 +341,23 @@ def validate_p3_plan(data: Mapping[str, Any], benchmark_registry: Mapping[str, A
         if benchmark_id not in known:
             errors.append(f"unknown benchmark id: {benchmark_id or '<empty>'}")
             continue
+        if benchmark_id in seen:
+            errors.append(f"duplicate benchmark id: {benchmark_id}")
+        seen.add(benchmark_id)
         if not bool(selected.get("license_verified")):
             errors.append(f"{benchmark_id}: license_verified must be true for formal execution")
         if not str(selected.get("upstream_revision", "")).strip():
             errors.append(f"{benchmark_id}: upstream_revision is required")
-        if not str(selected.get("task_subset_commitment_sha256", "")).strip():
-            errors.append(f"{benchmark_id}: task_subset_commitment_sha256 is required")
+        commitment = str(selected.get("task_subset_commitment_sha256", "")).strip().lower()
+        if len(commitment) != 64 or any(ch not in "0123456789abcdef" for ch in commitment):
+            errors.append(f"{benchmark_id}: task_subset_commitment_sha256 must be 64 hex characters")
+        attempts = selected.get("attempts_per_arm")
+        if not isinstance(attempts, int) or attempts <= 0:
+            errors.append(f"{benchmark_id}: attempts_per_arm must be a positive integer")
+
+    pairing = data.get("model_agent_pairing")
+    if not isinstance(pairing, dict) or not all(_pairing_key(pairing)):
+        errors.append("model_agent_pairing with model_display_name, agent, reasoning_effort is required")
 
     if data.get("combine_heterogeneous_scores") is True:
         errors.append("heterogeneous benchmark scores must not be collapsed into one composite score")
@@ -355,9 +373,12 @@ def validate_p3_plan(data: Mapping[str, Any], benchmark_registry: Mapping[str, A
     }
 
 
-
-def validate_p3_result(data: Mapping[str, Any], benchmark_registry: Mapping[str, Any]) -> Dict[str, Any]:
-    """Validate completed ecological/external benchmark evidence."""
+def validate_p3_result(
+    data: Mapping[str, Any],
+    benchmark_registry: Mapping[str, Any],
+    root: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """Validate completed ecological evidence against a frozen P3 preregistration."""
     errors: List[str] = []
     known = {
         str(item.get("id", "")): item
@@ -368,10 +389,48 @@ def validate_p3_result(data: Mapping[str, Any], benchmark_registry: Mapping[str,
         errors.append("study must be P3")
     if not bool(data.get("preregistered")):
         errors.append("preregistered must be true")
+
+    prereg_path = str(data.get("preregistration_path", "")).strip()
+    prereg_sha = str(data.get("preregistration_sha256", "")).strip().lower()
+    if not prereg_path:
+        errors.append("preregistration_path is required")
+    if len(prereg_sha) != 64 or any(ch not in "0123456789abcdef" for ch in prereg_sha):
+        errors.append("preregistration_sha256 must be 64 hex characters")
+
+    plan: Optional[Dict[str, Any]] = None
+    if root is not None and prereg_path:
+        root_resolved = root.resolve()
+        raw = Path(prereg_path)
+        if raw.is_absolute():
+            errors.append("preregistration_path must be repository-relative")
+        else:
+            plan_path = (root_resolved / raw).resolve()
+            try:
+                plan_path.relative_to(root_resolved)
+            except ValueError:
+                errors.append("preregistration_path escapes repository root")
+            else:
+                if not plan_path.is_file():
+                    errors.append("P3 preregistration file does not exist")
+                else:
+                    actual = _sha256_file(plan_path)
+                    if actual != prereg_sha:
+                        errors.append(f"preregistration hash mismatch: expected {prereg_sha}, got {actual}")
+                    try:
+                        plan = _read_json(plan_path)
+                    except ValueError as exc:
+                        errors.append(str(exc))
+                    if plan is not None:
+                        plan_check = validate_p3_plan(plan, benchmark_registry)
+                        if plan_check["status"] != "VALID":
+                            errors.append("referenced P3 preregistration is invalid: " + "; ".join(plan_check["errors"]))
+
     results = _nonempty_list(data.get("benchmarks"))
     if not results:
         errors.append("P3 result requires benchmark results")
+
     seen = set()
+    result_map: Dict[str, Mapping[str, Any]] = {}
     for index, item in enumerate(results):
         if not isinstance(item, dict):
             errors.append(f"benchmarks[{index}] must be an object")
@@ -383,24 +442,76 @@ def validate_p3_result(data: Mapping[str, Any], benchmark_registry: Mapping[str,
         if bid in seen:
             errors.append(f"duplicate benchmark result: {bid}")
         seen.add(bid)
+        result_map[bid] = item
+
         if not bool(item.get("license_verified")):
             errors.append(f"{bid}: license_verified must be true")
         if not str(item.get("upstream_revision", "")).strip():
             errors.append(f"{bid}: upstream_revision is required")
-        if not str(item.get("task_subset_commitment_sha256", "")).strip():
-            errors.append(f"{bid}: task_subset_commitment_sha256 is required")
-        if not isinstance(item.get("attempts"), int) or int(item.get("attempts", 0)) <= 0:
-            errors.append(f"{bid}: attempts must be a positive integer")
-        if not isinstance(item.get("completed"), bool) or not item.get("completed"):
+        commitment = str(item.get("task_subset_commitment_sha256", "")).strip().lower()
+        if len(commitment) != 64 or any(ch not in "0123456789abcdef" for ch in commitment):
+            errors.append(f"{bid}: task_subset_commitment_sha256 must be 64 hex characters")
+        if not bool(item.get("completed")):
             errors.append(f"{bid}: completed must be true")
+
         arms = item.get("arms")
-        if not isinstance(arms, dict) or any(arm not in arms for arm in ARMS):
+        if not isinstance(arms, dict):
             errors.append(f"{bid}: results must report A0/A1/A2 separately")
+        else:
+            for arm in ARMS:
+                arm_result = arms.get(arm)
+                if not isinstance(arm_result, dict):
+                    errors.append(f"{bid}: missing {arm} result")
+                    continue
+                attempts = arm_result.get("attempts")
+                successes = arm_result.get("qualified_successes")
+                if not isinstance(attempts, int) or attempts <= 0:
+                    errors.append(f"{bid}/{arm}: attempts must be positive integer")
+                if not isinstance(successes, int) or successes < 0:
+                    errors.append(f"{bid}/{arm}: qualified_successes must be non-negative integer")
+                elif isinstance(attempts, int) and successes > attempts:
+                    errors.append(f"{bid}/{arm}: qualified_successes cannot exceed attempts")
 
     if data.get("combined_score") is not None:
         errors.append("P3 must not collapse heterogeneous benchmarks into one combined_score")
     if len(seen) < 2:
         errors.append("P3 maturity evidence requires at least two distinct benchmark families")
+
+    result_pairing = data.get("model_agent_pairing")
+    if not isinstance(result_pairing, dict) or not all(_pairing_key(result_pairing)):
+        errors.append("model_agent_pairing provenance is required")
+
+    if plan is not None:
+        plan_items = {
+            str(item.get("id", "")).strip(): item
+            for item in _nonempty_list(plan.get("benchmarks"))
+            if isinstance(item, dict) and str(item.get("id", "")).strip()
+        }
+        if set(result_map) != set(plan_items):
+            errors.append("P3 result benchmark set differs from preregistration")
+        if _pairing_key(result_pairing if isinstance(result_pairing, dict) else {}) != _pairing_key(
+            plan.get("model_agent_pairing") if isinstance(plan.get("model_agent_pairing"), dict) else {}
+        ):
+            errors.append("P3 result model/agent pairing differs from preregistration")
+
+        for bid, planned in plan_items.items():
+            actual = result_map.get(bid)
+            if not isinstance(actual, dict):
+                continue
+            for field in ("upstream_revision", "task_subset_commitment_sha256"):
+                if str(actual.get(field, "")).strip() != str(planned.get(field, "")).strip():
+                    errors.append(f"{bid}: {field} differs from preregistration")
+            if bool(actual.get("license_verified")) != bool(planned.get("license_verified")):
+                errors.append(f"{bid}: license verification differs from preregistration")
+            required_attempts = planned.get("attempts_per_arm")
+            arms = actual.get("arms")
+            if isinstance(arms, dict) and isinstance(required_attempts, int):
+                for arm in ARMS:
+                    arm_result = arms.get(arm)
+                    if isinstance(arm_result, dict) and arm_result.get("attempts") != required_attempts:
+                        errors.append(
+                            f"{bid}/{arm}: attempts {arm_result.get('attempts')} != preregistered {required_attempts}"
+                        )
 
     return {
         "study": "P3_RESULT",
@@ -411,42 +522,144 @@ def validate_p3_result(data: Mapping[str, Any], benchmark_registry: Mapping[str,
     }
 
 
+def _validate_success_criteria(name: str, value: object, errors: List[str]) -> None:
+    if not isinstance(value, dict):
+        errors.append(f"{name} acceptance criteria must be an object")
+        return
+    text = str(value.get("success_criteria", "")).strip()
+    if not text:
+        errors.append(f"{name}.success_criteria is required")
+
+
+def validate_p4_plan(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate a frozen operational-validation plan before execution."""
+    errors: List[str] = []
+    if not str(data.get("study_id", "")).strip():
+        errors.append("study_id is required")
+    if not bool(data.get("preregistered")):
+        errors.append("preregistered must be true")
+    if not str(data.get("service_id", "")).strip():
+        errors.append("service_id is required")
+    if not str(data.get("revision", "")).strip():
+        errors.append("revision is required")
+    if not str(data.get("environment", "")).strip():
+        errors.append("environment is required")
+
+    criteria = data.get("acceptance_criteria")
+    if not isinstance(criteria, dict):
+        errors.append("acceptance_criteria object is required")
+        criteria = {}
+    for field in ("load", "soak", "rollback", "recovery", "observability"):
+        _validate_success_criteria(field, criteria.get(field), errors)
+
+    load = criteria.get("load")
+    if isinstance(load, dict):
+        target = load.get("target_rps")
+        duration = load.get("duration_minutes")
+        if not isinstance(target, (int, float)) or isinstance(target, bool) or target <= 0:
+            errors.append("load.target_rps must be > 0")
+        if not isinstance(duration, (int, float)) or isinstance(duration, bool) or duration <= 0:
+            errors.append("load.duration_minutes must be > 0")
+
+    soak = criteria.get("soak")
+    if isinstance(soak, dict):
+        duration = soak.get("duration_minutes")
+        if not isinstance(duration, (int, float)) or isinstance(duration, bool) or duration <= 0:
+            errors.append("soak.duration_minutes must be > 0")
+
+    return {
+        "study": "P4_PLAN",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+    }
+
 
 def _check_operational_dimension(name: str, value: object, errors: List[str]) -> None:
     if not isinstance(value, dict):
         errors.append(f"{name} must be an object")
         return
     status = str(value.get("status", "")).upper()
-    if status not in {"PASS", "FAIL"}:
-        errors.append(f"{name}.status must be PASS or FAIL")
+    if status != "PASS":
+        errors.append(f"{name}.status must be PASS for stable-maturity evidence")
     evidence = _nonempty_list(value.get("evidence"))
     if not any(str(item).strip() for item in evidence):
         errors.append(f"{name}.evidence requires at least one artifact")
 
 
-def validate_p4_result(data: Mapping[str, Any]) -> Dict[str, Any]:
+def validate_p4_result(data: Mapping[str, Any], root: Optional[Path] = None) -> Dict[str, Any]:
+    """Validate successful P4 evidence against its frozen operational plan."""
     errors: List[str] = []
+    if str(data.get("study", "")).upper() != "P4":
+        errors.append("study must be P4")
+    if not bool(data.get("preregistered")):
+        errors.append("preregistered must be true")
+
+    prereg_path = str(data.get("preregistration_path", "")).strip()
+    prereg_sha = str(data.get("preregistration_sha256", "")).strip().lower()
+    if not prereg_path:
+        errors.append("preregistration_path is required")
+    if len(prereg_sha) != 64 or any(ch not in "0123456789abcdef" for ch in prereg_sha):
+        errors.append("preregistration_sha256 must be 64 hex characters")
+
+    plan: Optional[Dict[str, Any]] = None
+    if root is not None and prereg_path:
+        root_resolved = root.resolve()
+        raw = Path(prereg_path)
+        if raw.is_absolute():
+            errors.append("preregistration_path must be repository-relative")
+        else:
+            plan_path = (root_resolved / raw).resolve()
+            try:
+                plan_path.relative_to(root_resolved)
+            except ValueError:
+                errors.append("preregistration_path escapes repository root")
+            else:
+                if not plan_path.is_file():
+                    errors.append("P4 preregistration file does not exist")
+                else:
+                    actual_sha = _sha256_file(plan_path)
+                    if actual_sha != prereg_sha:
+                        errors.append(f"preregistration hash mismatch: expected {prereg_sha}, got {actual_sha}")
+                    try:
+                        plan = _read_json(plan_path)
+                    except ValueError as exc:
+                        errors.append(str(exc))
+                    if plan is not None:
+                        plan_check = validate_p4_plan(plan)
+                        if plan_check["status"] != "VALID":
+                            errors.append("referenced P4 plan is invalid: " + "; ".join(plan_check["errors"]))
+
     if not str(data.get("service_id", "")).strip():
         errors.append("service_id is required")
     if not str(data.get("revision", "")).strip():
         errors.append("revision is required")
+    if not str(data.get("environment", "")).strip():
+        errors.append("environment is required")
+
     for field in ("load", "soak", "rollback", "recovery", "observability"):
         _check_operational_dimension(field, data.get(field), errors)
 
-    soak = data.get("soak")
-    if isinstance(soak, dict):
-        duration = soak.get("duration_minutes")
-        if not isinstance(duration, (int, float)) or duration <= 0:
-            errors.append("soak.duration_minutes must be > 0")
-
-    load = data.get("load")
-    if isinstance(load, dict):
-        target = load.get("target_rps")
-        if not isinstance(target, (int, float)) or target <= 0:
-            errors.append("load.target_rps must be > 0")
+    if plan is not None:
+        for field in ("service_id", "revision", "environment"):
+            if str(data.get(field, "")).strip() != str(plan.get(field, "")).strip():
+                errors.append(f"{field} differs from preregistration")
+        criteria = plan.get("acceptance_criteria")
+        if isinstance(criteria, dict):
+            planned_load = criteria.get("load")
+            result_load = data.get("load")
+            if isinstance(planned_load, dict) and isinstance(result_load, dict):
+                if result_load.get("target_rps") != planned_load.get("target_rps"):
+                    errors.append("load.target_rps differs from preregistration")
+                if result_load.get("duration_minutes") != planned_load.get("duration_minutes"):
+                    errors.append("load.duration_minutes differs from preregistration")
+            planned_soak = criteria.get("soak")
+            result_soak = data.get("soak")
+            if isinstance(planned_soak, dict) and isinstance(result_soak, dict):
+                if result_soak.get("duration_minutes") != planned_soak.get("duration_minutes"):
+                    errors.append("soak.duration_minutes differs from preregistration")
 
     return {
-        "study": "P4",
+        "study": "P4_RESULT",
         "status": "VALID" if not errors else "INVALID",
         "errors": errors,
         "operational_complete": not errors,
@@ -473,16 +686,50 @@ def cohen_kappa(left: Sequence[str], right: Sequence[str]) -> float:
     return (observed - expected) / (1.0 - expected)
 
 
-def analyze_inter_rater(data: Mapping[str, Any]) -> Dict[str, Any]:
+def analyze_inter_rater(data: Mapping[str, Any], root: Optional[Path] = None) -> Dict[str, Any]:
+    """Analyze assessor agreement and enforce declared reviewer independence/coverage."""
     errors: List[str] = []
     assessors = _nonempty_list(data.get("assessors"))
     if len(assessors) < 2:
         errors.append("at least two independent assessors are required")
-    ids = [str(a.get("id", "")).strip() for a in assessors if isinstance(a, dict)]
-    if len(ids) != len(assessors) or any(not item for item in ids):
-        errors.append("every assessor requires a non-empty id")
+    ids: List[str] = []
+    for index, assessor in enumerate(assessors):
+        if not isinstance(assessor, dict):
+            errors.append(f"assessors[{index}] must be an object")
+            continue
+        assessor_id = str(assessor.get("id", "")).strip()
+        if not assessor_id:
+            errors.append(f"assessors[{index}].id is required")
+            continue
+        ids.append(assessor_id)
+        if not bool(assessor.get("independence_attestation")):
+            errors.append(f"{assessor_id}: independence_attestation must be true")
+        if bool(assessor.get("implementation_role")):
+            errors.append(f"{assessor_id}: assessor must not have implementation_role in reviewed change")
     if len(set(ids)) != len(ids):
         errors.append("assessor ids must be unique")
+
+    assurance_level = str(data.get("assurance_level", "")).upper()
+    expected_controls_raw = _nonempty_list(data.get("control_ids"))
+    expected_controls = {str(x).strip().upper() for x in expected_controls_raw if str(x).strip()}
+    if not expected_controls:
+        errors.append("control_ids must declare the independently rated control set")
+
+    if root is not None and assurance_level:
+        profile_path = root.resolve() / "profiles" / f"{assurance_level.lower()}.json"
+        if not profile_path.is_file():
+            errors.append(f"unknown assurance_level/profile: {assurance_level}")
+        else:
+            profile = _read_json(profile_path)
+            profile_controls = {
+                str(x).strip().upper()
+                for x in _nonempty_list(profile.get("included_controls"))
+                if str(x).strip()
+            }
+            if expected_controls != profile_controls:
+                errors.append("control_ids must exactly match the selected assurance profile")
+    elif assurance_level not in {"AL1", "AL2", "AL3", "AL4"}:
+        errors.append("assurance_level must be AL1, AL2, AL3, or AL4")
 
     ratings = _nonempty_list(data.get("ratings"))
     paired: Dict[str, Dict[str, str]] = defaultdict(dict)
@@ -490,39 +737,47 @@ def analyze_inter_rater(data: Mapping[str, Any]) -> Dict[str, Any]:
         if not isinstance(item, dict):
             errors.append("each rating must be an object")
             continue
-        control_id = str(item.get("control_id", "")).strip()
+        control_id = str(item.get("control_id", "")).strip().upper()
         assessor_id = str(item.get("assessor_id", "")).strip()
         rating = str(item.get("rating", "")).upper()
         if not control_id or assessor_id not in ids or rating not in RATING_VALUES:
             errors.append(f"invalid rating record: {item}")
             continue
+        key = (control_id, assessor_id)
+        if assessor_id in paired[control_id]:
+            errors.append(f"duplicate rating for {control_id}/{assessor_id}")
         paired[control_id][assessor_id] = rating
+
+    for control_id in sorted(expected_controls):
+        for assessor_id in ids:
+            if assessor_id not in paired.get(control_id, {}):
+                errors.append(f"missing rating for {control_id}/{assessor_id}")
+    unexpected = set(paired) - expected_controls
+    if unexpected:
+        errors.append("ratings contain controls outside declared scope: " + ", ".join(sorted(unexpected)))
 
     kappa = None
     agreement = None
     paired_count = 0
     if len(ids) >= 2 and not errors:
         left_id, right_id = ids[0], ids[1]
-        common = sorted(cid for cid, values in paired.items() if left_id in values and right_id in values)
+        common = sorted(expected_controls)
         paired_count = len(common)
-        if paired_count == 0:
-            errors.append("no controls have paired ratings from the first two assessors")
-        else:
-            left = [paired[cid][left_id] for cid in common]
-            right = [paired[cid][right_id] for cid in common]
-            agreement = sum(a == b for a, b in zip(left, right)) / paired_count
-            kappa = cohen_kappa(left, right)
+        left = [paired[cid][left_id] for cid in common]
+        right = [paired[cid][right_id] for cid in common]
+        agreement = sum(a == b for a, b in zip(left, right)) / paired_count
+        kappa = cohen_kappa(left, right)
 
     return {
         "study": "INTER_RATER",
         "status": "VALID" if not errors else "INVALID",
         "errors": errors,
+        "assurance_level": assurance_level,
         "paired_controls": paired_count,
         "percent_agreement": agreement,
         "cohen_kappa": kappa,
         "claim_boundary": "Agreement metrics describe assessor consistency; they do not prove control correctness.",
     }
-
 
 
 def validate_replication_result(data: Mapping[str, Any]) -> Dict[str, Any]:
@@ -632,11 +887,23 @@ def analyze_burden(rows: Iterable[Mapping[str, Any]]) -> Dict[str, Any]:
 
 
 
-def validate_multilang_qualification(data: Mapping[str, Any]) -> Dict[str, Any]:
-    """Validate evidence for MAT-08 without inventing acceptance thresholds."""
+def validate_multilang_qualification(
+    data: Mapping[str, Any],
+    allow_public_baseline: bool = False,
+) -> Dict[str, Any]:
+    """Validate MAT-08 qualification; public baseline may be validated but is not maturity-eligible."""
     errors: List[str] = []
     if not bool(data.get("preregistered")):
         errors.append("multilang qualification must be preregistered")
+    public_corpus = bool(data.get("public_corpus"))
+    if public_corpus and not allow_public_baseline:
+        errors.append("public development corpus is not sufficient for stable MAT-08 evidence")
+    if not public_corpus:
+        commitment = str(data.get("corpus_commitment_sha256", "")).strip().lower()
+        if len(commitment) != 64 or any(ch not in "0123456789abcdef" for ch in commitment):
+            errors.append("private/fresh MAT-08 evidence requires corpus_commitment_sha256")
+        if not bool(data.get("independent_labels")):
+            errors.append("private/fresh MAT-08 evidence requires independent_labels=true")
     revision = str(data.get("revision", "")).strip()
     if not revision:
         errors.append("revision is required")
@@ -701,6 +968,7 @@ def validate_multilang_qualification(data: Mapping[str, Any]) -> Dict[str, Any]:
         "status": "VALID" if not errors else "INVALID",
         "errors": errors,
         "results": results,
+        "maturity_eligible": (not public_corpus) and not errors,
         "claim_boundary": "Qualification is limited to the frozen corpus, rules and thresholds in this evidence package.",
     }
 
@@ -710,6 +978,8 @@ def validate_independent_security_audit(data: Mapping[str, Any]) -> Dict[str, An
     errors: List[str] = []
     if not bool(data.get("independence_attestation")):
         errors.append("independence_attestation must be true")
+    if data.get("implementation_role") is not False:
+        errors.append("implementation_role must be false for the independent assessor")
     for field in ("assessor_id", "revision", "scope"):
         if not str(data.get(field, "")).strip():
             errors.append(f"{field} is required")
@@ -745,6 +1015,14 @@ def validate_governance_1_0(data: Mapping[str, Any]) -> Dict[str, Any]:
     errors: List[str] = []
     if str(data.get("status", "")).upper() != "ADOPTED":
         errors.append("governance status must be ADOPTED")
+    if not bool(data.get("human_adoption_attestation")):
+        errors.append("human_adoption_attestation must be true")
+    adopted_at = str(data.get("adopted_at", "")).strip()
+    if not adopted_at:
+        errors.append("adopted_at is required")
+    adopted_by = _nonempty_list(data.get("adopted_by"))
+    if not any(str(item).strip() for item in adopted_by):
+        errors.append("adopted_by must identify at least one human authority")
     roles = data.get("roles")
     if not isinstance(roles, dict):
         errors.append("roles object is required")
@@ -784,11 +1062,11 @@ def validate_evidence_for_criterion(
     if cid == "MAT-04":
         if benchmark_registry is None:
             raise ValueError("MAT-04 validation requires benchmark registry")
-        return validate_p3_result(data, benchmark_registry)
+        return validate_p3_result(data, benchmark_registry, root=root)
     if cid == "MAT-05":
-        return validate_p4_result(data)
+        return validate_p4_result(data, root=root)
     if cid == "MAT-06":
-        return analyze_inter_rater(data)
+        return analyze_inter_rater(data, root=root)
     if cid == "MAT-07":
         return validate_burden_error_result(data)
     if cid == "MAT-08":
@@ -804,14 +1082,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="AuraCode maturity-study validation toolkit")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("p2", "p2-result", "p4", "inter-rater", "burden", "replication", "burden-errors", "multilang-qualification", "security-audit", "governance"):
+    for name in ("p2", "p2-result", "p4-plan", "p4", "inter-rater", "burden", "replication", "burden-errors", "multilang-qualification", "security-audit", "governance"):
         p = sub.add_parser(name)
         p.add_argument("input")
+        p.add_argument("--root", default=".")
         p.add_argument("--json", action="store_true")
 
     p3r = sub.add_parser("p3-result")
     p3r.add_argument("input")
     p3r.add_argument("--registry", default="validation/benchmark-registry.json")
+    p3r.add_argument("--root", default=".")
     p3r.add_argument("--json", action="store_true")
 
     p3 = sub.add_parser("p3")
@@ -824,19 +1104,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.command == "p2":
         result = validate_p2_plan(data)
     elif args.command == "p2-result":
-        result = validate_p2_result(data)
+        result = validate_p2_result(data, root=Path(args.root))
     elif args.command == "p3":
         result = validate_p3_plan(data, _read_json(Path(args.registry)))
     elif args.command == "p3-result":
-        result = validate_p3_result(data, _read_json(Path(args.registry)))
+        result = validate_p3_result(data, _read_json(Path(args.registry)), root=Path(args.root))
+    elif args.command == "p4-plan":
+        result = validate_p4_plan(data)
     elif args.command == "p4":
-        result = validate_p4_result(data)
+        result = validate_p4_result(data, root=Path(args.root))
     elif args.command == "replication":
         result = validate_replication_result(data)
     elif args.command == "burden-errors":
         result = validate_burden_error_result(data)
     elif args.command == "inter-rater":
-        result = analyze_inter_rater(data)
+        result = analyze_inter_rater(data, root=Path(args.root))
     elif args.command == "multilang-qualification":
         result = validate_multilang_qualification(data)
     elif args.command == "security-audit":
