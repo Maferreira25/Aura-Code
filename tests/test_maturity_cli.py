@@ -46,6 +46,20 @@ class MaturityCliTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("GOVERNANCE_1_0: INVALID", output)
 
+    def test_handoff_subcommand_routes_to_exporter(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            code, output = self._run([
+                "handoff",
+                str(ROOT),
+                "--revision",
+                "deadbeef",
+                "--output-dir",
+                tmp,
+            ])
+            self.assertEqual(code, 0)
+            self.assertIn("Maturity handoff generated", output)
+
 
 if __name__ == "__main__":
     unittest.main()
