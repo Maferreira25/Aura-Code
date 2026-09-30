@@ -135,7 +135,9 @@ def cmd_prepare(args):
 def evaluate(sid,workspace,arm="A0",run_id="run",pair_id=None,model=None,agent=None,
              surface=None,model_family=None,model_display_name=None,model_slug=None,
              reasoning_effort=None,artifact_review=None,terminal_policy=None,strict_mode=None,
-             isolation="auto",image=DEFAULT_CONTAINER_IMAGE):
+             isolation="auto",image=DEFAULT_CONTAINER_IMAGE,
+             elapsed_seconds=None,input_tokens=None,output_tokens=None,tool_calls=None,
+             human_interventions=None,cost_usd=None):
     sdir,meta=scenarios()[sid]
     workspace=Path(workspace).resolve()
     runner = get_runner(mode=isolation, strict_mode=bool(strict_mode), image=image)
@@ -183,6 +185,12 @@ def evaluate(sid,workspace,arm="A0",run_id="run",pair_id=None,model=None,agent=N
         "evaluator_integrity":integ,
         "integrity_changes":changes,
         "workspace_sha256":tree_hash(workspace),
+        "elapsed_seconds":elapsed_seconds,
+        "input_tokens":input_tokens,
+        "output_tokens":output_tokens,
+        "tool_calls":tool_calls,
+        "human_interventions":human_interventions,
+        "cost_usd":cost_usd,
         "public_output":pub,
         "protected_output":prot,
         "notes":"Automated smoke evaluation; public scenario protected tests are not contamination-resistant after publication."
@@ -197,10 +205,24 @@ def cmd_evaluate(args):
         raise SystemExit("Manual/longitudinal scenarios require their protocol-specific evaluator.")
     if not re.match(r"^[A-Za-z0-9_.\-]+$", args.run_id):
         raise SystemExit(f"Invalid run_id characters: {args.run_id}")
+    burden_values = {
+        "elapsed_seconds": args.elapsed_seconds,
+        "input_tokens": args.input_tokens,
+        "output_tokens": args.output_tokens,
+        "tool_calls": args.tool_calls,
+        "human_interventions": args.human_interventions,
+        "cost_usd": args.cost_usd,
+    }
+    for name, value in burden_values.items():
+        if value is not None and value < 0:
+            raise SystemExit(f"{name} must be non-negative")
     r=evaluate(args.scenario,args.workspace,args.arm,args.run_id,args.pair_id,args.model,args.agent,
                args.surface,args.model_family,args.model_display_name,args.model_slug,
                args.reasoning_effort,args.artifact_review,args.terminal_policy,args.strict_mode,
-               isolation=args.isolation,image=args.image)
+               isolation=args.isolation,image=args.image,
+               elapsed_seconds=args.elapsed_seconds,input_tokens=args.input_tokens,
+               output_tokens=args.output_tokens,tool_calls=args.tool_calls,
+               human_interventions=args.human_interventions,cost_usd=args.cost_usd)
     RESULTS.mkdir(parents=True,exist_ok=True)
     if args.output:
         out=Path(args.output).resolve()
@@ -281,6 +303,12 @@ def main():
                    help="Isolation backend: 'auto' (container if available, else local), 'container' (fail closed if unavailable), 'local' (sanitized subprocess).")
     p.add_argument("--image", default=DEFAULT_CONTAINER_IMAGE,
                    help="Container image for container runner (default: python:3.13-slim).")
+    p.add_argument("--elapsed-seconds", type=float)
+    p.add_argument("--input-tokens", type=int)
+    p.add_argument("--output-tokens", type=int)
+    p.add_argument("--tool-calls", type=int)
+    p.add_argument("--human-interventions", type=int)
+    p.add_argument("--cost-usd", type=float)
     p.add_argument("--output")
     p.set_defaults(fn=cmd_evaluate)
     p=sp.add_parser("baseline"); p.set_defaults(fn=cmd_baseline)
