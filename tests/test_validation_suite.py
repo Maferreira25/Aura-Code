@@ -58,5 +58,17 @@ class ValidationSuiteTests(unittest.TestCase):
             self.assertIn("representa a conclusão formal", report)
 
 
+    def test_result_schema_records_burden_without_requiring_fake_zeroes(self):
+        schema=json.loads((ROOT/"validation"/"schemas"/"result.schema.json").read_text(encoding="utf-8"))
+        props=schema["properties"]
+        for field in [
+            "elapsed_seconds","input_tokens","output_tokens","tool_calls",
+            "human_interventions","cost_usd"
+        ]:
+            self.assertIn(field,props)
+            self.assertNotIn(field,schema["required"])
+            self.assertIn("null",props[field]["type"])
+
+
 if __name__=="__main__":
     unittest.main()
