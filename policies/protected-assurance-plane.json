@@ -33,7 +33,8 @@
     "tools/property_engine.py",
     "pyproject.toml",
     "tools/metamorphic_engine.py",
-    "tools/differential_engine.py"
+    "tools/differential_engine.py",
+    "tools/static_analyzer_adapter.py"
   ],
   "held_out": [
     "_auracode_assurance/held_out/**",
