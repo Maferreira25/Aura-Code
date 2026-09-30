@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "MR-EXAMPLE-001",
+  "timeout_seconds": 60,
+  "relations": [
+    {
+      "relation_id": "MR-EXAMPLE-IDEMPOTENT",
+      "requirement_id": "REQ-EXAMPLE-001",
+      "description": "Applying the operation twice must produce the same result as applying it once.",
+      "test_target": "tests/metamorphic/test_idempotence.py"
+    }
+  ]
+}
