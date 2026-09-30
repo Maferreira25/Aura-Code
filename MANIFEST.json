@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 480,
+  "file_count": 482,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -1784,8 +1784,8 @@
       "bytes": 21877
     },
     "validation/MATURITY-STUDIES.md": {
-      "sha256": "76e23825db04147a361be6e2e2ec541e935e65e67b6089b2c9ae6705c5e23b4a",
-      "bytes": 11593
+      "sha256": "441f4a580263da6c46b5a1780eb50d2c313d04f706e299dc0fa40ac920344814",
+      "bytes": 12154
     },
     "validation/config/p2-preregistration.example.json": {
       "sha256": "2afc932f0a051be9078d561b1ade23842dab830255675edad9d14bc1dbb50cd4",
@@ -1884,8 +1884,8 @@
       "bytes": 3915
     },
     "tests/test_maturity_cli.py": {
-      "sha256": "a7c414011ee06e23f6a0e91931d2cce8ddf99a52cacb94de5c6b5e26e7637d8b",
-      "bytes": 1695
+      "sha256": "acec0c419d08a2ffe0ca1cdc50dfc89adc0f1e993c519d7db31d432f67c21e47",
+      "bytes": 2150
     },
     "tests/test_maturity_infrastructure.py": {
       "sha256": "5417c01b8b29328a69c565f780451f27b64d1ec32bd4e356d6ce0002be7fd8ff",
@@ -1900,8 +1900,8 @@
       "bytes": 2100
     },
     "tools/maturity_cli.py": {
-      "sha256": "528d1f06e7427b22c33021d57f452475660942782350570a5738585f514f81fc",
-      "bytes": 1555
+      "sha256": "2fd62cf7b4c78e92080abe2afa66276d9c88d037b2c9e092bd266fd658afd38a",
+      "bytes": 1697
     },
     "validation/maturity-workplan.json": {
       "sha256": "debab32e83aa44fc032558daa0eeedc7c0c1006a71a7ef7831ef50b5d179f641",
@@ -1922,6 +1922,14 @@
     "validation/tools/validate_maturity_infrastructure.py": {
       "sha256": "0fd828aa6f29fb8bef890b3c68fe9d3b0602a200303b811f9a671359a0ce6456",
       "bytes": 9303
+    },
+    "tests/test_maturity_handoff.py": {
+      "sha256": "e2f2969560c217cb186c5e5e11a3b66e6e3afde307871f18d8c43d0d0e5794d2",
+      "bytes": 1826
+    },
+    "validation/tools/maturity_handoff.py": {
+      "sha256": "b8669ad04f54ab46907756dc11fce9846717af9e6043d0512ae222e77033129b",
+      "bytes": 6350
     }
   }
 }
