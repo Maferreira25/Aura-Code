@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "MR-EXAMPLE-001",
+  "title": "Metamorphic relations for normalization",
+  "requirements": ["REQ-EXAMPLE-001"],
+  "test_target": "tests/test_metamorphic.py",
+  "relations": [
+    {
+      "relation_id": "MR-NORMALIZE-001",
+      "title": "Idempotent normalization",
+      "transformation": "Apply normalize twice to the same valid input.",
+      "expected_relation": "normalize(normalize(x)) must equal normalize(x).",
+      "test_selector": "test_mr_normalize_idempotent"
+    }
+  ],
+  "timeout_seconds": 60
+}
