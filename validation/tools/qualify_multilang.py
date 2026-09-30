@@ -136,9 +136,10 @@ def qualify(corpus_path: Path, revision: str) -> Dict[str, Any]:
 
     from validation.tools.maturity_studies import validate_multilang_qualification
 
-    semantic = validate_multilang_qualification(report)
+    semantic = validate_multilang_qualification(report, allow_public_baseline=True)
     report["qualification_status"] = semantic["status"]
     report["qualification_errors"] = semantic["errors"]
+    report["maturity_eligible"] = False
     return report
 
 
