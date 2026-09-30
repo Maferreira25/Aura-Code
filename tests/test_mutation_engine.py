@@ -80,6 +80,7 @@ class TestMutationEngine(unittest.TestCase):
         self.assertGreater(res["total_mutants"], 0)
         self.assertGreater(res["killed"], 0)
         self.assertFalse(res["vitiated_oracles_detected"])
+        self.assertEqual(res["canonical_result"]["status"], "PASS")
 
     def test_timeout_is_not_counted_as_killed(self):
         prod_file = self.temp_dir / "timeout_target.py"
@@ -105,6 +106,7 @@ class TestMutationEngine(unittest.TestCase):
         self.assertEqual(res["killed"], 0)
         self.assertEqual(res["timeouts"], 1)
         self.assertEqual(res["evaluated_mutants"], 0)
+        self.assertEqual(res["canonical_result"]["status"], "ERROR")
 
     def test_evaluator_exception_is_not_counted_as_killed(self):
         prod_file = self.temp_dir / "error_target.py"
@@ -130,6 +132,7 @@ class TestMutationEngine(unittest.TestCase):
         self.assertEqual(res["killed"], 0)
         self.assertEqual(res["errors"], 1)
         self.assertEqual(res["evaluated_mutants"], 0)
+        self.assertEqual(res["canonical_result"]["status"], "ERROR")
 
     def test_mutation_execution_detects_vitiated_oracle(self):
         # Production code
@@ -162,6 +165,7 @@ class TestMutationEngine(unittest.TestCase):
         self.assertEqual(res["status"], "WARN")
         self.assertTrue(res["vitiated_oracles_detected"])
         self.assertGreater(res["survived"], 0)
+        self.assertEqual(res["canonical_result"]["status"], "INCONCLUSIVE")
         self.assertIn("remediations", res)
         self.assertGreater(len(res["remediations"]), 0)
 
