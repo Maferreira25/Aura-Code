@@ -444,7 +444,7 @@ def _state_path(target: str, state_path: Optional[str]) -> Path:
     return Path(state_path).resolve() if state_path else default_state_path(Path(target))
 
 
-def build_parser():
+def build_parser() -> "argparse.ArgumentParser":
     import argparse
     parser = argparse.ArgumentParser(description="AuraCode persistent assurance-state decision engine")
     sub = parser.add_subparsers(dest="action", required=True)
@@ -485,7 +485,7 @@ def build_parser():
     return parser
 
 
-def main(argv=None) -> int:
+def main(argv: Optional[Sequence[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     state_path = _state_path(args.target, getattr(args, "state", None))
 
