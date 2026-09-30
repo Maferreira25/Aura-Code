@@ -62,6 +62,51 @@ def _verify_local_evidence(root: Path, values: object) -> Dict[str, Any]:
     return {"valid": True, "missing": [], "reason": ""}
 
 
+
+def _semantic_validate_evidence(root: Path, criterion_id: str, evidence: object) -> Dict[str, Any]:
+    """Validate maturity evidence content, not just path existence."""
+    values = evidence if isinstance(evidence, list) else []
+    normalized = [str(item).strip() for item in values if str(item).strip()]
+    if len(normalized) != 1:
+        return {
+            "valid": False,
+            "reason": "maturity criterion PASS requires exactly one canonical JSON evidence package",
+        }
+    path = (root / normalized[0]).resolve()
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return {"valid": False, "reason": "maturity evidence must remain inside repository root"}
+    if path.suffix.lower() != ".json":
+        return {"valid": False, "reason": "semantic maturity evidence must be a JSON file"}
+    try:
+        data = _load_json(path)
+    except ValueError as exc:
+        return {"valid": False, "reason": str(exc)}
+
+    root_str = str(root)
+    added_root_path = root_str not in sys.path
+    if added_root_path:
+        sys.path.insert(0, root_str)
+    try:
+        from validation.tools.maturity_studies import validate_evidence_for_criterion
+        registry = None
+        if criterion_id == "MAT-04":
+            registry = _load_json(root / "validation" / "benchmark-registry.json")
+        result = validate_evidence_for_criterion(criterion_id, data, registry)
+    except (ImportError, ValueError) as exc:
+        return {"valid": False, "reason": f"semantic validator unavailable/invalid: {exc}"}
+    finally:
+        if added_root_path and root_str in sys.path:
+            sys.path.remove(root_str)
+
+    if str(result.get("status", "")).upper() != "VALID":
+        errors = result.get("errors", [])
+        detail = "; ".join(str(item) for item in errors) if isinstance(errors, list) else "invalid evidence"
+        return {"valid": False, "reason": detail or "semantic evidence validation failed"}
+    return {"valid": True, "reason": "", "report": result}
+
+
 def evaluate_maturity(root: Path = ROOT) -> Dict[str, Any]:
     root = root.resolve()
     criteria_data = _load_json(root / "validation" / "maturity-criteria.json")
@@ -130,8 +175,13 @@ def evaluate_maturity(root: Path = ROOT) -> Dict[str, Any]:
             evidence = entry.get("evidence", [])
             verification = _verify_local_evidence(root, evidence)
             if declared == "PASS" and verification["valid"]:
-                status = "PASS"
-                reason = str(entry.get("rationale", "")).strip() or "Evidence verified."
+                semantic = _semantic_validate_evidence(root, criterion_id, evidence)
+                if semantic["valid"]:
+                    status = "PASS"
+                    reason = str(entry.get("rationale", "")).strip() or "Evidence verified."
+                else:
+                    status = "INVALID_PASS"
+                    reason = str(semantic["reason"])
             elif declared == "PASS":
                 status = "INVALID_PASS"
                 reason = str(verification["reason"])
