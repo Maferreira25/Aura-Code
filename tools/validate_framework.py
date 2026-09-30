@@ -168,10 +168,32 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/control.schema.json", "schemas/assessment.schema.json",
         "schemas/contracts.schema.json", "schemas/evidence.schema.json",
         "schemas/assurance-state.schema.json", "controls/gates.json",
+        "validation/tools/validate_experiment_evidence.py",
+        "validation/tools/p1_matrix.py",
+        "validation/maturity-criteria.json",
+        "validation/maturity-evidence.json",
+        "tools/maturity_gate.py",
         "MANIFEST.json",
     ]:
         if not (root_dir / rel).exists():
             errors.append(f"Missing repository file: {rel}")
+
+    # Stable-release maturity enforcement
+    version_file = root_dir / "VERSION"
+    if version_file.exists():
+        raw_version = version_file.read_text(encoding="utf-8").strip()
+        stable_match = re.match(r"^([1-9][0-9]*)\\.[0-9]+\\.[0-9]+$", raw_version)
+        if stable_match:
+            try:
+                from tools.maturity_gate import evaluate_maturity
+                maturity = evaluate_maturity(root_dir)
+                if not maturity.get("ready"):
+                    errors.append(
+                        f"Stable version {raw_version} is blocked by maturity gate: "
+                        + "; ".join(maturity.get("blockers", []))
+                    )
+            except Exception as exc:
+                errors.append(f"Stable version {raw_version} maturity evaluation failed: {exc}")
 
     # Manifest integrity verification (REM-002, REM-021, REM-027)
     manifest_path = root_dir / "MANIFEST.json"
