@@ -7,6 +7,7 @@ from tools.assurance_state import (
     apply_continuous_regression,
     evaluate_gate,
     import_assessment,
+    import_audit_result,
     load_gate_policy,
     load_profile_controls,
     new_state,
@@ -232,6 +233,44 @@ class AssuranceStateTests(unittest.TestCase):
         record_actor(state, "revalidator", "agent-review", "AI_AGENT", "review-session", "model-x")
         revalidate_finding(state, finding_id, "PASS", ["retest.txt"])
         self.assertEqual(state["assurance_status"], "ACTIVE")
+
+    def test_clean_audit_records_history_without_blanket_control_pass(self):
+        state = new_state("demo", "AL2")
+        result = import_audit_result(
+            state,
+            {
+                "status": "PASS",
+                "guarantees": {
+                    "security": {"status": "PASS"},
+                    "architecture": {"status": "PASS"},
+                },
+            },
+            ["audit.json"],
+        )
+        self.assertIsNone(result["finding_id"])
+        self.assertEqual(state["assurance_status"], "ACTIVE")
+        self.assertEqual(state["controls"], {})
+        self.assertEqual(len(state["audit_history"]), 1)
+
+    def test_failed_audit_creates_blocking_finding_and_reopens_assurance(self):
+        state = new_state("demo", "AL2")
+        result = import_audit_result(
+            state,
+            {
+                "status": "FAIL",
+                "guarantees": {
+                    "security": {"status": "FAIL"},
+                    "architecture": {"status": "PASS"},
+                },
+            },
+            ["audit.json"],
+        )
+        self.assertIsNotNone(result["finding_id"])
+        self.assertEqual(state["assurance_status"], "REOPENED")
+        finding = state["open_findings"][0]
+        self.assertEqual(finding["severity"], "HIGH")
+        self.assertEqual(finding["source"], "AUDIT_ENGINE")
+        self.assertEqual(finding["failed_guarantees"], ["security"])
 
 
 if __name__ == "__main__":
