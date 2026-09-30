@@ -37,7 +37,8 @@
     "tools/detector_diversity.py",
     "tools/static_analyzer_adapters.py",
     "tools/fuzz_engine.py",
-    "tools/dynamic_security_engine.py"
+    "tools/dynamic_security_engine.py",
+    "tools/assurance_v2_cli.py"
   ],
   "held_out": [
     "_auracode_assurance/held_out/**",
