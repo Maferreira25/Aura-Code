@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -77,22 +78,29 @@ class MaturityGateTests(unittest.TestCase):
                 encoding="utf-8",
             )
             (root / "GOVERNANCE.md").write_text("adopted governance", encoding="utf-8")
-            (root / "governance.json").write_text(
-                json.dumps({
-                    "status": "ADOPTED",
-                    "roles": {
-                        "maintainers": ["maintainer-1"],
-                        "release_manager": "release-1",
-                        "security_response": ["security-1"],
-                    },
-                    "normative_change_rule": "PR review",
-                    "release_authority_rule": "release manager approves",
-                    "security_response_rule": "security team triages",
-                    "appeal_rule": "maintainer committee review",
-                    "evidence": ["GOVERNANCE.md"],
-                }),
-                encoding="utf-8",
-            )
+            governance_payload = {
+                "status": "ADOPTED",
+                "roles": {
+                    "maintainers": ["maintainer-1"],
+                    "release_manager": "release-1",
+                    "security_response": ["security-1"],
+                },
+                "normative_change_rule": "PR review",
+                "release_authority_rule": "release manager approves",
+                "security_response_rule": "security team triages",
+                "appeal_rule": "maintainer committee review",
+                "evidence": ["GOVERNANCE.md"],
+            }
+            governance_path = root / "governance.json"
+            governance_path.write_text(json.dumps(governance_payload), encoding="utf-8")
+            evidence_sha = hashlib.sha256(governance_path.read_bytes()).hexdigest()
+            ledger = json.loads((root / "validation" / "maturity-evidence.json").read_text(encoding="utf-8"))
+            ledger["criteria"]["MAT-10"].update({
+                "reviewed_by": "human-reviewer",
+                "reviewed_at": "2026-09-30T00:00:00Z",
+                "evidence_sha256": evidence_sha,
+            })
+            (root / "validation" / "maturity-evidence.json").write_text(json.dumps(ledger), encoding="utf-8")
             report = evaluate_maturity(root)
             self.assertTrue(report["ready"])
             self.assertEqual(report["criteria"][0]["status"], "PASS")
@@ -196,6 +204,41 @@ class MaturityGateTests(unittest.TestCase):
             self.assertFalse(report["ready"])
             self.assertEqual(report["criteria"][0]["status"], "INVALID_PASS")
             self.assertIn("nested evidence files do not exist", report["criteria"][0]["reason"])
+
+    def test_hash_mismatch_is_invalid_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "validation" / "results").mkdir(parents=True)
+            (root / "validation" / "maturity-criteria.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": [
+                        {"id": "MAT-10", "title": "Governance", "mode": "evidence", "required": True}
+                    ],
+                }),
+                encoding="utf-8",
+            )
+            (root / "governance.json").write_text("{}", encoding="utf-8")
+            (root / "validation" / "maturity-evidence.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": {
+                        "MAT-10": {
+                            "status": "PASS",
+                            "evidence": ["governance.json"],
+                            "rationale": "claimed",
+                            "reviewed_by": "reviewer",
+                            "reviewed_at": "2026-09-30T00:00:00Z",
+                            "evidence_sha256": "0" * 64,
+                        }
+                    },
+                }),
+                encoding="utf-8",
+            )
+            report = evaluate_maturity(root)
+            self.assertFalse(report["ready"])
+            self.assertEqual(report["criteria"][0]["status"], "INVALID_PASS")
+            self.assertIn("hash mismatch", report["criteria"][0]["reason"])
 
 
 if __name__ == "__main__":
