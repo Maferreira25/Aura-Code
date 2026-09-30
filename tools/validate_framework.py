@@ -167,6 +167,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "docs/FRAMEWORK.md", "docs/VALIDATION.md", "templates/assessment.json",
         "schemas/control.schema.json", "schemas/assessment.schema.json",
         "schemas/contracts.schema.json", "schemas/evidence.schema.json",
+        "schemas/assurance-state.schema.json", "controls/gates.json",
         "MANIFEST.json",
     ]:
         if not (root_dir / rel).exists():
@@ -215,6 +216,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
     for s_rel in [
         "schemas/control.schema.json", "schemas/assessment.schema.json",
         "schemas/contracts.schema.json", "schemas/evidence.schema.json",
+        "schemas/assurance-state.schema.json",
         "validation/schemas/result.schema.json", "validation/schemas/scenario.schema.json"
     ]:
         sp = root_dir / s_rel
@@ -225,6 +227,37 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
                     errors.append(f"{s_rel}: invalid schema object or missing $schema")
             except Exception as e:
                 errors.append(f"{s_rel}: failed to parse JSON schema: {e}")
+
+    # Assurance gate-policy verification
+    gates_file = root_dir / "controls" / "gates.json"
+    if gates_file.exists():
+        try:
+            gate_data = load("controls/gates.json")
+            gates = gate_data.get("gates", [])
+            if not isinstance(gates, list) or not gates:
+                errors.append("controls/gates.json: gates must be a non-empty array")
+            else:
+                seen_targets = set()
+                for gate in gates:
+                    if not isinstance(gate, dict):
+                        errors.append("controls/gates.json: each gate must be an object")
+                        continue
+                    target = gate.get("target_stage")
+                    if not isinstance(target, str) or not target:
+                        errors.append("controls/gates.json: gate missing target_stage")
+                    elif target in seen_targets:
+                        errors.append(f"controls/gates.json: duplicate target_stage {target}")
+                    else:
+                        seen_targets.add(target)
+                    required_controls = gate.get("required_controls", [])
+                    if not isinstance(required_controls, list):
+                        errors.append(f"controls/gates.json: {target} required_controls must be an array")
+                        continue
+                    for cid in required_controls:
+                        if cid not in idset:
+                            errors.append(f"controls/gates.json: unknown control {cid}")
+        except Exception as exc:
+            errors.append(f"controls/gates.json: failed to validate gate policy: {exc}")
 
     # Contracts schema conformity
     contracts_file = root_dir / "contracts.json"
