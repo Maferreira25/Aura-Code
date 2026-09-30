@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 450,
+  "file_count": 455,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -932,8 +932,8 @@
       "bytes": 18902
     },
     "tests/test_validation_suite.py": {
-      "sha256": "ce9ffec4b4d85895f1e6d142fb46e01a7486835207b06ea27284d4b8ce210e9f",
-      "bytes": 2856
+      "sha256": "a2282bc4ca1c536d1399e06f5a1d66e284538e275a00f8ac70571084ed119b1e",
+      "bytes": 3381
     },
     "tests/test_wizard.py": {
       "sha256": "d007d12e4fde4239e1c85165c314a46e387154c3baf233b1aa8ec63d44cf054d",
@@ -1656,8 +1656,8 @@
       "bytes": 256
     },
     "validation/schemas/result.schema.json": {
-      "sha256": "697e7a4b170b70b07f544d74fb61cd91fc72794465b53d9feda4550d6c48f645",
-      "bytes": 2327
+      "sha256": "d577d7ca69cb8b4d305c92d822a266507cbc135333f504d0e6fed94ec29a112b",
+      "bytes": 2972
     },
     "validation/schemas/scenario.schema.json": {
       "sha256": "b1354adb3f02fe3e37450093e7170d4fa70991225b19fac7d069639da7e6d18b",
@@ -1672,8 +1672,8 @@
       "bytes": 2444
     },
     "validation/tools/harness.py": {
-      "sha256": "818562fed7561ce5f308925075e6555d10bb21c6ad0f5c5370bf0c6e8f1d18c0",
-      "bytes": 13015
+      "sha256": "421bb0941a03135cc5b7d6f3986e45f3c1dae36ccddaaea420963e36052f4136",
+      "bytes": 14370
     },
     "validation/tools/runner.py": {
       "sha256": "f08784e3340f77b28a69faf429b69eab915ad992ad7ac3750efe47acc6ea5ae6",
@@ -1802,6 +1802,26 @@
     "validation/config/burden-errors.example.json": {
       "sha256": "2dc094eb71a0816f5be5fc760c7b3f757fae19a96ad596c7f3f079d975ccd470",
       "bytes": 422
+    },
+    "validation/multilang-qualification/corpus.json": {
+      "sha256": "0ddb868e77f6483cf37fc73c39e73805840374f7a07f6f01d59bde94d620a2fa",
+      "bytes": 4300
+    },
+    "validation/tools/qualify_multilang.py": {
+      "sha256": "d26d6bbca476f5f307315d04060fcad8f149eb4c3513c6ad1adca499cb46ce5e",
+      "bytes": 7019
+    },
+    "validation/tools/private_split.py": {
+      "sha256": "4061673bb54f41766306421f2295e2cffe2217168d243a758d7ee0317ddd86ce",
+      "bytes": 5611
+    },
+    "tests/test_private_split.py": {
+      "sha256": "7a64e460d39c2cf1a439cba17b672d81cb8e849bd07e6253233f62c3b2a0063b",
+      "bytes": 2107
+    },
+    "tests/test_multilang_qualification.py": {
+      "sha256": "04155fd84f888fe7fccdf3957ea6aae15b84fd737c8aa0fecb1bba14ea894a57",
+      "bytes": 1571
     }
   }
 }
