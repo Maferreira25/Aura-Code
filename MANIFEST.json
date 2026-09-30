@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 423,
+  "file_count": 427,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "df047118d908343c6eeb092ef9bbdb82dc42ffd08042b2b290d686cf0d9899b6",
-      "bytes": 44138
+      "sha256": "be79a4c9a54bb57e780fc9a0caf56c6e20d980d42adcb8818dd5a51f34dca238",
+      "bytes": 44480
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "269563cb3e028f1e500de7948275bcec0ccd3492bce8eeb30593ca8262f83672",
-      "bytes": 14649
+      "sha256": "2f0ff8c940b66e437bd6c02fb2a44be72ca7c3983b591778e80bef878242c6bd",
+      "bytes": 16420
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1694,6 +1694,22 @@
     "VERSION": {
       "sha256": "9bab5660ff944ab1556cce8285381a4af093c2f9fb4a672f5423cc086de7abf2",
       "bytes": 11
+    },
+    "tools/assurance_state.py": {
+      "sha256": "807954c95db93f987968ea7a77c5431419b701fe77b0df66499fefabcfd48c54",
+      "bytes": 21470
+    },
+    "controls/gates.json": {
+      "sha256": "d1c4425e4166c2180a137120426f0294552119fd87ec99aefa145b6ead6a6cac",
+      "bytes": 3605
+    },
+    "schemas/assurance-state.schema.json": {
+      "sha256": "b5f1e2cefb198fd9a04ba0fdb464b451a38c77032b88db64f84e7e3bd729efa5",
+      "bytes": 2693
+    },
+    "tests/test_assurance_state.py": {
+      "sha256": "f0a9a4cb966b5097cd89b7cccabe17d0051d85d97190b3e68e01d073c0ebba4f",
+      "bytes": 4946
     }
   }
 }
