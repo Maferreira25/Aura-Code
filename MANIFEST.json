@@ -1920,8 +1920,8 @@
       "bytes": 6918
     },
     "validation/tools/validate_maturity_infrastructure.py": {
-      "sha256": "b22836dc6f21af483b2c37e5561c1a79954c617d6f4d526c85453672afe6263c",
-      "bytes": 9436
+      "sha256": "6b2d1cb93ab2fa648b3c6d44eec609d54d80cd8eac28619bfcced656dfbb36e2",
+      "bytes": 9478
     },
     "tests/test_maturity_handoff.py": {
       "sha256": "e2f2969560c217cb186c5e5e11a3b66e6e3afde307871f18d8c43d0d0e5794d2",
