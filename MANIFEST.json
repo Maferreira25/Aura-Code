@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 427,
+  "file_count": 429,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -420,8 +420,8 @@
       "bytes": 1482
     },
     "schemas/evidence.schema.json": {
-      "sha256": "268ac37c8c895174a8232054385c11dfb8df648b6e83ef0b68c5f55c8410db28",
-      "bytes": 903
+      "sha256": "79cb6a0629c29541786444823541db3b61a5c221b7b9b5271082fd95738106b0",
+      "bytes": 2957
     },
     "SECURITY.md": {
       "sha256": "0c8e7c6d91b7c3d5826d47f8a20ad9eb296bfec2368bb372781b5b87fb8ed28e",
@@ -624,8 +624,8 @@
       "bytes": 1343
     },
     "templates/evidence-record.json": {
-      "sha256": "5a96f48b6cc2286c1d526919231bd3dd4094391714f991a7202cbed427762f0a",
-      "bytes": 320
+      "sha256": "f15ce48fd7dc88b96ee45beb75858dd189f5205957995b3a87cc8b34a51c2cdb",
+      "bytes": 1140
     },
     "templates/incident-postmortem.md": {
       "sha256": "eb05d575a3aae30ffdc8ae7a3058742508a0f2283548e2fffb2c0c2780b4c5b4",
@@ -1710,6 +1710,14 @@
     "tests/test_assurance_shadow.py": {
       "sha256": "f44950c4deb0fa94e3e4bfe59454fd856b7c8dc3a4d7a746b5bad2b3f2499ea3",
       "bytes": 5134
+    },
+    "tools/evidence_engine.py": {
+      "sha256": "d3d5d80edf202ecaedab03f760bd06a28a633611ff888a5167042e1265565863",
+      "bytes": 11981
+    },
+    "tests/test_evidence_engine.py": {
+      "sha256": "f2e3fc5a91f8fbf0e787eae93e7b3c080921fafd722c032cf2dd23823846fa4a",
+      "bytes": 5708
     }
   }
 }
