@@ -249,18 +249,24 @@ A control is mandatory when its assurance level and applicability make it applic
 ### AGT-02 — No sole self-approval
 **Minimum assurance:** `AL2`
 
-**Requirement:** The implementing AI agent MUST NOT be the sole approver of a significant change.
+**Requirement:** The implementing AI agent MUST NOT be the sole approver of a significant change. When independent verification is required, implementer and verifier/approver provenance MUST identify distinct actors and distinct sessions. For AL3/AL4 AI-to-AI verification, the current gate policy additionally requires distinct model identities.
 
 **Applicability:** All software projects unless explicitly not applicable.
 
 **Required evidence:**
-- Independent review record from human, separate agent context, deterministic gates, or combination required by assurance level.
+- Independent review record plus implementer and verifier/approver `actor_id` and `session_id`.
+- For AL3/AL4 AI-to-AI verification, `model_id` for both actors showing the diversity required by the gate policy.
+- Deterministic or protected-evaluator evidence required by the applicable assurance profile.
 
 **Verification:**
-- Check reviewer/approver independence metadata.
+- Compare implementer and verifier/approver provenance; reject identical `actor_id` or `session_id` when independence is required.
+- For AL3/AL4 AI-to-AI verification, reject identical or missing `model_id` under the current gate policy.
+- Confirm the independent review did not rely solely on the implementing agent's own assertions.
 
 **Blocking conditions:**
 - Only the implementing agent approved a significant change.
+- Implementer and verifier/approver are the same actor or prohibited same session when independence is required.
+- AL3/AL4 AI-to-AI verification uses the same model identity or lacks model provenance required by the gate policy.
 
 **References:** `METR-MERGEABILITY`, `SECUREAGENTBENCH`
 
