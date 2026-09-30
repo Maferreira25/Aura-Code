@@ -90,6 +90,7 @@ def new_state(project: str, assurance_level: str, framework_version: str = "unkn
         "actors": {},
         "controls": {},
         "open_findings": [],
+        "audit_history": [],
         "material_decisions": [],
         "transition_history": [],
     }
