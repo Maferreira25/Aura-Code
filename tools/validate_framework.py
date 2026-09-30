@@ -170,7 +170,10 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/assurance-result.schema.json", "schemas/requirement.schema.json",
         "schemas/invariant.schema.json", "schemas/traceability.schema.json",
         "schemas/protected-assurance-plane.schema.json",
+        "schemas/held-out-suite.schema.json",
         "policies/protected-assurance-plane.json",
+        "templates/held-out-suite.json",
+        "tools/heldout_runner.py",
         "MANIFEST.json",
     ]:
         if not (root_dir / rel).exists():
@@ -222,6 +225,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/assurance-result.schema.json", "schemas/requirement.schema.json",
         "schemas/invariant.schema.json", "schemas/traceability.schema.json",
         "schemas/protected-assurance-plane.schema.json",
+        "schemas/held-out-suite.schema.json",
         "validation/schemas/result.schema.json", "validation/schemas/scenario.schema.json"
     ]:
         sp = root_dir / s_rel
