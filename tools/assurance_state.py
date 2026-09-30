@@ -18,6 +18,7 @@ VALID_ROLES = {"implementer", "verifier", "auditor", "remediator", "revalidator"
 AI_KINDS = {"AI_AGENT", "AI_MODEL"}
 VALID_FINDING_SEVERITIES = {"CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"}
 VALID_FINDING_STATUSES = {"OPEN", "CONFIRMED", "PARTIALLY_CONFIRMED", "FALSE_POSITIVE", "IN_REMEDIATION", "IMPLEMENTED", "REVALIDATION_FAILED", "RESOLVED", "BLOCKED", "ACCEPTED_RISK"}
+VALID_ASSURANCE_STATUSES = {"ACTIVE", "REOPENED", "BLOCKED"}
 STAGES = (
     "INTAKE",
     "RISK_CLASSIFIED",
@@ -83,6 +84,7 @@ def new_state(project: str, assurance_level: str, framework_version: str = "unkn
         "project": project.strip(),
         "assurance_level": level,
         "current_stage": "INTAKE",
+        "assurance_status": "ACTIVE",
         "created_at": now,
         "updated_at": now,
         "actors": {},
@@ -99,6 +101,8 @@ def validate_state(state: Mapping[str, Any]) -> List[str]:
         errors.append("invalid assurance_level")
     if str(state.get("current_stage", "")) not in STAGES:
         errors.append("invalid current_stage")
+    if str(state.get("assurance_status", "ACTIVE")).upper() not in VALID_ASSURANCE_STATUSES:
+        errors.append("invalid assurance_status")
     if not str(state.get("project", "")).strip():
         errors.append("project is required")
 
@@ -353,6 +357,9 @@ def check_actor_independence(
     left = _actor(state, left_role)
     right = _actor(state, right_role)
     reasons: List[str] = []
+    assurance_status = str(state.get("assurance_status", "ACTIVE")).upper()
+    if assurance_status != "ACTIVE":
+        reasons.append(f"assurance status is {assurance_status}; unresolved material findings require revalidation")
     if left is None:
         reasons.append(f"missing actor provenance for '{left_role}'")
     if right is None:
@@ -511,6 +518,62 @@ def revalidate_finding(
     new_status = "RESOLVED" if normalized == "PASS" else "REVALIDATION_FAILED"
     finding["status"] = new_status
     finding.setdefault("history", []).append({"status": new_status, "at": utc_now()})
+    refresh_assurance_status(state)
+    return finding
+
+
+
+def refresh_assurance_status(state: Dict[str, Any]) -> str:
+    """Recompute whether assurance is active or blocked by unresolved material findings."""
+    blockers = _blocking_findings(state, {"CRITICAL", "HIGH"})
+    if blockers:
+        current = str(state.get("assurance_status", "ACTIVE")).upper()
+        state["assurance_status"] = "REOPENED" if current == "REOPENED" else "BLOCKED"
+    else:
+        state["assurance_status"] = "ACTIVE"
+    return str(state["assurance_status"])
+
+
+def apply_continuous_regression(
+    state: Dict[str, Any],
+    comparison: Mapping[str, Any],
+    evidence: Sequence[str],
+) -> Optional[Dict[str, Any]]:
+    """Materialize a blocking Continuous Assurance regression as a governed finding."""
+    if str(comparison.get("decision", "")).upper() != "BLOCK":
+        return None
+    blockers = comparison.get("blockers", [])
+    if not isinstance(blockers, list) or not blockers:
+        raise ValueError("Blocking comparison must include blocker evidence")
+    ev = [str(item).strip() for item in evidence if str(item).strip()]
+    if not ev:
+        raise ValueError("Continuous Assurance regression requires evidence")
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    finding_id = f"CA-{timestamp}"
+    suffix = 1
+    while _find_finding(state, finding_id) is not None:
+        suffix += 1
+        finding_id = f"CA-{timestamp}-{suffix}"
+
+    finding = register_finding(
+        state,
+        finding_id,
+        "HIGH",
+        "Continuous Assurance regression detected",
+        status="CONFIRMED",
+        evidence=ev,
+    )
+    finding["source"] = "CONTINUOUS_ASSURANCE"
+    finding["regressions"] = [str(item) for item in blockers]
+    state["assurance_status"] = "REOPENED"
+    state.setdefault("transition_history", []).append({
+        "event": "ASSURANCE_REOPENED",
+        "stage": state.get("current_stage"),
+        "finding_id": finding_id,
+        "reasons": [str(item) for item in blockers],
+        "at": utc_now(),
+    })
     return finding
 
 
