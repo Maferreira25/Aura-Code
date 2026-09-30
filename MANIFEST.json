@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 429,
+  "file_count": 435,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "80e0a69dfa11503a6dafc41d4b060835ec0230d41174d4769ce2b7a552881f0c",
-      "bytes": 14745
+      "sha256": "b5a8910cd6aa02a2a876f1475248e642445385e8942df227cfee45cd561abfbb",
+      "bytes": 14969
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1718,6 +1718,30 @@
     "tests/test_evidence_engine.py": {
       "sha256": "f2e3fc5a91f8fbf0e787eae93e7b3c080921fafd722c032cf2dd23823846fa4a",
       "bytes": 5708
+    },
+    "schemas/requirement.schema.json": {
+      "sha256": "fb9ece5bca7b5866f43c000838a85d94f0a43a979b0c0acd8174c5d07602a44e",
+      "bytes": 1676
+    },
+    "schemas/invariant.schema.json": {
+      "sha256": "6f5529458c8f24c688d581435d0ca9d41173ef32b85b7d2c75ae87449d62776b",
+      "bytes": 1391
+    },
+    "schemas/traceability.schema.json": {
+      "sha256": "f6902852488490bc67d904aaf5a2f3ffaf896729cef41f2cb413509e1420e48b",
+      "bytes": 706
+    },
+    "tools/traceability_engine.py": {
+      "sha256": "7c63f3c177096206cb151c50d9789e92425d4f629c304a03f2803dcc4af40ba3",
+      "bytes": 11978
+    },
+    "tests/test_traceability_engine.py": {
+      "sha256": "4e78b595e9b9c78566c0e974a40c8f8eff8dcbb405b5df5b70f08af905f17a5f",
+      "bytes": 7317
+    },
+    "templates/traceability.json": {
+      "sha256": "87700e39f5f77963901c4c7ec2bdb3bb76690ea95fe425f0d0195a88f7f5a680",
+      "bytes": 1273
     }
   }
 }
