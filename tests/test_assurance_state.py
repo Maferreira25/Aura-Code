@@ -316,6 +316,21 @@ class AssuranceStateTests(unittest.TestCase):
         errors = validate_state(state)
         self.assertIn("transition_history entries must be objects", errors)
 
+    def test_agt02_catalog_matches_gate_independence_policy(self):
+        catalog = __import__("json").loads(
+            (ROOT / "controls" / "catalog.json").read_text(encoding="utf-8")
+        )
+        agt02 = next(item for item in catalog["controls"] if item["id"] == "AGT-02")
+        gates = load_gate_policy(ROOT)["gates"]
+        verification = next(item for item in gates if item["target_stage"] == "VERIFICATION")
+        self.assertIn("AGT-02", verification["required_controls"])
+        self.assertEqual(verification["independence_from_level"], "AL2")
+        self.assertEqual(verification["strong_model_independence_from_level"], "AL3")
+        requirement = agt02["requirement"]
+        self.assertIn("distinct actors", requirement)
+        self.assertIn("distinct sessions", requirement)
+        self.assertIn("distinct model identities", requirement)
+
 
 if __name__ == "__main__":
     unittest.main()
