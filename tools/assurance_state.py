@@ -434,3 +434,102 @@ def advance_state(state: Dict[str, Any], target_stage: str, root: Path = ROOT) -
     if result["allowed"]:
         state["current_stage"] = result["target_stage"]
     return result
+
+
+def default_state_path(target: Path) -> Path:
+    return target.resolve() / ".auracode" / "assurance-state.json"
+
+
+def _state_path(target: str, state_path: Optional[str]) -> Path:
+    return Path(state_path).resolve() if state_path else default_state_path(Path(target))
+
+
+def build_parser():
+    import argparse
+    parser = argparse.ArgumentParser(description="AuraCode persistent assurance-state decision engine")
+    sub = parser.add_subparsers(dest="action", required=True)
+
+    init_p = sub.add_parser("init", help="Create a new assurance state")
+    init_p.add_argument("target", nargs="?", default=".")
+    init_p.add_argument("--project", required=True)
+    init_p.add_argument("--level", required=True, choices=VALID_LEVELS)
+    init_p.add_argument("--framework-version", default="unknown")
+    init_p.add_argument("--state")
+    init_p.add_argument("--json", action="store_true")
+
+    actor_p = sub.add_parser("actor", help="Record actor provenance")
+    actor_p.add_argument("target", nargs="?", default=".")
+    actor_p.add_argument("--role", required=True, choices=sorted(VALID_ROLES))
+    actor_p.add_argument("--actor-id", required=True)
+    actor_p.add_argument("--kind", required=True, choices=sorted(VALID_ACTOR_KINDS))
+    actor_p.add_argument("--session-id")
+    actor_p.add_argument("--model-id")
+    actor_p.add_argument("--state")
+    actor_p.add_argument("--json", action="store_true")
+
+    control_p = sub.add_parser("control", help="Record one control result")
+    control_p.add_argument("target", nargs="?", default=".")
+    control_p.add_argument("--id", required=True)
+    control_p.add_argument("--status", required=True, choices=sorted(VALID_STATUSES | set(LEGACY_STATUS_MAP)))
+    control_p.add_argument("--evidence", action="append", default=[])
+    control_p.add_argument("--rationale", default="")
+    control_p.add_argument("--state")
+    control_p.add_argument("--json", action="store_true")
+
+    gate_p = sub.add_parser("gate", help="Evaluate or advance one sequential assurance gate")
+    gate_p.add_argument("target", nargs="?", default=".")
+    gate_p.add_argument("--to", required=True, choices=STAGES)
+    gate_p.add_argument("--advance", action="store_true")
+    gate_p.add_argument("--state")
+    gate_p.add_argument("--json", action="store_true")
+    return parser
+
+
+def main(argv=None) -> int:
+    args = build_parser().parse_args(argv)
+    state_path = _state_path(args.target, getattr(args, "state", None))
+
+    if args.action == "init":
+        if state_path.exists():
+            print(f"ERROR: assurance state already exists: {state_path}")
+            return 2
+        state = new_state(args.project, args.level, args.framework_version)
+        save_state(state_path, state)
+        payload = {"status": "PASS", "state_file": str(state_path), "state": state}
+    else:
+        try:
+            state = load_state(state_path)
+        except ValueError as exc:
+            print(f"ERROR: {exc}")
+            return 2
+
+        if args.action == "actor":
+            record_actor(state, args.role, args.actor_id, args.kind, args.session_id, args.model_id)
+            save_state(state_path, state)
+            payload = {"status": "PASS", "state_file": str(state_path), "actor": args.role}
+        elif args.action == "control":
+            record_control(state, args.id, args.status, args.evidence, args.rationale)
+            save_state(state_path, state)
+            payload = {"status": "PASS", "state_file": str(state_path), "control": args.id.upper()}
+        else:
+            try:
+                payload = advance_state(state, args.to) if args.advance else evaluate_gate(state, args.to)
+            except ValueError as exc:
+                print(f"ERROR: {exc}")
+                return 2
+            if args.advance:
+                save_state(state_path, state)
+
+    if getattr(args, "json", False):
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    elif args.action == "gate":
+        print(f"{payload['decision']}: {payload['from_stage']} -> {payload['target_stage']}")
+        for reason in payload.get("reasons", []):
+            print(f"- {reason}")
+    else:
+        print(f"{payload['status']}: {payload.get('state_file')}")
+    return 0 if payload.get("decision", payload.get("status")) in {"ALLOW", "PASS"} else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
