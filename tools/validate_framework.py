@@ -172,11 +172,14 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/protected-assurance-plane.schema.json",
         "schemas/held-out-suite.schema.json",
         "schemas/property-suite.schema.json",
+        "schemas/metamorphic-suite.schema.json",
         "policies/protected-assurance-plane.json",
         "templates/held-out-suite.json",
         "templates/property-suite.json",
+        "templates/metamorphic-suite.json",
         "tools/heldout_runner.py",
         "tools/property_engine.py",
+        "tools/metamorphic_engine.py",
         "MANIFEST.json",
     ]:
         if not (root_dir / rel).exists():
@@ -230,6 +233,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/protected-assurance-plane.schema.json",
         "schemas/held-out-suite.schema.json",
         "schemas/property-suite.schema.json",
+        "schemas/metamorphic-suite.schema.json",
         "validation/schemas/result.schema.json", "validation/schemas/scenario.schema.json"
     ]:
         sp = root_dir / s_rel
