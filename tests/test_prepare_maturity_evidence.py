@@ -16,6 +16,9 @@ class PrepareMaturityEvidenceTests(unittest.TestCase):
         package.write_text(
             json.dumps({
                 "status": "ADOPTED",
+                "human_adoption_attestation": True,
+                "adopted_at": "2026-09-30T12:00:00Z",
+                "adopted_by": ["human-authority"],
                 "roles": {
                     "maintainers": ["m1"],
                     "release_manager": "r1",
