@@ -406,7 +406,9 @@ def inspect_subcommand(
                         if candidate_path.is_absolute():
                             candidate = candidate_path.resolve().relative_to(workspace_root.resolve()).as_posix()
                     except (OSError, ValueError):
-                        pass
+                        # Keep the original repository-relative candidate. The policy
+                        # matcher remains fail-closed for known held-out patterns.
+                        candidate = candidate.replace("\\", "/")
                 if not can_read(candidate, policy, actor="developer"):
                     return {
                         "safe": False,
