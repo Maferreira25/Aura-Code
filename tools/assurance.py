@@ -56,6 +56,7 @@ from tools import differential_engine
 from tools import taint_engine
 from tools import static_analyzer_adapters
 from tools import detector_diversity
+from tools import fuzz_engine
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -325,6 +326,12 @@ def main() -> None:
     analyzer_p.add_argument("report", help="Path to SARIF report")
     analyzer_p.add_argument("--id", required=True, help="Stable analyzer identifier, e.g. semgrep or codeql")
     analyzer_p.add_argument("--json", action="store_true", help="Output normalized report in JSON format")
+
+    # Subcommand: fuzz
+    fuzz_p = subparsers.add_parser("fuzz", help="Execute deterministic corpus fuzzing against a declared target")
+    fuzz_p.add_argument("manifest", help="Path to fuzz-suite manifest")
+    fuzz_p.add_argument("--target", default=".", help="Target workspace directory")
+    fuzz_p.add_argument("--json", action="store_true", help="Output result in JSON format")
 
     # Subcommand: traceability
     trace_p = subparsers.add_parser("traceability", help="Verify Requirement -> Invariant -> Implementation -> Test -> Evidence chains")
@@ -638,6 +645,25 @@ def main() -> None:
         res = static_analyzer_adapters.normalize_sarif(Path(args.report), analyzer_id=args.id)
         print(json.dumps(res, indent=2, ensure_ascii=False))
         sys.exit(0 if res.get("status") in {"PASS", "FAIL"} else 1)
+
+    elif args.command == "fuzz":
+        import json
+        workspace = Path(args.target).resolve()
+        manifest_path = Path(args.manifest)
+        if not manifest_path.is_absolute():
+            manifest_path = (workspace / manifest_path).resolve()
+        res = fuzz_engine.evaluate_fuzz_suite(workspace, manifest_path)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Fuzzing: {res.get('status')}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+            if res.get("suite_id"):
+                print(
+                    f"Suite: {res['suite_id']} | Seed: {res.get('seed', 'n/a')} | "
+                    f"Iterations: {res.get('iterations', 0)} | Findings: {len(res.get('findings', []))}"
+                )
+        sys.exit(0 if res.get("status") == "PASS" else 1)
 
     elif args.command == "traceability":
         import json
