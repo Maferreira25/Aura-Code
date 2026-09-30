@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "STATIC-EXAMPLE-001",
+  "analyzers": [
+    {
+      "analyzer_id": "semgrep",
+      "kind": "semgrep",
+      "command": [
+        "semgrep",
+        "scan",
+        "--config",
+        "p/owasp-top-ten",
+        "--sarif",
+        "--output",
+        "_auracode_external/semgrep.sarif",
+        "."
+      ],
+      "sarif_output": "_auracode_external/semgrep.sarif",
+      "accepted_exit_codes": [0],
+      "timeout_seconds": 300,
+      "required": true
+    },
+    {
+      "analyzer_id": "codeql",
+      "kind": "codeql",
+      "command": [
+        "codeql",
+        "database",
+        "analyze",
+        "codeql-db",
+        "--format=sarif-latest",
+        "--output=_auracode_external/codeql.sarif"
+      ],
+      "sarif_output": "_auracode_external/codeql.sarif",
+      "accepted_exit_codes": [0],
+      "timeout_seconds": 900,
+      "required": true
+    }
+  ],
+  "diversity": {
+    "enabled": true,
+    "line_tolerance": 2
+  }
+}
