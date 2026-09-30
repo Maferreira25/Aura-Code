@@ -512,14 +512,21 @@ def check_actor_independence(
     elif left_id == right_id:
         reasons.append(f"{left_role} and {right_role} must be different actors")
 
+    left_kind = str(left.get("kind", "")).upper()
+    right_kind = str(right.get("kind", "")).upper()
     left_session = str(left.get("session_id") or "").strip()
     right_session = str(right.get("session_id") or "").strip()
-    if left_session and right_session and left_session == right_session:
+    if left_kind in AI_KINDS and right_kind in AI_KINDS:
+        if not left_session or not right_session:
+            reasons.append(
+                f"AI independence requires session_id for both {left_role} and {right_role}"
+            )
+        elif left_session == right_session:
+            reasons.append(f"{left_role} and {right_role} must not share the same session")
+    elif left_session and right_session and left_session == right_session:
         reasons.append(f"{left_role} and {right_role} must not share the same session")
 
     if strong_model_independence:
-        left_kind = str(left.get("kind", "")).upper()
-        right_kind = str(right.get("kind", "")).upper()
         left_model = str(left.get("model_id") or "").strip()
         right_model = str(right.get("model_id") or "").strip()
         if left_kind in AI_KINDS and right_kind in AI_KINDS:
