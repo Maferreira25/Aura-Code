@@ -254,3 +254,66 @@ The workplan at validation/maturity-workplan.json defines owner-role type, prere
 The workplan is explicitly **not** a status source. PASS/FAIL/UNKNOWN continues to come only from the maturity gate and validated evidence ledger.
 
 This distinction prevents an operational checklist from silently becoming evidence.
+
+
+## Unified AuraCode maturity CLI
+
+The internal Python tools remain directly executable for research automation, but the supported operator entrypoint is the unified AuraCode CLI.
+
+Existing gate syntax remains valid:
+
+~~~text
+auracode maturity . --json
+~~~
+
+Equivalent explicit form:
+
+~~~text
+auracode maturity gate . --json
+~~~
+
+Current readiness/work queue:
+
+~~~text
+auracode maturity readiness . --json
+~~~
+
+Validate study plans or result packages:
+
+~~~text
+auracode maturity study p2 <p2-plan.json> --json
+auracode maturity study p2-result <p2-result.json> --root . --json
+auracode maturity study p3 <p3-plan.json> --registry validation/benchmark-registry.json --json
+auracode maturity study p3-result <p3-result.json> --registry validation/benchmark-registry.json --root . --json
+auracode maturity study p4-plan <p4-plan.json> --json
+auracode maturity study p4 <p4-result.json> --root . --json
+auracode maturity study inter-rater <package.json> --root . --json
+auracode maturity study burden-errors <package.json> --json
+auracode maturity study multilang-qualification <package.json> --json
+auracode maturity study security-audit <package.json> --json
+auracode maturity study governance <package.json> --json
+~~~
+
+Generate deterministic execution queues:
+
+~~~text
+auracode maturity queue p2 <p2-plan.json> --missing-only --json
+auracode maturity queue p3 <p3-plan.json> --registry validation/benchmark-registry.json --missing-only --json
+auracode maturity queue p4 <p4-plan.json> --missing-only --json
+~~~
+
+Prepare, but do not automatically adopt, a reviewed ledger entry:
+
+~~~text
+auracode maturity prepare MAT-XX <package.json> \
+  --reviewed-by "<reviewer>" \
+  --reviewed-at "YYYY-MM-DDTHH:MM:SSZ" --json
+~~~
+
+Validate that MAT-01 through MAT-10 still have complete implementation scaffolding:
+
+~~~text
+auracode maturity infrastructure . --json
+~~~
+
+The unified CLI does not change the evidence model: plans are not results, completed runs are not automatically successful, and a prepared ledger entry is not automatically accepted into project governance.
