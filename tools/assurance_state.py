@@ -605,6 +605,41 @@ def build_parser() -> "argparse.ArgumentParser":
     control_p.add_argument("--state")
     control_p.add_argument("--json", action="store_true")
 
+    finding_p = sub.add_parser("finding", help="Manage finding remediation and independent revalidation")
+    finding_sub = finding_p.add_subparsers(dest="finding_action", required=True)
+
+    finding_add = finding_sub.add_parser("add", help="Register an audit/review finding")
+    finding_add.add_argument("target", nargs="?", default=".")
+    finding_add.add_argument("--id", required=True)
+    finding_add.add_argument("--severity", required=True, choices=sorted(VALID_FINDING_SEVERITIES))
+    finding_add.add_argument("--title", required=True)
+    finding_add.add_argument("--status", default="OPEN", choices=sorted(VALID_FINDING_STATUSES))
+    finding_add.add_argument("--evidence", action="append", default=[])
+    finding_add.add_argument("--state")
+    finding_add.add_argument("--json", action="store_true")
+
+    finding_start = finding_sub.add_parser("start", help="Start remediation for a confirmed finding")
+    finding_start.add_argument("target", nargs="?", default=".")
+    finding_start.add_argument("--id", required=True)
+    finding_start.add_argument("--evidence", action="append", default=[])
+    finding_start.add_argument("--state")
+    finding_start.add_argument("--json", action="store_true")
+
+    finding_impl = finding_sub.add_parser("implemented", help="Record remediation implementation evidence")
+    finding_impl.add_argument("target", nargs="?", default=".")
+    finding_impl.add_argument("--id", required=True)
+    finding_impl.add_argument("--evidence", action="append", required=True)
+    finding_impl.add_argument("--state")
+    finding_impl.add_argument("--json", action="store_true")
+
+    finding_reval = finding_sub.add_parser("revalidate", help="Record independent revalidation result")
+    finding_reval.add_argument("target", nargs="?", default=".")
+    finding_reval.add_argument("--id", required=True)
+    finding_reval.add_argument("--result", required=True, choices=["PASS", "FAIL"])
+    finding_reval.add_argument("--evidence", action="append", required=True)
+    finding_reval.add_argument("--state")
+    finding_reval.add_argument("--json", action="store_true")
+
     gate_p = sub.add_parser("gate", help="Evaluate or advance one sequential assurance gate")
     gate_p.add_argument("target", nargs="?", default=".")
     gate_p.add_argument("--to", required=True, choices=STAGES)
@@ -632,7 +667,28 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             print(f"ERROR: {exc}")
             return 2
 
-        if args.action == "actor":
+        if args.action == "finding":
+            try:
+                if args.finding_action == "add":
+                    finding = register_finding(
+                        state, args.id, args.severity, args.title, args.status, args.evidence
+                    )
+                elif args.finding_action == "start":
+                    finding = start_remediation(state, args.id, args.evidence)
+                elif args.finding_action == "implemented":
+                    finding = mark_remediation_implemented(state, args.id, args.evidence)
+                else:
+                    finding = revalidate_finding(state, args.id, args.result, args.evidence)
+            except ValueError as exc:
+                print(f"ERROR: {exc}")
+                return 2
+            save_state(state_path, state)
+            payload = {
+                "status": "PASS",
+                "state_file": str(state_path),
+                "finding": finding,
+            }
+        elif args.action == "actor":
             record_actor(state, args.role, args.actor_id, args.kind, args.session_id, args.model_id)
             save_state(state_path, state)
             payload = {"status": "PASS", "state_file": str(state_path), "actor": args.role}
