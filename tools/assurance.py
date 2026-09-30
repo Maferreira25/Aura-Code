@@ -48,6 +48,7 @@ from tools import brainstorm_engine
 from tools import forward_engine
 from tools import debugger_engine
 from tools import refactor_engine
+from tools import assurance_state
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -280,6 +281,10 @@ def main() -> None:
     preflight_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+
+    # Subcommand: state
+    state_p = subparsers.add_parser("state", help="Persistent fail-closed assurance state and gate decisions", add_help=False)
+    state_p.add_argument("state_args", nargs=argparse.REMAINDER)
 
     # Subcommand: audit
     audit_p = subparsers.add_parser("audit", help="Evidence-based audit with explicit guarantee states")
@@ -640,6 +645,9 @@ def main() -> None:
         if args.json:
             argv.append("--json")
         _dispatch_with_argv(argv, preflight.main)
+
+    elif args.command == "state":
+        sys.exit(assurance_state.main(args.state_args))
 
     elif args.command == "audit":
         audit_argv = ["audit.py", args.target]
