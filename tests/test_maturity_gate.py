@@ -80,6 +80,9 @@ class MaturityGateTests(unittest.TestCase):
             (root / "GOVERNANCE.md").write_text("adopted governance", encoding="utf-8")
             governance_payload = {
                 "status": "ADOPTED",
+                "human_adoption_attestation": True,
+                "adopted_at": "2026-09-30T00:00:00Z",
+                "adopted_by": ["human-authority"],
                 "roles": {
                     "maintainers": ["maintainer-1"],
                     "release_manager": "release-1",
