@@ -16,11 +16,12 @@ from tools.mutation_engine import (
     generate_mutants_for_source,
     execute_mutation_analysis,
     format_prescriptive_report,
+    MUTANT_STATUSES,
 )
 
 
 class TestMutationEngine(unittest.TestCase):
-    """Test suite for AST mutation analysis and vitiated oracle detection."""
+    """Test suite for AST mutation analysis and mutation-assurance gaps."""
 
     def setUp(self):
         self.temp_dir = Path(tempfile.mkdtemp()).resolve()
@@ -53,6 +54,70 @@ class TestMutationEngine(unittest.TestCase):
         mutants = generate_mutants_for_source(code)
         types = [m.mutation_type for m in mutants]
         self.assertTrue("BOOLEAN_CONSTANT" in types or "RETURN_NULLIFICATION" in types)
+
+    def test_mutation_v2_status_catalog(self):
+        self.assertEqual(
+            MUTANT_STATUSES,
+            {
+                "PENDING",
+                "KILLED",
+                "SURVIVED",
+                "NO_COVERAGE",
+                "TIMEOUT",
+                "ERROR",
+                "LIKELY_EQUIVALENT",
+                "WAIVED",
+            },
+        )
+
+    def test_security_authorization_guard_mutation_is_generated(self):
+        code = (
+            "def is_authorized(user):\n"
+            "    return user == 'admin'\n\n"
+            "def access(user):\n"
+            "    if not is_authorized(user):\n"
+            "        raise PermissionError('denied')\n"
+            "    return True\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=100)
+        guard = [
+            item for item in mutants
+            if item.mutation_type == "SECURITY_AUTHORIZATION_GUARD_BYPASS"
+        ]
+        self.assertGreater(len(guard), 0)
+        self.assertTrue(all(item.security_relevant for item in guard))
+        self.assertTrue(all(item.criticality == "CRITICAL" for item in guard))
+
+    def test_security_sanitizer_removal_mutation_is_generated(self):
+        code = (
+            "def sanitize(value):\n"
+            "    return value.strip()\n\n"
+            "def render(raw):\n"
+            "    return sanitize(raw)\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=100)
+        sanitizer = [
+            item for item in mutants
+            if item.mutation_type == "SECURITY_SANITIZER_REMOVAL"
+        ]
+        self.assertGreater(len(sanitizer), 0)
+        self.assertTrue(all(item.security_relevant for item in sanitizer))
+
+    def test_statement_flow_and_exception_mutations_are_generated(self):
+        code = (
+            "def execute(flag, logger):\n"
+            "    logger.info('start')\n"
+            "    if flag:\n"
+            "        raise RuntimeError('boom')\n"
+            "    return 1\n"
+        )
+        types = {
+            item.mutation_type
+            for item in generate_mutants_for_source(code, max_mutants=100)
+        }
+        self.assertIn("STATEMENT_DELETION", types)
+        self.assertIn("FLOW_CONDITION_NEGATION", types)
+        self.assertIn("EXCEPTION_SUPPRESSION", types)
 
     def test_mutation_execution_kills_mutants_with_real_assertions(self):
         # Production code
@@ -134,6 +199,139 @@ class TestMutationEngine(unittest.TestCase):
         self.assertEqual(res["evaluated_mutants"], 0)
         self.assertEqual(res["canonical_result"]["status"], "ERROR")
 
+    def test_no_coverage_requires_explicit_coverage_evidence_and_restores_source(self):
+        prod_file = self.temp_dir / "coverage_target.py"
+        original = "def f(x):\n    return x + 1\n"
+        prod_file.write_text(original, encoding="utf-8")
+        test_file = self.temp_dir / "test_coverage_target.py"
+        test_file.write_text(
+            "import unittest\n"
+            "from coverage_target import f\n"
+            "class T(unittest.TestCase):\n"
+            "    def test_f(self):\n"
+            "        self.assertEqual(f(1), 2)\n",
+            encoding="utf-8",
+        )
+
+        res = execute_mutation_analysis(
+            prod_file,
+            test_file,
+            max_mutants=10,
+            covered_lines={1},
+        )
+
+        self.assertGreater(res["no_coverage"], 0)
+        self.assertEqual(res["canonical_result"]["status"], "INCONCLUSIVE")
+        self.assertTrue(res["coverage_evidence_supplied"])
+        self.assertEqual(prod_file.read_text(encoding="utf-8"), original)
+        self.assertTrue(
+            all(
+                item["status"] == "NO_COVERAGE"
+                for item in res["mutants"]
+                if item["line"] == 2
+            )
+        )
+
+    def test_explicit_likely_equivalent_disposition_removes_unresolved_survivor(self):
+        prod_file = self.temp_dir / "equivalent_target.py"
+        prod_file.write_text("def f(x):\n    return x + 0\n", encoding="utf-8")
+        test_file = self.temp_dir / "test_equivalent_target.py"
+        test_file.write_text(
+            "import unittest\n"
+            "from equivalent_target import f\n"
+            "class T(unittest.TestCase):\n"
+            "    def test_f(self):\n"
+            "        f(10)\n"
+            "        self.assertTrue(True)\n",
+            encoding="utf-8",
+        )
+        ids = {
+            item.mutant_id: "Independent review classified this mutant as likely equivalent."
+            for item in generate_mutants_for_source(prod_file.read_text(encoding="utf-8"), max_mutants=20)
+        }
+        res = execute_mutation_analysis(
+            prod_file,
+            test_file,
+            max_mutants=20,
+            likely_equivalent=ids,
+        )
+
+        self.assertEqual(res["survived"], 0)
+        self.assertGreater(res["likely_equivalent"], 0)
+        self.assertEqual(res["canonical_result"]["status"], "PASS")
+        self.assertTrue(
+            all(
+                item["status"] in {"KILLED", "LIKELY_EQUIVALENT"}
+                for item in res["mutants"]
+            )
+        )
+
+    def test_explicit_waiver_never_becomes_pass(self):
+        prod_file = self.temp_dir / "waiver_target.py"
+        prod_file.write_text("def f(x):\n    return x + 1\n", encoding="utf-8")
+        test_file = self.temp_dir / "test_waiver_target.py"
+        test_file.write_text(
+            "import unittest\n"
+            "from waiver_target import f\n"
+            "class T(unittest.TestCase):\n"
+            "    def test_f(self):\n"
+            "        f(10)\n"
+            "        self.assertTrue(True)\n",
+            encoding="utf-8",
+        )
+        ids = {
+            item.mutant_id: "Human waiver WAIVER-TEST-001."
+            for item in generate_mutants_for_source(prod_file.read_text(encoding="utf-8"), max_mutants=20)
+        }
+        res = execute_mutation_analysis(
+            prod_file,
+            test_file,
+            max_mutants=20,
+            waivers=ids,
+        )
+
+        self.assertEqual(res["survived"], 0)
+        self.assertGreater(res["waived"], 0)
+        self.assertEqual(res["canonical_result"]["status"], "WAIVED")
+
+    def test_surviving_security_guard_mutant_is_canonical_fail(self):
+        prod_file = self.temp_dir / "auth_service.py"
+        prod_file.write_text(
+            "def is_authorized(user):\n"
+            "    return user == 'admin'\n\n"
+            "def access(user):\n"
+            "    if not is_authorized(user):\n"
+            "        raise PermissionError('denied')\n"
+            "    return True\n",
+            encoding="utf-8",
+        )
+        test_file = self.temp_dir / "test_auth_service.py"
+        test_file.write_text(
+            "import unittest\n"
+            "from auth_service import access\n"
+            "class T(unittest.TestCase):\n"
+            "    def test_access(self):\n"
+            "        access('admin')\n"
+            "        self.assertTrue(True)\n",
+            encoding="utf-8",
+        )
+
+        res = execute_mutation_analysis(prod_file, test_file, max_mutants=100)
+
+        critical_live = [
+            item for item in res["mutants"]
+            if item["status"] in {"SURVIVED", "NO_COVERAGE"}
+            and item["criticality"] in {"CRITICAL", "HIGH"}
+        ]
+        self.assertGreater(len(critical_live), 0)
+        self.assertEqual(res["canonical_result"]["status"], "FAIL")
+        self.assertTrue(
+            any(
+                item["type"] == "SECURITY_AUTHORIZATION_GUARD_BYPASS"
+                for item in critical_live
+            )
+        )
+
     def test_mutation_execution_detects_vitiated_oracle(self):
         # Production code
         prod_file = self.temp_dir / "service.py"
@@ -145,7 +343,7 @@ class TestMutationEngine(unittest.TestCase):
             encoding="utf-8"
         )
 
-        # Vitiated test that asserts nothing about the return value (tautological)
+        # Weak test that asserts nothing about the return value (tautological)
         test_file = self.temp_dir / "test_service.py"
         test_file.write_text(
             "import unittest\n"
@@ -161,9 +359,9 @@ class TestMutationEngine(unittest.TestCase):
         )
 
         res = execute_mutation_analysis(prod_file, test_file)
-        # Because the test passes regardless of mutations, mutants will SURVIVE!
+        # Because the test does not distinguish behavior, mutants can SURVIVE.
         self.assertEqual(res["status"], "WARN")
-        self.assertTrue(res["vitiated_oracles_detected"])
+        self.assertTrue(res["survived_mutants_detected"])
         self.assertGreater(res["survived"], 0)
         self.assertEqual(res["canonical_result"]["status"], "INCONCLUSIVE")
         self.assertIn("remediations", res)
@@ -181,6 +379,7 @@ class TestMutationEngine(unittest.TestCase):
         self.assertIn("AUDITORIA DE MUTAÇÃO AST & PRESCRIÇÃO DE CORREÇÃO", report_str)
         self.assertIn("PRESCRIÇÃO DE CORREÇÃO #", report_str)
         self.assertIn("Sugestão de Teste Unitário", report_str)
+        self.assertNotIn("ORÁCULOS VICIADOS / FALSOS", report_str)
 
 
 if __name__ == "__main__":
