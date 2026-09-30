@@ -11,6 +11,8 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 from tools.multilang_ast import HAS_TREE_SITTER, MultiLangASTAnalyzer
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 
 def _read_json(path: Path) -> Dict[str, Any]:
     try:
@@ -24,6 +26,14 @@ def _read_json(path: Path) -> Dict[str, Any]:
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _evidence_ref(path: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(REPO_ROOT.resolve()).as_posix()
+    except ValueError:
+        raise ValueError("qualification corpus must be inside the AuraCode repository for portable evidence")
 
 
 def _run_detector(analyzer: MultiLangASTAnalyzer, detector: str, path: Path) -> List[Dict[str, Any]]:
@@ -85,7 +95,7 @@ def qualify(corpus_path: Path, revision: str) -> Dict[str, Any]:
                     "false_negative": 0,
                     "parser_available": True if language == "python" else HAS_TREE_SITTER,
                     "engine": "python-ast" if language == "python" else "tree-sitter-typescript",
-                    "evidence": [str(corpus_file)],
+                    "evidence": [_evidence_ref(corpus_file)],
                 },
             )
             entry["cases"] += 1
