@@ -32,6 +32,7 @@ from tools import check_strict_types
 from tools import check_test_integrity
 from tools import check_architecture
 from tools import check_requirements_ambiguity
+from tools.assurance_result import build_result, normalize_legacy_status
 
 
 GUARANTEE_KEYS = (
@@ -43,6 +44,64 @@ GUARANTEE_KEYS = (
     "architecture",
     "requirements",
 )
+
+
+_CANONICAL_CHECKS = {
+    "security": ("injection-vectors", "check_injection_vectors"),
+    "resource_leaks": ("resource-leaks", "check_resource_leaks"),
+    "slop": ("slop", "check_slop_code"),
+    "strict_types": ("strict-types", "check_strict_types"),
+    "test_integrity": ("test-integrity", "check_test_integrity"),
+    "architecture": ("architecture", "check_architecture"),
+    "requirements": ("requirements-ambiguity", "check_requirements_ambiguity"),
+}
+
+_FINDING_KEYS = {
+    "strict_types": "types",
+    "test_integrity": "tests",
+}
+
+
+def _canonicalize_guarantees(
+    workspace_dir: Path,
+    guarantees: Dict[str, Dict[str, Any]],
+    findings: Dict[str, List[Dict[str, Any]]],
+    languages_detected: Dict[str, int],
+) -> List[Dict[str, Any]]:
+    """Normalize legacy audit guarantees into canonical shadow-mode results."""
+    results: List[Dict[str, Any]] = []
+    languages = sorted(languages_detected)
+    for key in GUARANTEE_KEYS:
+        guarantee = guarantees[key]
+        check_id, producer_tool = _CANONICAL_CHECKS[key]
+        legacy_status = guarantee.get("status")
+        canonical_status = normalize_legacy_status(legacy_status).value
+        finding_key = _FINDING_KEYS.get(key, key)
+        result_findings = findings.get(finding_key, [])
+        if not isinstance(result_findings, list):
+            result_findings = []
+
+        results.append(
+            build_result(
+                check_id=check_id,
+                status=canonical_status,
+                producer_tool=producer_tool,
+                producer_method=str(guarantee.get("method", "unknown")),
+                workspace=str(workspace_dir),
+                reason=str(guarantee.get("reason") or "Legacy audit guarantee normalized in shadow mode."),
+                scope={
+                    "files_scanned": int(guarantee.get("files_scanned", 0) or 0),
+                    "languages": languages,
+                },
+                findings=result_findings,
+                legacy={
+                    "source": "tools/audit.py",
+                    "source_status": legacy_status,
+                    "guarantee_key": key,
+                },
+            )
+        )
+    return results
 
 
 def _guarantee(
@@ -84,13 +143,16 @@ def _overall_status(guarantees: Dict[str, Dict[str, Any]]) -> str:
 
 def _empty_result(workspace_dir: Path, target_status: str, overall_status: str, reason: str) -> Dict[str, Any]:
     """Return a stable result for invalid or uninspectable targets."""
+    guarantees = _unperformed_guarantees(reason)
+    empty_findings = {key: [] for key in GUARANTEE_KEYS}
     return {
         "status": overall_status,
         "workspace": str(workspace_dir),
         "target": {"status": target_status, "reason": reason},
         "total_files_scanned": 0,
         "languages_detected": {},
-        "guarantees": _unperformed_guarantees(reason),
+        "guarantees": guarantees,
+        "canonical_results": _canonicalize_guarantees(workspace_dir, guarantees, empty_findings, {}),
         "violations_summary": {
             "total_violations": 0,
             "security": 0,
@@ -392,7 +454,21 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
             "tests": test_violations,
             "architecture": arch_result.get("violations", []) if arch_result else [],
             "requirements": ambiguity_result.get("unclear_requirements", []) if ambiguity_result else [],
-        }
+        },
+        "canonical_results": _canonicalize_guarantees(
+            workspace_dir,
+            guarantees,
+            {
+                "security": sec_violations,
+                "resource_leaks": leaks_violations,
+                "slop": slop_violations,
+                "types": type_violations,
+                "tests": test_violations,
+                "architecture": arch_result.get("violations", []) if arch_result else [],
+                "requirements": ambiguity_result.get("unclear_requirements", []) if ambiguity_result else [],
+            },
+            languages_detected,
+        ),
     }
 
 
