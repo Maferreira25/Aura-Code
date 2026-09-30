@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 423,
+  "file_count": 426,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "269563cb3e028f1e500de7948275bcec0ccd3492bce8eeb30593ca8262f83672",
-      "bytes": 14649
+      "sha256": "80e0a69dfa11503a6dafc41d4b060835ec0230d41174d4769ce2b7a552881f0c",
+      "bytes": 14745
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1694,6 +1694,18 @@
     "VERSION": {
       "sha256": "9bab5660ff944ab1556cce8285381a4af093c2f9fb4a672f5423cc086de7abf2",
       "bytes": 11
+    },
+    "schemas/assurance-result.schema.json": {
+      "sha256": "abd80141445b9d167b822ad743b0fb1f6be5e6203b061063ddfad5b1f10acc43",
+      "bytes": 3034
+    },
+    "tools/assurance_result.py": {
+      "sha256": "d836a9165f22962309ca69b035bf4a0b96872bf7971c3e57271840be5ef67240",
+      "bytes": 10099
+    },
+    "tests/test_assurance_result.py": {
+      "sha256": "2e6e4b0ffc6bd1968b091d5082288b1f1602f3fda6482964a3e817cbfb6db0d3",
+      "bytes": 7208
     }
   }
 }
