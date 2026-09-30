@@ -131,3 +131,87 @@ A MAT criterion remains UNKNOWN until:
 - the criterion is reviewed under the applicable governance rule.
 
 Creating a protocol, schema, template, or validator is implementation progress. It is not evidence that the corresponding study has passed.
+
+
+## Frozen-evidence mechanics
+
+The maturity tooling now treats preregistration and result packages as separate artifacts.
+
+For P2:
+- create the private/fresh scenario split outside the public candidate workspace;
+- commit the split cryptographically with validation/tools/private_split.py;
+- freeze the preregistration file and record its SHA-256;
+- execute the exact scenario × arm × pairing × repetition matrix;
+- the result package must reference the preregistration path/hash and the same private-split commitment;
+- the validator rejects missing cells, added/removed scenarios, changed pairings, altered repetition counts, or a shrunken expected_attempts value.
+
+For P3:
+- freeze benchmark IDs, upstream revisions, license verification, task-subset commitments, attempts per arm, and model/agent pairing before execution;
+- completed results must match that preregistration exactly;
+- at least two benchmark families are required for stable-maturity evidence;
+- each benchmark reports A0/A1/A2 separately; heterogeneous scores are not collapsed into a single opaque score.
+
+For P4:
+- freeze service/revision/environment and success criteria before execution;
+- load and soak targets/durations are preregistered;
+- stable-maturity evidence requires PASS for load, soak, rollback, recovery, and observability;
+- changing the test target or thresholds after observing outcomes invalidates the package.
+
+## Private/fresh split commitment
+
+Create a privacy-preserving commitment without publishing the split contents:
+
+~~~text
+python validation/tools/private_split.py commit /private/p2-split \
+  --output validation/private/P2-PRIVATE-001-commitment.json --json
+~~~
+
+Later verify the same split:
+
+~~~text
+python validation/tools/private_split.py verify /private/p2-split \
+  validation/private/P2-PRIVATE-001-commitment.json --json
+~~~
+
+The commitment detects changed files/content. It does not prove scenario quality, freshness, independence, or absence of contamination.
+
+## Multi-language qualification
+
+The public corpus at validation/multilang-qualification/corpus.json is only a development baseline.
+
+Run:
+
+~~~text
+python validation/tools/qualify_multilang.py \
+  --revision <immutable-commit> --json
+~~~
+
+A public-corpus result is deliberately marked maturity_eligible=false.
+
+MAT-08 stable evidence requires a private/fresh independently labeled corpus, a corpus commitment, preregistered thresholds, Python and TypeScript confusion matrices, and passing recall/false-positive-rate thresholds.
+
+## Stable maturity ledger integrity
+
+A declared PASS for MAT-02 through MAT-10 requires:
+- exactly one canonical JSON evidence package;
+- semantic validation for the specific MAT criterion;
+- all nested evidence references to be repository-relative files that actually exist;
+- reviewed_by;
+- reviewed_at in ISO-8601;
+- evidence_sha256 matching the canonical package.
+
+Use the proposal helper:
+
+~~~text
+python validation/tools/prepare_maturity_evidence.py MAT-XX <package.json> \
+  --reviewed-by "<independent reviewer>" \
+  --reviewed-at "YYYY-MM-DDTHH:MM:SSZ" --json
+~~~
+
+The command validates and hashes the package but does **not** modify validation/maturity-evidence.json and does not authenticate reviewer identity. Human/project governance still decides whether the reviewed package is accepted into the ledger.
+
+## MAT-09 and MAT-10
+
+MAT-09 uses docs/audit/INDEPENDENT-SECURITY-REVIEW-GUIDE.md. The assessor must attest independence and must not have had an implementation role in the reviewed change. Threat-model and supply-chain review evidence are both required, with zero open Critical/High blockers.
+
+MAT-10 is intentionally not self-completable by an agent. docs/GOVERNANCE-1.0-PROPOSAL.md is a draft decision package only. A PASS requires explicit human adoption, identified human authority, adopted roles, and frozen governance evidence.
