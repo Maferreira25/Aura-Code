@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 430,
+  "file_count": 432,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "be79a4c9a54bb57e780fc9a0caf56c6e20d980d42adcb8818dd5a51f34dca238",
-      "bytes": 44480
+      "sha256": "4155efafeb77ec7e941fd7869dc8530b37f46ade5e0eb42297c621fd2c70ff75",
+      "bytes": 44860
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1722,6 +1722,14 @@
     "tests/test_assurance_agents.py": {
       "sha256": "e3d17e748f2fb44711a686c0f8b2bef114c203b8c1701962d6159b70db0ce4ef",
       "bytes": 1317
+    },
+    "tools/continuous_assurance.py": {
+      "sha256": "9e7e0244fc4ef18dfb0baea44816f48eba9615af1528ced962dc511f12cd8e34",
+      "bytes": 9150
+    },
+    "tests/test_continuous_assurance.py": {
+      "sha256": "b3e910c6e601f6544af2676e844b3ca2ad080ba38bb81c3e16daa22055401276",
+      "bytes": 2904
     }
   }
 }
