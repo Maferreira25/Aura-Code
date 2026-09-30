@@ -107,6 +107,90 @@ def validate_p2_plan(data: Mapping[str, Any]) -> Dict[str, Any]:
     }
 
 
+
+def validate_p2_result(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate a completed P2 result package; plans alone can never satisfy this."""
+    errors: List[str] = []
+    warnings: List[str] = []
+    if str(data.get("study", "")).upper() != "P2":
+        errors.append("study must be P2")
+    if not bool(data.get("preregistered")):
+        errors.append("preregistered must be true")
+    if not bool(data.get("private_or_fresh_split")):
+        errors.append("private_or_fresh_split must be true")
+    prereg = str(data.get("preregistration_sha256", "")).lower().strip()
+    if len(prereg) != 64 or any(ch not in "0123456789abcdef" for ch in prereg):
+        errors.append("preregistration_sha256 must be a 64-character SHA-256 hex digest")
+
+    runs = _nonempty_list(data.get("runs"))
+    if not runs:
+        errors.append("P2 result requires runs")
+    ids: List[str] = []
+    by_arm: Dict[str, int] = {arm: 0 for arm in ARMS}
+    scenario_ids = set()
+    pairings = set()
+    invalid_qs: List[str] = []
+    for index, row in enumerate(runs):
+        if not isinstance(row, dict):
+            errors.append(f"runs[{index}] must be an object")
+            continue
+        run_id = str(row.get("run_id", "")).strip()
+        arm = str(row.get("arm", "")).strip()
+        scenario_id = str(row.get("scenario_id", "")).strip()
+        model = str(row.get("model_display_name", "")).strip()
+        agent = str(row.get("agent", "")).strip()
+        if not run_id or arm not in ARMS or not scenario_id or not model or not agent:
+            errors.append(f"runs[{index}] missing required provenance")
+            continue
+        ids.append(run_id)
+        by_arm[arm] += 1
+        scenario_ids.add(scenario_id)
+        pairings.add((model, agent))
+        required = ("public_tests_passed", "protected_tests_passed", "evaluator_integrity")
+        if all(isinstance(row.get(key), bool) for key in required):
+            expected = all(bool(row.get(key)) for key in required)
+            if bool(row.get("qualified_success")) != expected:
+                invalid_qs.append(run_id)
+        elif not isinstance(row.get("qualified_success"), bool):
+            errors.append(f"{run_id}: qualified_success must be boolean")
+
+    if len(ids) != len(set(ids)):
+        errors.append("P2 run_id values must be unique")
+    if invalid_qs:
+        errors.append("Qualified Success formula mismatch: " + ", ".join(sorted(invalid_qs)))
+    if len(scenario_ids) < 30:
+        errors.append(f"P2 result requires >=30 scenarios; found {len(scenario_ids)}")
+    for arm in ARMS:
+        if by_arm[arm] == 0:
+            errors.append(f"P2 result has no runs for arm {arm}")
+
+    declared_expected = data.get("expected_attempts")
+    if not isinstance(declared_expected, int) or declared_expected <= 0:
+        errors.append("expected_attempts must be a positive integer")
+    elif len(runs) != declared_expected:
+        errors.append(f"P2 incomplete: observed {len(runs)}/{declared_expected} attempts")
+
+    completed = bool(data.get("completed"))
+    if not completed:
+        errors.append("completed must be true for a formal P2 result")
+
+    if len(pairings) < 1:
+        errors.append("P2 result requires at least one model/agent pairing")
+
+    return {
+        "study": "P2_RESULT",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+        "warnings": warnings,
+        "completed": completed and not errors,
+        "run_count": len(runs),
+        "scenario_count": len(scenario_ids),
+        "pairing_count": len(pairings),
+        "by_arm": by_arm,
+    }
+
+
+
 def validate_p3_plan(data: Mapping[str, Any], benchmark_registry: Mapping[str, Any]) -> Dict[str, Any]:
     errors: List[str] = []
     warnings: List[str] = []
@@ -149,6 +233,63 @@ def validate_p3_plan(data: Mapping[str, Any], benchmark_registry: Mapping[str, A
         "warnings": warnings,
         "benchmark_count": len(selections),
     }
+
+
+
+def validate_p3_result(data: Mapping[str, Any], benchmark_registry: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate completed ecological/external benchmark evidence."""
+    errors: List[str] = []
+    known = {
+        str(item.get("id", "")): item
+        for item in _nonempty_list(benchmark_registry.get("benchmarks"))
+        if isinstance(item, dict) and str(item.get("id", "")).strip()
+    }
+    if str(data.get("study", "")).upper() != "P3":
+        errors.append("study must be P3")
+    if not bool(data.get("preregistered")):
+        errors.append("preregistered must be true")
+    results = _nonempty_list(data.get("benchmarks"))
+    if not results:
+        errors.append("P3 result requires benchmark results")
+    seen = set()
+    for index, item in enumerate(results):
+        if not isinstance(item, dict):
+            errors.append(f"benchmarks[{index}] must be an object")
+            continue
+        bid = str(item.get("id", "")).strip()
+        if bid not in known:
+            errors.append(f"unknown benchmark id: {bid or '<empty>'}")
+            continue
+        if bid in seen:
+            errors.append(f"duplicate benchmark result: {bid}")
+        seen.add(bid)
+        if not bool(item.get("license_verified")):
+            errors.append(f"{bid}: license_verified must be true")
+        if not str(item.get("upstream_revision", "")).strip():
+            errors.append(f"{bid}: upstream_revision is required")
+        if not str(item.get("task_subset_commitment_sha256", "")).strip():
+            errors.append(f"{bid}: task_subset_commitment_sha256 is required")
+        if not isinstance(item.get("attempts"), int) or int(item.get("attempts", 0)) <= 0:
+            errors.append(f"{bid}: attempts must be a positive integer")
+        if not isinstance(item.get("completed"), bool) or not item.get("completed"):
+            errors.append(f"{bid}: completed must be true")
+        arms = item.get("arms")
+        if not isinstance(arms, dict) or any(arm not in arms for arm in ARMS):
+            errors.append(f"{bid}: results must report A0/A1/A2 separately")
+
+    if data.get("combined_score") is not None:
+        errors.append("P3 must not collapse heterogeneous benchmarks into one combined_score")
+    if len(seen) < 2:
+        errors.append("P3 maturity evidence requires at least two distinct benchmark families")
+
+    return {
+        "study": "P3_RESULT",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+        "completed": not errors,
+        "benchmark_count": len(seen),
+    }
+
 
 
 def _check_operational_dimension(name: str, value: object, errors: List[str]) -> None:
@@ -263,6 +404,79 @@ def analyze_inter_rater(data: Mapping[str, Any]) -> Dict[str, Any]:
     }
 
 
+
+def validate_replication_result(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate MAT-03 replication evidence without asserting an effect size threshold."""
+    errors: List[str] = []
+    pairings = _nonempty_list(data.get("pairings"))
+    if len(pairings) < 2:
+        errors.append("replication requires at least two distinct model/agent pairings")
+    identities = set()
+    for index, item in enumerate(pairings):
+        if not isinstance(item, dict):
+            errors.append(f"pairings[{index}] must be an object")
+            continue
+        model = str(item.get("model_display_name", "")).strip()
+        agent = str(item.get("agent", "")).strip()
+        study_id = str(item.get("study_id", "")).strip()
+        if not model or not agent or not study_id:
+            errors.append(f"pairings[{index}] requires model_display_name, agent, and study_id")
+            continue
+        identities.add((model, agent))
+        if not isinstance(item.get("a0_qs_rate"), (int, float)):
+            errors.append(f"pairings[{index}].a0_qs_rate is required")
+        if not isinstance(item.get("a2_qs_rate"), (int, float)):
+            errors.append(f"pairings[{index}].a2_qs_rate is required")
+        if not bool(item.get("completed")):
+            errors.append(f"pairings[{index}].completed must be true")
+    if len(identities) < 2:
+        errors.append("replication requires at least two distinct model/agent identities")
+    return {
+        "study": "REPLICATION",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+        "pairing_count": len(identities),
+        "claim_boundary": "This validator proves replication coverage, not that the replicated effect is positive or statistically significant.",
+    }
+
+
+def validate_burden_error_result(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate that burden plus false-positive/false-negative evidence was actually measured."""
+    errors: List[str] = []
+    rows = _nonempty_list(data.get("results"))
+    burden = analyze_burden(rows)
+    for arm in ARMS:
+        if burden["by_arm"][arm]["runs"] == 0:
+            errors.append(f"no burden runs for arm {arm}")
+    for metric in ("elapsed_seconds", "human_interventions"):
+        for arm in ARMS:
+            observed = burden["by_arm"][arm]["metrics"][metric]["observed"]
+            if observed == 0:
+                errors.append(f"{metric} has no observations for arm {arm}")
+
+    calibration = data.get("error_calibration")
+    if not isinstance(calibration, dict):
+        errors.append("error_calibration object is required")
+    else:
+        for field in ("true_positive", "true_negative", "false_positive", "false_negative"):
+            value = calibration.get(field)
+            if not isinstance(value, int) or value < 0:
+                errors.append(f"error_calibration.{field} must be a non-negative integer")
+        if not errors:
+            total = sum(int(calibration[k]) for k in ("true_positive", "true_negative", "false_positive", "false_negative"))
+            if total == 0:
+                errors.append("error_calibration must contain at least one classified case")
+
+    return {
+        "study": "BURDEN_ERRORS",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+        "burden": burden,
+        "claim_boundary": "Measurement completeness does not decide whether the observed burden or error rate is acceptable; acceptance thresholds must be preregistered.",
+    }
+
+
+
 def _number(row: Mapping[str, Any], name: str) -> Optional[float]:
     value = row.get(name)
     if isinstance(value, bool):
@@ -301,10 +515,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="AuraCode maturity-study validation toolkit")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("p2", "p4", "inter-rater", "burden"):
+    for name in ("p2", "p2-result", "p4", "inter-rater", "burden", "replication", "burden-errors"):
         p = sub.add_parser(name)
         p.add_argument("input")
         p.add_argument("--json", action="store_true")
+
+    p3r = sub.add_parser("p3-result")
+    p3r.add_argument("input")
+    p3r.add_argument("--registry", default="validation/benchmark-registry.json")
+    p3r.add_argument("--json", action="store_true")
 
     p3 = sub.add_parser("p3")
     p3.add_argument("input")
@@ -315,10 +534,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     data = _read_json(Path(args.input))
     if args.command == "p2":
         result = validate_p2_plan(data)
+    elif args.command == "p2-result":
+        result = validate_p2_result(data)
     elif args.command == "p3":
         result = validate_p3_plan(data, _read_json(Path(args.registry)))
+    elif args.command == "p3-result":
+        result = validate_p3_result(data, _read_json(Path(args.registry)))
     elif args.command == "p4":
         result = validate_p4_result(data)
+    elif args.command == "replication":
+        result = validate_replication_result(data)
+    elif args.command == "burden-errors":
+        result = validate_burden_error_result(data)
     elif args.command == "inter-rater":
         result = analyze_inter_rater(data)
     else:
