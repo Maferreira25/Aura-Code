@@ -29,7 +29,9 @@
     "tools/loop_runner.py",
     "tools/check_*.py",
     "tools/heldout_runner.py",
-    "templates/**"
+    "templates/**",
+    "tools/property_engine.py",
+    "pyproject.toml"
   ],
   "held_out": [
     "_auracode_assurance/held_out/**",
