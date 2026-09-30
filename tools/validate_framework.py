@@ -172,7 +172,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/protected-assurance-plane.schema.json",
         "schemas/held-out-suite.schema.json", "schemas/property-suite.schema.json",
         "schemas/metamorphic-suite.schema.json", "schemas/differential-suite.schema.json",
-        "schemas/static-analyzer-report.schema.json",
+        "schemas/static-analyzer-report.schema.json", "schemas/fuzz-suite.schema.json",
         "policies/protected-assurance-plane.json",
         "templates/held-out-suite.json",
         "tools/heldout_runner.py",
@@ -229,7 +229,7 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "schemas/protected-assurance-plane.schema.json",
         "schemas/held-out-suite.schema.json", "schemas/property-suite.schema.json",
         "schemas/metamorphic-suite.schema.json", "schemas/differential-suite.schema.json",
-        "schemas/static-analyzer-report.schema.json",
+        "schemas/static-analyzer-report.schema.json", "schemas/fuzz-suite.schema.json",
         "validation/schemas/result.schema.json", "validation/schemas/scenario.schema.json"
     ]:
         sp = root_dir / s_rel
