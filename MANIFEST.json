@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 443,
+  "file_count": 450,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -1748,8 +1748,8 @@
       "bytes": 1602
     },
     "tools/maturity_gate.py": {
-      "sha256": "8a60cab61aac95129d0246845818f0ec359b2c8a5d08b7fe3b024e2e79a75612",
-      "bytes": 8144
+      "sha256": "62a52acc3f375f04050ced720166cb47009844fdcc18e4e1241d1bf67bea7889",
+      "bytes": 10402
     },
     "validation/maturity-criteria.json": {
       "sha256": "27d8f8ecfa058a2a1c6514098c658e53f8ebb7dc651c0af16628ce190f27157c",
@@ -1760,8 +1760,8 @@
       "bytes": 1217
     },
     "tests/test_maturity_gate.py": {
-      "sha256": "4d839a2889ce51bc1620af9458d4dee917e3212899f234d34cdc717f7d412f07",
-      "bytes": 3136
+      "sha256": "b069db636c41420b862fe08d7115dba8ca60e618fea8da1dd7ba3caefa84333b",
+      "bytes": 6491
     },
     "tools/dogfood_assurance.py": {
       "sha256": "4f77e302a782fb75b3b474c5377d7d77b9ac120b6c04fb4b0cde5442ee75d4e6",
@@ -1774,6 +1774,34 @@
     "docs/ASSURANCE-STATE.md": {
       "sha256": "593e3c7fdb4f641d8c6ffe74b8eaf5b3f62a2058b0bff684d284a4d313e1608b",
       "bytes": 6149
+    },
+    "validation/tools/maturity_studies.py": {
+      "sha256": "531699b33ca0d1baab0cb855ec6feea57a411665bbc7a11467666db489b28ba1",
+      "bytes": 32300
+    },
+    "tests/test_maturity_studies.py": {
+      "sha256": "4a9dd49ff69999c48b838ef6b972b8d6395f23b4cc58404ada5baaa6c5ae8665",
+      "bytes": 12720
+    },
+    "validation/MATURITY-STUDIES.md": {
+      "sha256": "feaa30f8547bf30d9781e372a482e38067ffd6e03a25506cd2a6a7090c45a9ed",
+      "bytes": 4312
+    },
+    "validation/config/p2-preregistration.example.json": {
+      "sha256": "2afc932f0a051be9078d561b1ade23842dab830255675edad9d14bc1dbb50cd4",
+      "bytes": 2640
+    },
+    "validation/config/p4-result.example.json": {
+      "sha256": "3516630ae16617fafbb43c714d96711a59b42832553fd4c5ff59a1b234f66250",
+      "bytes": 657
+    },
+    "validation/config/inter-rater.example.json": {
+      "sha256": "1294567d371d25edd51e63af0d84abf38743026920746c665af84113fbbe5d09",
+      "bytes": 329
+    },
+    "validation/config/burden-errors.example.json": {
+      "sha256": "2dc094eb71a0816f5be5fc760c7b3f757fae19a96ad596c7f3f079d975ccd470",
+      "bytes": 422
     }
   }
 }
