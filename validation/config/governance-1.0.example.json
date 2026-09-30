@@ -9,5 +9,8 @@
   "release_authority_rule": "",
   "security_response_rule": "",
   "appeal_rule": "",
-  "evidence": []
+  "evidence": [],
+  "human_adoption_attestation": false,
+  "adopted_at": "",
+  "adopted_by": []
 }
