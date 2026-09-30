@@ -824,8 +824,8 @@
       "bytes": 16426
     },
     "tests/test_audit.py": {
-      "sha256": "93971fb2722d5f5d6c1456fda4cbba8efb22b4c2bb8337c810d927f7706b6da6",
-      "bytes": 8280
+      "sha256": "5a32cb943483f1f98779c08b3a6389f018cc360cff1122d2ee275e952961aade",
+      "bytes": 9233
     },
     "tests/test_auracode_skills.py": {
       "sha256": "e332d27c4f3b8cda38ebad5041bacdfe642726848ca6de0f44a1e6622c65d626",
@@ -952,16 +952,16 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "df047118d908343c6eeb092ef9bbdb82dc42ffd08042b2b290d686cf0d9899b6",
-      "bytes": 44138
+      "sha256": "b1aef41af2a36238ee6da83b06ae7519e11e0242c200f75682b488d0f504debf",
+      "bytes": 46102
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
       "bytes": 24736
     },
     "tools/audit.py": {
-      "sha256": "46ddee7c231590b3638fe42d40ab0b09a3c00cbe77e5951085c7a9fe4e2f2079",
-      "bytes": 21239
+      "sha256": "8bc8396f4ce94a3a56b4f6f5080ef09e79d2b6e631087b8b70fe7dd59e10aa5a",
+      "bytes": 22824
     },
     "tools/brainstorm_engine.py": {
       "sha256": "1805a86ea9418600eb83adb1edf204abdaf7e99f8082484c304e9962f3b591a0",
