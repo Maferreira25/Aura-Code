@@ -50,6 +50,9 @@ from tools import debugger_engine
 from tools import refactor_engine
 from tools import traceability_engine
 from tools import heldout_runner
+from tools import property_engine
+from tools import metamorphic_engine
+from tools import differential_engine
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -283,6 +286,24 @@ def main() -> None:
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
 
+    # Subcommand: property-based testing
+    property_p = subparsers.add_parser("property", help="Execute a declared Hypothesis property-based assurance suite")
+    property_p.add_argument("manifest", help="Path to property suite manifest")
+    property_p.add_argument("--target", default=".", help="Candidate workspace directory")
+    property_p.add_argument("--json", action="store_true", help="Output normalized result in JSON format")
+
+    # Subcommand: metamorphic testing
+    metamorphic_p = subparsers.add_parser("metamorphic", help="Execute declared metamorphic relation tests")
+    metamorphic_p.add_argument("manifest", help="Path to metamorphic suite manifest")
+    metamorphic_p.add_argument("--target", default=".", help="Candidate workspace directory")
+    metamorphic_p.add_argument("--json", action="store_true", help="Output normalized result in JSON format")
+
+    # Subcommand: differential testing
+    differential_p = subparsers.add_parser("differential", help="Compare reference and candidate implementations over JSON cases")
+    differential_p.add_argument("manifest", help="Path to differential suite manifest")
+    differential_p.add_argument("--target", default=".", help="Candidate workspace directory")
+    differential_p.add_argument("--json", action="store_true", help="Output normalized result in JSON format")
+
     # Subcommand: heldout
     heldout_p = subparsers.add_parser("heldout", help="Execute protected held-out tests outside the candidate workspace")
     heldout_p.add_argument("target", nargs="?", default=".", help="Candidate workspace directory")
@@ -511,6 +532,54 @@ def main() -> None:
         if args.json:
             assess_argv.append("--json")
         sys.exit(assess.main(assess_argv))
+
+    elif args.command == "property":
+        import json
+        workspace = Path(args.target).resolve()
+        manifest = Path(args.manifest)
+        if not manifest.is_absolute():
+            manifest = (workspace / manifest).resolve()
+        res = property_engine.evaluate_property_suite_file(workspace, manifest)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Property Assurance: {res.get('status')}")
+            print(f"Properties: {res.get('property_count', 0)} | Seed: {res.get('seed', 'n/a')}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+        sys.exit(0 if res.get("status") == "PASS" else 1)
+
+    elif args.command == "metamorphic":
+        import json
+        workspace = Path(args.target).resolve()
+        manifest = Path(args.manifest)
+        if not manifest.is_absolute():
+            manifest = (workspace / manifest).resolve()
+        res = metamorphic_engine.evaluate_metamorphic_suite_file(workspace, manifest)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Metamorphic Assurance: {res.get('status')}")
+            print(f"Relations: {res.get('relations_count', 0)}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+        sys.exit(0 if res.get("status") == "PASS" else 1)
+
+    elif args.command == "differential":
+        import json
+        workspace = Path(args.target).resolve()
+        manifest = Path(args.manifest)
+        if not manifest.is_absolute():
+            manifest = (workspace / manifest).resolve()
+        res = differential_engine.evaluate_differential_suite_file(workspace, manifest)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Differential Assurance: {res.get('status')}")
+            print(
+                f"Cases: {res.get('cases_total', 0)} | "
+                f"Divergences: {res.get('divergences_count', 0)}"
+            )
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+        sys.exit(0 if res.get("status") == "PASS" else 1)
 
     elif args.command == "heldout":
         import json
