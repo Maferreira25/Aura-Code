@@ -59,6 +59,10 @@ class TestProtectedAssurancePlane(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertFalse(can_write(path, self.policy, actor="developer"))
 
+    def test_fuzz_engine_is_protected(self):
+        self.assertEqual(classify_path("tools/fuzz_engine.py", self.policy), PLANE_PROTECTED)
+        self.assertFalse(can_write("tools/fuzz_engine.py", self.policy, actor="developer"))
+
     def test_taint_engines_are_protected(self):
         for path in (
             "tools/taint_engine.py",
