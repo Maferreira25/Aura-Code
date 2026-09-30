@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 460,
+  "file_count": 464,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "58b898c534f67b43577385f49200b9d9016a5e40ff642f5784f5d64ef80c09da",
-      "bytes": 53251
+      "sha256": "e9b112f11217d334a343936df910e78c3a15d44b818965a013f24cbb015fb6f3",
+      "bytes": 54568
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "e1551c28303540af3efdbdaa2ba1cf0bde7d440b7132d341a60e9156e090abda",
-      "bytes": 15668
+      "sha256": "eb7c61fb0500ef2ab548b39fff48a740bf3fa71fc8360f1cf0c944310681eb0e",
+      "bytes": 15736
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,16 +1748,16 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "0183446bfd5a7a97bc8920cdc081b59eb2a58d38e93766978709cdad23fa5917",
-      "bytes": 1320
+      "sha256": "92c53ef12fc1fd7af0cf6b8ded201e0e000ea4806a98dba918e0793c0d8e23b7",
+      "bytes": 1348
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
       "bytes": 7182
     },
     "tests/test_protected_assurance_plane.py": {
-      "sha256": "4dc933398d8670bed89a40f6433e157afaac9c013f76affd451d8a1cc03c16c7",
-      "bytes": 4924
+      "sha256": "a57215be80a95de5a5d5d7b0517a72aeb3bb2839d9c17ac8b518a10f0253bd87",
+      "bytes": 5156
     },
     "schemas/held-out-suite.schema.json": {
       "sha256": "22359b62ba7e2a0e68de66ce96bc5becc1a4a895b3235e5ec8b659cd52c51505",
@@ -1842,6 +1842,22 @@
     "tests/test_taint_and_diversity.py": {
       "sha256": "9f4c6babf415ac4f6b90c2bd92b7b4f98ee75cb14718ab42ef192d884df7c54b",
       "bytes": 5320
+    },
+    "schemas/fuzz-suite.schema.json": {
+      "sha256": "5d60602cb98cccac94a37b0bb6b0630f27471cf9feaaae5806740186ce39ea73",
+      "bytes": 1251
+    },
+    "templates/fuzz-suite.json": {
+      "sha256": "a82e2da47bdb145e340e027ffb29e3331a11a794e3ec28324300347e08abb4df",
+      "bytes": 326
+    },
+    "tools/fuzz_engine.py": {
+      "sha256": "7d5ac86508454cfe921ae7304b245c1debfbb8c22b0c62d8042cab7f4efc9a96",
+      "bytes": 10006
+    },
+    "tests/test_fuzz_engine.py": {
+      "sha256": "024eda61962d48edf73117ac4cc1a25a698e0559821d583a1a56f59682760296",
+      "bytes": 4170
     }
   }
 }
