@@ -94,11 +94,8 @@ def evaluate_maturity(root: Path = ROOT) -> Dict[str, Any]:
             "errors": [f"P1 evaluator unavailable: {exc}"],
         }
     finally:
-        if added_root_path:
-            try:
-                sys.path.remove(root_str)
-            except ValueError:
-                pass
+        if added_root_path and root_str in sys.path:
+            sys.path.remove(root_str)
 
     results: List[Dict[str, Any]] = []
     blockers: List[str] = []
