@@ -104,3 +104,27 @@ Not permitted:
 ## Framework-repository dogfooding
 
 The included GitHub Actions workflow pins `actions/checkout` to an immutable full commit SHA. The structural validator also checks external GitHub Action references for immutable SHA form, so the framework repository begins enforcing its own `SUP-06` rule rather than merely documenting it.
+
+
+## Current P1 evidence status
+
+The repository currently contains 36 A0/A1/A2 result records from the public P1 smoke suite:
+
+- 30 automated results: 10 scenarios x 3 arms x 1 repetition;
+- 3 manual ambiguity results: 1 per arm;
+- 3 longitudinal architecture results: 1 sequence per arm.
+
+This is below the frozen P1 design of 90 automated runs (10 scenarios x 3 arms x 3 repetitions), 5 ambiguity repetitions per arm, and at least 3 architecture sequences per arm.
+
+All three arms currently have 100% Qualified Success in the automated public-smoke results. This is a ceiling effect, so the current dataset does not discriminate A2 from A0/A1 and MUST NOT be described as evidence that the framework improves outcomes.
+
+Run:
+
+```bash
+python validation/tools/validate_experiment_evidence.py validation/results
+python validation/tools/validate_experiment_evidence.py validation/results --require-complete
+```
+
+The first command reports methodological status without failing solely because P1 is incomplete. The second is a blocking gate for any process that claims the frozen P1 has been completed.
+
+Public smoke results remain methodology/harness evidence only; contamination-resistant effectiveness claims require the private/fresh P2 design described above.
