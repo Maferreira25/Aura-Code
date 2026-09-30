@@ -49,6 +49,7 @@ from tools import forward_engine
 from tools import debugger_engine
 from tools import refactor_engine
 from tools import assurance_state
+from tools import continuous_assurance
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -281,6 +282,10 @@ def main() -> None:
     preflight_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+
+    # Subcommand: continuous
+    continuous_p = subparsers.add_parser("continuous", help="Continuous assurance snapshots and drift detection", add_help=False)
+    continuous_p.add_argument("continuous_args", nargs=argparse.REMAINDER)
 
     # Subcommand: state
     state_p = subparsers.add_parser("state", help="Persistent fail-closed assurance state and gate decisions", add_help=False)
@@ -645,6 +650,9 @@ def main() -> None:
         if args.json:
             argv.append("--json")
         _dispatch_with_argv(argv, preflight.main)
+
+    elif args.command == "continuous":
+        sys.exit(continuous_assurance.main(args.continuous_args))
 
     elif args.command == "state":
         sys.exit(assurance_state.main(args.state_args))
