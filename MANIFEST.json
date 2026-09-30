@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 441,
+  "file_count": 442,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -1696,8 +1696,8 @@
       "bytes": 11
     },
     "tools/assurance_state.py": {
-      "sha256": "eeee3cc096c334c3fbc6ccd3a89546f6ce162f3baa3f42d6f50742eac024a54b",
-      "bytes": 42714
+      "sha256": "313ddf4ad7619a2f51685712586433d7e9968699f366f50b039d89f2f0146559",
+      "bytes": 33414
     },
     "controls/gates.json": {
       "sha256": "d1c4425e4166c2180a137120426f0294552119fd87ec99aefa145b6ead6a6cac",
@@ -1766,6 +1766,10 @@
     "tools/dogfood_assurance.py": {
       "sha256": "4f77e302a782fb75b3b474c5377d7d77b9ac120b6c04fb4b0cde5442ee75d4e6",
       "bytes": 4732
+    },
+    "tools/assurance_state_cli.py": {
+      "sha256": "7853f751b57a33dbe08faeccb17bdf38e5e6d99b53cbd76bcff024a7d4177e02",
+      "bytes": 10283
     }
   }
 }
