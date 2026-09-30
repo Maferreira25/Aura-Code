@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Maferreira25/Aura-Code/main/schemas/traceability.schema.json",
+  "title": "Aura Code Traceability Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "requirements",
+    "invariants"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "requirements": {
+      "type": "array",
+      "items": {"$ref": "requirement.schema.json"},
+      "uniqueItems": true
+    },
+    "invariants": {
+      "type": "array",
+      "items": {"$ref": "invariant.schema.json"},
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}
