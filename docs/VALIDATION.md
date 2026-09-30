@@ -128,3 +128,22 @@ python validation/tools/validate_experiment_evidence.py validation/results --req
 The first command reports methodological status without failing solely because P1 is incomplete. The second is a blocking gate for any process that claims the frozen P1 has been completed.
 
 Public smoke results remain methodology/harness evidence only; contamination-resistant effectiveness claims require the private/fresh P2 design described above.
+
+
+## Stable 1.0 maturity gate
+
+The project now maintains:
+
+- `validation/maturity-criteria.json` — non-waivable first-1.0 criteria;
+- `validation/maturity-evidence.json` — explicit evidence ledger;
+- `tools/maturity_gate.py` — fail-closed evaluator.
+
+Run:
+
+```bash
+python tools/assurance.py maturity . --json
+```
+
+MAT-01 is derived automatically from the frozen P1 evidence validator. MAT-02 through MAT-10 require `PASS` plus local repository evidence files. URLs alone are not self-verifying evidence.
+
+The current `0.3.0.dev0` line may remain under development while the gate is blocked. If `VERSION` is changed to a stable numeric `1.x.y`, framework structural validation also requires the maturity gate to return `ALLOW`; otherwise CI fails. An `ALLOW` decision is release-readiness evidence, not third-party certification or a guarantee of defect-free software.
