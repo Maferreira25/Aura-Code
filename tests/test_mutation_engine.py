@@ -6,8 +6,10 @@ as well as execution verification distinguishing real semantic tests from vitiat
 """
 
 import shutil
+import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from tools.mutation_engine import (
@@ -78,6 +80,56 @@ class TestMutationEngine(unittest.TestCase):
         self.assertGreater(res["total_mutants"], 0)
         self.assertGreater(res["killed"], 0)
         self.assertFalse(res["vitiated_oracles_detected"])
+
+    def test_timeout_is_not_counted_as_killed(self):
+        prod_file = self.temp_dir / "timeout_target.py"
+        prod_file.write_text("def f(x):\n    return x + 1\n", encoding="utf-8")
+        test_file = self.temp_dir / "test_timeout_target.py"
+        test_file.write_text(
+            "import unittest\n"
+            "from timeout_target import f\n"
+            "class T(unittest.TestCase):\n"
+            "    def test_f(self):\n"
+            "        self.assertEqual(f(1), 2)\n",
+            encoding="utf-8",
+        )
+
+        ok = subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
+        with patch(
+            "tools.mutation_engine.subprocess.run",
+            side_effect=[ok, subprocess.TimeoutExpired(cmd=["python"], timeout=1)],
+        ):
+            res = execute_mutation_analysis(prod_file, test_file, max_mutants=1, timeout_sec=1)
+
+        self.assertEqual(res["status"], "ERROR")
+        self.assertEqual(res["killed"], 0)
+        self.assertEqual(res["timeouts"], 1)
+        self.assertEqual(res["evaluated_mutants"], 0)
+
+    def test_evaluator_exception_is_not_counted_as_killed(self):
+        prod_file = self.temp_dir / "error_target.py"
+        prod_file.write_text("def f(x):\n    return x + 1\n", encoding="utf-8")
+        test_file = self.temp_dir / "test_error_target.py"
+        test_file.write_text(
+            "import unittest\n"
+            "from error_target import f\n"
+            "class T(unittest.TestCase):\n"
+            "    def test_f(self):\n"
+            "        self.assertEqual(f(1), 2)\n",
+            encoding="utf-8",
+        )
+
+        ok = subprocess.CompletedProcess(args=[], returncode=0, stdout="", stderr="")
+        with patch(
+            "tools.mutation_engine.subprocess.run",
+            side_effect=[ok, RuntimeError("evaluator crashed")],
+        ):
+            res = execute_mutation_analysis(prod_file, test_file, max_mutants=1)
+
+        self.assertEqual(res["status"], "ERROR")
+        self.assertEqual(res["killed"], 0)
+        self.assertEqual(res["errors"], 1)
+        self.assertEqual(res["evaluated_mutants"], 0)
 
     def test_mutation_execution_detects_vitiated_oracle(self):
         # Production code
