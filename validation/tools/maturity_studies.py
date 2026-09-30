@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from collections import Counter, defaultdict
@@ -108,8 +109,20 @@ def validate_p2_plan(data: Mapping[str, Any]) -> Dict[str, Any]:
 
 
 
-def validate_p2_result(data: Mapping[str, Any]) -> Dict[str, Any]:
-    """Validate a completed P2 result package; plans alone can never satisfy this."""
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _pairing_key(item: Mapping[str, Any]) -> Tuple[str, str, str]:
+    return (
+        str(item.get("model_display_name", "")).strip(),
+        str(item.get("agent", "")).strip(),
+        str(item.get("reasoning_effort", "")).strip(),
+    )
+
+
+def validate_p2_result(data: Mapping[str, Any], root: Optional[Path] = None) -> Dict[str, Any]:
+    """Validate a completed P2 package against its frozen preregistration."""
     errors: List[str] = []
     warnings: List[str] = []
     if str(data.get("study", "")).upper() != "P2":
@@ -118,18 +131,60 @@ def validate_p2_result(data: Mapping[str, Any]) -> Dict[str, Any]:
         errors.append("preregistered must be true")
     if not bool(data.get("private_or_fresh_split")):
         errors.append("private_or_fresh_split must be true")
-    prereg = str(data.get("preregistration_sha256", "")).lower().strip()
-    if len(prereg) != 64 or any(ch not in "0123456789abcdef" for ch in prereg):
+
+    preregistration_path = str(data.get("preregistration_path", "")).strip()
+    preregistration_sha = str(data.get("preregistration_sha256", "")).lower().strip()
+    if not preregistration_path:
+        errors.append("preregistration_path is required")
+    if len(preregistration_sha) != 64 or any(ch not in "0123456789abcdef" for ch in preregistration_sha):
         errors.append("preregistration_sha256 must be a 64-character SHA-256 hex digest")
+
+    split_commitment = str(data.get("private_split_commitment_sha256", "")).lower().strip()
+    if len(split_commitment) != 64 or any(ch not in "0123456789abcdef" for ch in split_commitment):
+        errors.append("private_split_commitment_sha256 must be a 64-character SHA-256 hex digest")
+
+    plan: Optional[Dict[str, Any]] = None
+    if root is not None and preregistration_path:
+        root_resolved = root.resolve()
+        raw_path = Path(preregistration_path)
+        if raw_path.is_absolute():
+            errors.append("preregistration_path must be repository-relative")
+        else:
+            plan_path = (root_resolved / raw_path).resolve()
+            try:
+                plan_path.relative_to(root_resolved)
+            except ValueError:
+                errors.append("preregistration_path escapes repository root")
+            else:
+                if not plan_path.is_file():
+                    errors.append("preregistration file does not exist")
+                else:
+                    actual_sha = _sha256_file(plan_path)
+                    if actual_sha != preregistration_sha:
+                        errors.append(
+                            f"preregistration hash mismatch: expected {preregistration_sha}, got {actual_sha}"
+                        )
+                    try:
+                        plan = _read_json(plan_path)
+                    except ValueError as exc:
+                        errors.append(str(exc))
+                    if plan is not None:
+                        plan_check = validate_p2_plan(plan)
+                        if plan_check["status"] != "VALID":
+                            errors.append("referenced P2 preregistration is invalid: " + "; ".join(plan_check["errors"]))
+                        if str(plan.get("private_split_commitment_sha256", "")).lower() != split_commitment:
+                            errors.append("private split commitment does not match preregistration")
 
     runs = _nonempty_list(data.get("runs"))
     if not runs:
         errors.append("P2 result requires runs")
     ids: List[str] = []
     by_arm: Dict[str, int] = {arm: 0 for arm in ARMS}
-    scenario_ids = set()
-    pairings = set()
+    observed_scenarios = set()
+    observed_pairings = set()
+    coverage: Counter[Tuple[str, Tuple[str, str, str], str]] = Counter()
     invalid_qs: List[str] = []
+
     for index, row in enumerate(runs):
         if not isinstance(row, dict):
             errors.append(f"runs[{index}] must be an object")
@@ -137,19 +192,20 @@ def validate_p2_result(data: Mapping[str, Any]) -> Dict[str, Any]:
         run_id = str(row.get("run_id", "")).strip()
         arm = str(row.get("arm", "")).strip()
         scenario_id = str(row.get("scenario_id", "")).strip()
-        model = str(row.get("model_display_name", "")).strip()
-        agent = str(row.get("agent", "")).strip()
-        if not run_id or arm not in ARMS or not scenario_id or not model or not agent:
+        pairing = _pairing_key(row)
+        if not run_id or arm not in ARMS or not scenario_id or not all(pairing):
             errors.append(f"runs[{index}] missing required provenance")
             continue
         ids.append(run_id)
         by_arm[arm] += 1
-        scenario_ids.add(scenario_id)
-        pairings.add((model, agent))
+        observed_scenarios.add(scenario_id)
+        observed_pairings.add(pairing)
+        coverage[(scenario_id, pairing, arm)] += 1
+
         required = ("public_tests_passed", "protected_tests_passed", "evaluator_integrity")
         if all(isinstance(row.get(key), bool) for key in required):
-            expected = all(bool(row.get(key)) for key in required)
-            if bool(row.get("qualified_success")) != expected:
+            expected_qs = all(bool(row.get(key)) for key in required)
+            if bool(row.get("qualified_success")) != expected_qs:
                 invalid_qs.append(run_id)
         elif not isinstance(row.get("qualified_success"), bool):
             errors.append(f"{run_id}: qualified_success must be boolean")
@@ -158,24 +214,88 @@ def validate_p2_result(data: Mapping[str, Any]) -> Dict[str, Any]:
         errors.append("P2 run_id values must be unique")
     if invalid_qs:
         errors.append("Qualified Success formula mismatch: " + ", ".join(sorted(invalid_qs)))
-    if len(scenario_ids) < 30:
-        errors.append(f"P2 result requires >=30 scenarios; found {len(scenario_ids)}")
+    if len(observed_scenarios) < 30:
+        errors.append(f"P2 result requires >=30 scenarios; found {len(observed_scenarios)}")
     for arm in ARMS:
         if by_arm[arm] == 0:
             errors.append(f"P2 result has no runs for arm {arm}")
 
+    declared_repetitions = data.get("repetitions_per_arm")
+    if not isinstance(declared_repetitions, int) or declared_repetitions < 5:
+        errors.append("repetitions_per_arm must be an integer >= 5")
+    declared_pairings_raw = _nonempty_list(data.get("model_agent_pairings"))
+    declared_pairings = {
+        _pairing_key(item)
+        for item in declared_pairings_raw
+        if isinstance(item, dict) and all(_pairing_key(item))
+    }
+    if not declared_pairings:
+        errors.append("model_agent_pairings must contain at least one complete pairing")
+
+    declared_scenarios = {
+        str(item.get("id", "")).strip()
+        for item in _nonempty_list(data.get("scenarios"))
+        if isinstance(item, dict) and str(item.get("id", "")).strip()
+    }
+    if len(declared_scenarios) < 30:
+        errors.append("result scenarios must contain at least 30 scenario ids")
+
+    if plan is not None:
+        plan_scenarios = {
+            str(item.get("id", "")).strip()
+            for item in _nonempty_list(plan.get("scenarios"))
+            if isinstance(item, dict) and str(item.get("id", "")).strip()
+        }
+        plan_pairings = {
+            _pairing_key(item)
+            for item in _nonempty_list(plan.get("model_agent_pairings"))
+            if isinstance(item, dict) and all(_pairing_key(item))
+        }
+        plan_repetitions = plan.get("repetitions_per_arm")
+        if declared_scenarios != plan_scenarios:
+            errors.append("result scenario set differs from preregistration")
+        if declared_pairings != plan_pairings:
+            errors.append("result model/agent pairings differ from preregistration")
+        if declared_repetitions != plan_repetitions:
+            errors.append("result repetition count differs from preregistration")
+
+    expected_attempts = 0
+    if isinstance(declared_repetitions, int) and declared_repetitions > 0:
+        expected_attempts = (
+            len(declared_scenarios)
+            * len(ARMS)
+            * declared_repetitions
+            * len(declared_pairings)
+        )
     declared_expected = data.get("expected_attempts")
-    if not isinstance(declared_expected, int) or declared_expected <= 0:
-        errors.append("expected_attempts must be a positive integer")
-    elif len(runs) != declared_expected:
-        errors.append(f"P2 incomplete: observed {len(runs)}/{declared_expected} attempts")
+    if declared_expected != expected_attempts or expected_attempts <= 0:
+        errors.append(
+            f"expected_attempts must equal frozen design size {expected_attempts}; got {declared_expected}"
+        )
+    if expected_attempts and len(runs) != expected_attempts:
+        errors.append(f"P2 incomplete: observed {len(runs)}/{expected_attempts} attempts")
+
+    if expected_attempts:
+        for scenario_id in sorted(declared_scenarios):
+            for pairing in sorted(declared_pairings):
+                for arm in ARMS:
+                    observed = coverage[(scenario_id, pairing, arm)]
+                    if observed != declared_repetitions:
+                        errors.append(
+                            f"incomplete cell {scenario_id}/{pairing[0]}/{pairing[1]}/{pairing[2]}/{arm}: "
+                            f"{observed}/{declared_repetitions}"
+                        )
+
+    unexpected_scenarios = observed_scenarios - declared_scenarios
+    if unexpected_scenarios:
+        errors.append("runs contain undeclared scenarios: " + ", ".join(sorted(unexpected_scenarios)))
+    unexpected_pairings = observed_pairings - declared_pairings
+    if unexpected_pairings:
+        errors.append("runs contain undeclared model/agent pairings")
 
     completed = bool(data.get("completed"))
     if not completed:
         errors.append("completed must be true for a formal P2 result")
-
-    if len(pairings) < 1:
-        errors.append("P2 result requires at least one model/agent pairing")
 
     return {
         "study": "P2_RESULT",
@@ -184,11 +304,11 @@ def validate_p2_result(data: Mapping[str, Any]) -> Dict[str, Any]:
         "warnings": warnings,
         "completed": completed and not errors,
         "run_count": len(runs),
-        "scenario_count": len(scenario_ids),
-        "pairing_count": len(pairings),
+        "scenario_count": len(observed_scenarios),
+        "pairing_count": len(observed_pairings),
+        "expected_attempts": expected_attempts,
         "by_arm": by_arm,
     }
-
 
 
 def validate_p3_plan(data: Mapping[str, Any], benchmark_registry: Mapping[str, Any]) -> Dict[str, Any]:
@@ -653,11 +773,12 @@ def validate_evidence_for_criterion(
     criterion_id: str,
     data: Mapping[str, Any],
     benchmark_registry: Optional[Mapping[str, Any]] = None,
+    root: Optional[Path] = None,
 ) -> Dict[str, Any]:
     """Dispatch maturity evidence to the semantic validator for its criterion."""
     cid = criterion_id.strip().upper()
     if cid == "MAT-02":
-        return validate_p2_result(data)
+        return validate_p2_result(data, root=root)
     if cid == "MAT-03":
         return validate_replication_result(data)
     if cid == "MAT-04":
