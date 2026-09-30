@@ -76,6 +76,7 @@ class MaturityGateTests(unittest.TestCase):
                 }),
                 encoding="utf-8",
             )
+            (root / "GOVERNANCE.md").write_text("adopted governance", encoding="utf-8")
             (root / "governance.json").write_text(
                 json.dumps({
                     "status": "ADOPTED",
@@ -148,6 +149,53 @@ class MaturityGateTests(unittest.TestCase):
         self.assertFalse(is_stable_release_version("1.0.0rc1"))
         self.assertFalse(is_stable_release_version("1.0.0-dev"))
         self.assertFalse(is_stable_release_version("v1.0.0"))
+
+    def test_mat10_nested_missing_evidence_is_invalid_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "validation" / "results").mkdir(parents=True)
+            (root / "validation" / "maturity-criteria.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": [
+                        {"id": "MAT-10", "title": "Governance", "mode": "evidence", "required": True}
+                    ],
+                }),
+                encoding="utf-8",
+            )
+            (root / "validation" / "maturity-evidence.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": {
+                        "MAT-10": {
+                            "status": "PASS",
+                            "evidence": ["governance.json"],
+                            "rationale": "claimed",
+                        }
+                    },
+                }),
+                encoding="utf-8",
+            )
+            (root / "governance.json").write_text(
+                json.dumps({
+                    "status": "ADOPTED",
+                    "roles": {
+                        "maintainers": ["maintainer-1"],
+                        "release_manager": "release-1",
+                        "security_response": ["security-1"],
+                    },
+                    "normative_change_rule": "PR review",
+                    "release_authority_rule": "release manager approves",
+                    "security_response_rule": "security team triages",
+                    "appeal_rule": "maintainer committee review",
+                    "evidence": ["missing-adoption-record.md"],
+                }),
+                encoding="utf-8",
+            )
+            report = evaluate_maturity(root)
+            self.assertFalse(report["ready"])
+            self.assertEqual(report["criteria"][0]["status"], "INVALID_PASS")
+            self.assertIn("nested evidence files do not exist", report["criteria"][0]["reason"])
 
 
 if __name__ == "__main__":
