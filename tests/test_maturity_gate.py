@@ -41,14 +41,91 @@ class MaturityGateTests(unittest.TestCase):
             self.assertFalse(report["ready"])
             self.assertEqual(report["criteria"][0]["status"], "INVALID_PASS")
 
-    def test_pass_with_existing_local_evidence_allows(self):
+    def test_unknown_semantic_criterion_cannot_pass_by_file_existence_alone(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            self._write_minimal_root(root, "PASS", ["evidence.md"])
-            (root / "evidence.md").write_text("verified", encoding="utf-8")
+            self._write_minimal_root(root, "PASS", ["evidence.json"])
+            (root / "evidence.json").write_text("{}", encoding="utf-8")
+            report = evaluate_maturity(root)
+            self.assertFalse(report["ready"])
+            self.assertEqual(report["criteria"][0]["status"], "INVALID_PASS")
+
+    def test_mat10_valid_semantic_evidence_allows_single_criterion_root(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "validation" / "results").mkdir(parents=True)
+            (root / "validation" / "maturity-criteria.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": [
+                        {"id": "MAT-10", "title": "Governance", "mode": "evidence", "required": True}
+                    ],
+                }),
+                encoding="utf-8",
+            )
+            (root / "validation" / "maturity-evidence.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": {
+                        "MAT-10": {
+                            "status": "PASS",
+                            "evidence": ["governance.json"],
+                            "rationale": "adopted",
+                        }
+                    },
+                }),
+                encoding="utf-8",
+            )
+            (root / "governance.json").write_text(
+                json.dumps({
+                    "status": "ADOPTED",
+                    "roles": {
+                        "maintainers": ["maintainer-1"],
+                        "release_manager": "release-1",
+                        "security_response": ["security-1"],
+                    },
+                    "normative_change_rule": "PR review",
+                    "release_authority_rule": "release manager approves",
+                    "security_response_rule": "security team triages",
+                    "appeal_rule": "maintainer committee review",
+                    "evidence": ["GOVERNANCE.md"],
+                }),
+                encoding="utf-8",
+            )
             report = evaluate_maturity(root)
             self.assertTrue(report["ready"])
-            self.assertEqual(report["decision"], "ALLOW")
+            self.assertEqual(report["criteria"][0]["status"], "PASS")
+
+    def test_existing_but_incomplete_mat10_json_is_invalid_pass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "validation" / "results").mkdir(parents=True)
+            (root / "validation" / "maturity-criteria.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": [
+                        {"id": "MAT-10", "title": "Governance", "mode": "evidence", "required": True}
+                    ],
+                }),
+                encoding="utf-8",
+            )
+            (root / "validation" / "maturity-evidence.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": {
+                        "MAT-10": {
+                            "status": "PASS",
+                            "evidence": ["governance.json"],
+                            "rationale": "claimed",
+                        }
+                    },
+                }),
+                encoding="utf-8",
+            )
+            (root / "governance.json").write_text("{}", encoding="utf-8")
+            report = evaluate_maturity(root)
+            self.assertFalse(report["ready"])
+            self.assertEqual(report["criteria"][0]["status"], "INVALID_PASS")
 
     def test_external_url_is_not_accepted_as_self_verified_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
