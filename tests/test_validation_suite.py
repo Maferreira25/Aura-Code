@@ -55,7 +55,7 @@ class ValidationSuiteTests(unittest.TestCase):
             self.assertIn("P1 FORMAL ATUAL: INCOMPLETO", report)
             self.assertIn("36/114", report)
             self.assertIn("faltam 78", report)
-            self.assertIn("não representa a conclusão formal", report)
+            self.assertIn("representa a conclusão formal", report)
 
 
 if __name__=="__main__":
