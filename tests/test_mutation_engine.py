@@ -18,6 +18,7 @@ from tools.mutation_engine import (
     format_prescriptive_report,
     disposition_survivor,
     validate_mutant_status,
+    evaluate_mutation_assurance,
 )
 
 
@@ -126,6 +127,83 @@ class TestMutationEngine(unittest.TestCase):
                 "NO_COVERAGE",
                 rationale="Not executed.",
             )
+
+    def test_critical_survivor_blocks_even_with_high_score(self):
+        result = {
+            "status": "PASS",
+            "total_mutants": 10,
+            "mutation_score": 90.0,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "SECURITY_GUARD_BYPASS",
+                    "status": "SURVIVED",
+                }
+            ] + [
+                {
+                    "mutant_id": i,
+                    "type": "ARITHMETIC",
+                    "status": "KILLED",
+                }
+                for i in range(2, 11)
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL3")
+        self.assertEqual(policy["status"], "FAIL")
+        self.assertTrue(policy["blocking"])
+        self.assertEqual(len(policy["critical_survivors"]), 1)
+
+    def test_noncritical_survivor_is_inconclusive(self):
+        result = {
+            "status": "WARN",
+            "total_mutants": 1,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "ARITHMETIC",
+                    "status": "SURVIVED",
+                }
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL2")
+        self.assertEqual(policy["status"], "INCONCLUSIVE")
+        self.assertTrue(policy["blocking"])
+
+    def test_runtime_error_blocks_mutation_assurance(self):
+        result = {
+            "status": "ERROR",
+            "total_mutants": 1,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "RELATIONAL",
+                    "status": "TIMEOUT",
+                }
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL3")
+        self.assertEqual(policy["status"], "ERROR")
+        self.assertTrue(policy["blocking"])
+
+    def test_waived_mutant_does_not_become_pass(self):
+        result = {
+            "status": "PASS",
+            "total_mutants": 1,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "ARITHMETIC",
+                    "status": "WAIVED",
+                    "disposition": {
+                        "rationale": "Temporary exception.",
+                        "approver": "reviewer",
+                    },
+                }
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL2")
+        self.assertEqual(policy["status"], "WAIVED")
+        self.assertTrue(policy["blocking"])
 
     def test_mutation_execution_kills_mutants_with_real_assertions(self):
         # Production code
