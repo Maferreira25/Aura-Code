@@ -856,8 +856,8 @@
       "bytes": 14102
     },
     "tests/test_loop_runner.py": {
-      "sha256": "8bec7f404ada4ed99c40296ffaedb94eec86cdbeaf07f4d1ff13c06d832a19a3",
-      "bytes": 5622
+      "sha256": "27dbd6907b637acfa8467337169072be3d6811a664fddfba7056bf12c3a2c7c8",
+      "bytes": 6575
     },
     "tests/test_manage_worktree.py": {
       "sha256": "fd355a1cea328a97fb9bd5ba524ff2bea0fbe73435317284bc3f57d5c2b180b7",
@@ -880,8 +880,8 @@
       "bytes": 7754
     },
     "tests/test_preflight.py": {
-      "sha256": "9f6a5484219894f0fd875d08bd9023f74b03213413c223de587743e700865725",
-      "bytes": 4242
+      "sha256": "555e02e8d2f90b1e1eb49a2f7e5733594019704e94c49a89bbe13e2b4ea38c77",
+      "bytes": 5374
     },
     "tests/test_release_truthfulness.py": {
       "sha256": "0c03eda6901bac3b7c217569c0c88cdb18fce8e7f27bf9ac2e52c622f42cd671",
@@ -1024,8 +1024,8 @@
       "bytes": 24529
     },
     "tools/loop_runner.py": {
-      "sha256": "a7800e5815df5d81ad765ba95723a6209d1f231a05b097a34c07eaae8b6c671f",
-      "bytes": 17672
+      "sha256": "6528062e68e3ed15edb0c9271472777c66a3c8b0e4303c6d297d2836e2a154ab",
+      "bytes": 20017
     },
     "tools/manage_cage.py": {
       "sha256": "c13daa23f24a49831f8b48d3f40134b257daa8fe283ffea4c89e32094a871306",
@@ -1052,8 +1052,8 @@
       "bytes": 23621
     },
     "tools/preflight.py": {
-      "sha256": "5e5e7fc350f3a41a313343fd384ee635586cb3749315ff01fba302a4c80dec14",
-      "bytes": 9797
+      "sha256": "ba47a2f18da2631dd904fb2899c9cc6a37ec295ff5cae5727e29f2e8f5d4c47c",
+      "bytes": 13573
     },
     "tools/refactor_engine.py": {
       "sha256": "2ad924d4638f770f4bcd821e1293905f2bbe794e47cc6ea02ad41c91811f21cb",
