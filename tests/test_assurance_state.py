@@ -4,6 +4,7 @@ from pathlib import Path
 
 from tools.assurance_state import (
     advance_state,
+    apply_continuous_regression,
     evaluate_gate,
     import_assessment,
     load_gate_policy,
@@ -201,6 +202,36 @@ class AssuranceStateTests(unittest.TestCase):
         self.assertEqual(blocked["decision"], "BLOCK")
         self.assertIn("missing actor provenance for 'implementer'", blocked["reasons"])
         self.assertIn("missing actor provenance for 'verifier'", blocked["reasons"])
+
+    def test_continuous_regression_reopens_and_blocks_gate(self):
+        state = new_state("demo", "AL1")
+        record_control(state, "GOV-01", "PASS", ["risk.md"])
+        comparison = {
+            "decision": "BLOCK",
+            "blockers": ["control regression ARC-01: PASS -> UNKNOWN"],
+        }
+        finding = apply_continuous_regression(state, comparison, ["compare.json"])
+        self.assertIsNotNone(finding)
+        self.assertEqual(state["assurance_status"], "REOPENED")
+        blocked = evaluate_gate(state, "RISK_CLASSIFIED", ROOT)
+        self.assertEqual(blocked["decision"], "BLOCK")
+        self.assertIn("assurance status is REOPENED", "\n".join(blocked["reasons"]))
+
+    def test_independent_revalidation_restores_active_when_last_material_finding_closes(self):
+        state = new_state("demo", "AL2")
+        comparison = {
+            "decision": "BLOCK",
+            "blockers": ["new open HIGH findings: 0 -> 1"],
+        }
+        finding = apply_continuous_regression(state, comparison, ["compare.json"])
+        self.assertIsNotNone(finding)
+        finding_id = finding["id"]
+        record_actor(state, "remediator", "agent-fix", "AI_AGENT", "fix-session", "model-x")
+        start_remediation(state, finding_id, ["plan.md"])
+        mark_remediation_implemented(state, finding_id, ["patch.diff", "test.txt"])
+        record_actor(state, "revalidator", "agent-review", "AI_AGENT", "review-session", "model-x")
+        revalidate_finding(state, finding_id, "PASS", ["retest.txt"])
+        self.assertEqual(state["assurance_status"], "ACTIVE")
 
 
 if __name__ == "__main__":
