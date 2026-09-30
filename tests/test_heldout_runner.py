@@ -87,6 +87,18 @@ class TestHeldOutRunner(unittest.TestCase):
         self.assertNotIn("stderr", result)
         self.assertNotIn("secret test name", json.dumps(result))
 
+    def test_external_suite_runs_with_real_local_runner(self):
+        result = evaluate_held_out(
+            self.workspace,
+            self.suite,
+            isolation="local",
+            strict_mode=False,
+        )
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["runner_backend"], "subprocess_sanitized")
+        self.assertFalse(result["strong_isolation"])
+        self.assertEqual(result["progression"]["state"], "READY")
+
     def test_failed_held_out_suite_blocks_without_details(self):
         fake = FakeRunner(
             {
