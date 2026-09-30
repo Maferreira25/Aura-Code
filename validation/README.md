@@ -151,3 +151,18 @@ python validation/tools/prepare_maturity_evidence.py MAT-XX <package.json> \
 The templates under validation/config are intentionally fail-closed. Placeholder or incomplete templates are not evidence.
 
 A maturity PASS requires a semantically valid canonical JSON package, real nested evidence files, reviewer metadata, and a matching SHA-256. The tooling does not turn a preregistration, template, or public development corpus into a completed maturity claim.
+
+
+### Execution/readiness queues
+
+~~~bash
+# Materialize frozen P2/P3/P4 execution slots
+python validation/tools/maturity_queue.py p2 <p2-plan.json> --missing-only --json
+python validation/tools/maturity_queue.py p3 <p3-plan.json> --registry validation/benchmark-registry.json --missing-only --json
+python validation/tools/maturity_queue.py p4 <p4-plan.json> --json
+
+# See every remaining MAT-01..MAT-10 blocker and the required next action
+python validation/tools/maturity_readiness.py . --json
+~~~
+
+validation/maturity-workplan.json is operational metadata only. It cannot grant PASS. The authoritative maturity decision remains tools/maturity_gate.py.
