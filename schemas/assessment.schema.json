@@ -43,7 +43,13 @@
               "PASS",
               "FAIL",
               "NA",
-              "NOT_ASSESSED"
+              "NOT_ASSESSED",
+              "INCONCLUSIVE",
+              "NOT_TESTED",
+              "NOT_APPLICABLE",
+              "WAIVED",
+              "ERROR",
+              "STALE"
             ]
           },
           "evidence": {
