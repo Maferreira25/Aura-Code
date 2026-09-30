@@ -49,6 +49,7 @@ from tools import forward_engine
 from tools import debugger_engine
 from tools import refactor_engine
 from tools import traceability_engine
+from tools import heldout_runner
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -282,6 +283,14 @@ def main() -> None:
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
 
+    # Subcommand: heldout
+    heldout_p = subparsers.add_parser("heldout", help="Execute protected held-out tests outside the candidate workspace")
+    heldout_p.add_argument("target", nargs="?", default=".", help="Candidate workspace directory")
+    heldout_p.add_argument("--suite", required=True, help="Protected held-out suite directory")
+    heldout_p.add_argument("--isolation", choices=["auto", "container", "local"], default="auto")
+    heldout_p.add_argument("--strict", action="store_true", help="Require strong container isolation when auto mode is used")
+    heldout_p.add_argument("--json", action="store_true", help="Output redacted result in JSON format")
+
     # Subcommand: traceability
     trace_p = subparsers.add_parser("traceability", help="Verify Requirement -> Invariant -> Implementation -> Test -> Evidence chains")
     trace_p.add_argument("manifest", nargs="?", default="_auracode_sdd/traceability.json", help="Path to traceability manifest")
@@ -502,6 +511,26 @@ def main() -> None:
         if args.json:
             assess_argv.append("--json")
         sys.exit(assess.main(assess_argv))
+
+    elif args.command == "heldout":
+        import json
+        res = heldout_runner.evaluate_held_out(
+            Path(args.target).resolve(),
+            Path(args.suite).resolve(),
+            isolation=args.isolation,
+            strict_mode=args.strict,
+        )
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Held-Out Evaluation: {res.get('status')}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+            disclosure = res.get("disclosure", {})
+            if disclosure.get("message"):
+                print(disclosure["message"])
+            if res.get("failure_category"):
+                print(f"Failure category: {res['failure_category']}")
+        sys.exit(0 if res.get("status") == "PASS" else 1)
 
     elif args.command == "traceability":
         import json
