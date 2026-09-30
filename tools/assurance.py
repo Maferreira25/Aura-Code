@@ -57,6 +57,7 @@ from tools import taint_engine
 from tools import static_analyzer_adapters
 from tools import detector_diversity
 from tools import fuzz_engine
+from tools import dynamic_security_engine
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -332,6 +333,12 @@ def main() -> None:
     fuzz_p.add_argument("manifest", help="Path to fuzz-suite manifest")
     fuzz_p.add_argument("--target", default=".", help="Target workspace directory")
     fuzz_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: dast
+    dast_p = subparsers.add_parser("dast", help="Execute local-only runtime security contract checks")
+    dast_p.add_argument("manifest", help="Path to DAST suite manifest")
+    dast_p.add_argument("--target", default=".", help="Target workspace directory")
+    dast_p.add_argument("--json", action="store_true", help="Output result in JSON format")
 
     # Subcommand: traceability
     trace_p = subparsers.add_parser("traceability", help="Verify Requirement -> Invariant -> Implementation -> Test -> Evidence chains")
@@ -662,6 +669,25 @@ def main() -> None:
                 print(
                     f"Suite: {res['suite_id']} | Seed: {res.get('seed', 'n/a')} | "
                     f"Iterations: {res.get('iterations', 0)} | Findings: {len(res.get('findings', []))}"
+                )
+        sys.exit(0 if res.get("status") == "PASS" else 1)
+
+    elif args.command == "dast":
+        import json
+        workspace = Path(args.target).resolve()
+        manifest_path = Path(args.manifest)
+        if not manifest_path.is_absolute():
+            manifest_path = (workspace / manifest_path).resolve()
+        res = dynamic_security_engine.evaluate_dast_suite(workspace, manifest_path)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode DAST: {res.get('status')}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+            if res.get("suite_id"):
+                print(
+                    f"Suite: {res['suite_id']} | "
+                    f"Checks: {res.get('checks_pass', 0)}/{res.get('checks_total', 0)} PASS"
                 )
         sys.exit(0 if res.get("status") == "PASS" else 1)
 
