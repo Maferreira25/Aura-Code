@@ -195,6 +195,76 @@ def record_control(
     state.setdefault("controls", {})[control] = result
 
 
+
+def import_assessment(
+    state: Dict[str, Any],
+    assessment: Mapping[str, Any],
+    project_root: Path,
+    root: Path = ROOT,
+) -> Dict[str, Any]:
+    """Import a legacy/current assessment only after evidence-path validation.
+
+    Unsupported, missing, or invalid PASS/NA claims become UNKNOWN rather than
+    silently authorizing a gate.
+    """
+    from tools.assess import assess_data
+
+    level = str(assessment.get("assurance_level", "")).upper()
+    if level != str(state.get("assurance_level", "")).upper():
+        raise ValueError(
+            f"Assessment level '{level}' does not match state level '{state.get('assurance_level')}'"
+        )
+    assessed = assess_data(
+        dict(assessment),
+        root=root,
+        project_root=project_root.resolve(),
+        verify_evidence_paths=True,
+    )
+    if assessed.get("error"):
+        raise ValueError(str(assessed["error"]))
+
+    raw_controls = assessment.get("controls", {})
+    if not isinstance(raw_controls, dict):
+        raw_controls = {}
+    passed = set(assessed.get("passed", []))
+    failed = set(assessed.get("fail", []))
+    valid_na = set(assessed.get("na", []))
+    invalid_pass = set(assessed.get("invalid_pass", []))
+    invalid_na = set(assessed.get("invalid_na", []))
+    required = load_profile_controls(level, root)
+
+    imported: List[str] = []
+    downgraded: List[str] = []
+    for control_id in required:
+        raw = raw_controls.get(control_id, {})
+        raw = raw if isinstance(raw, dict) else {}
+        evidence = raw.get("evidence", [])
+        ev = evidence if isinstance(evidence, list) else []
+        rationale = str(raw.get("rationale", "") or "")
+
+        if control_id in passed:
+            status = "PASS"
+        elif control_id in failed:
+            status = "FAIL"
+        elif control_id in valid_na:
+            status = "NOT_APPLICABLE"
+        else:
+            status = "UNKNOWN"
+            if control_id in invalid_pass or control_id in invalid_na:
+                downgraded.append(control_id)
+
+        record_control(state, control_id, status, ev, rationale)
+        imported.append(control_id)
+
+    return {
+        "status": "PASS",
+        "assessment_success": bool(assessed.get("success")),
+        "imported_controls": imported,
+        "downgraded_to_unknown": downgraded,
+        "not_assessed": list(assessed.get("not_assessed", [])),
+    }
+
+
 def load_profile_controls(level: str, root: Path = ROOT) -> List[str]:
     level_norm = level.upper()
     if level_norm not in VALID_LEVELS:
@@ -586,6 +656,12 @@ def build_parser() -> "argparse.ArgumentParser":
     init_p.add_argument("--state")
     init_p.add_argument("--json", action="store_true")
 
+    import_p = sub.add_parser("import-assessment", help="Import a validated assessment into assurance state")
+    import_p.add_argument("target", nargs="?", default=".")
+    import_p.add_argument("--assessment", required=True)
+    import_p.add_argument("--state")
+    import_p.add_argument("--json", action="store_true")
+
     actor_p = sub.add_parser("actor", help="Record actor provenance")
     actor_p.add_argument("target", nargs="?", default=".")
     actor_p.add_argument("--role", required=True, choices=sorted(VALID_ROLES))
@@ -667,7 +743,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             print(f"ERROR: {exc}")
             return 2
 
-        if args.action == "finding":
+        if args.action == "import-assessment":
+            try:
+                assessment_path = Path(args.assessment).resolve()
+                assessment = _read_json(assessment_path)
+                imported = import_assessment(
+                    state,
+                    assessment,
+                    project_root=Path(args.target).resolve(),
+                )
+            except ValueError as exc:
+                print(f"ERROR: {exc}")
+                return 2
+            save_state(state_path, state)
+            payload = {
+                "status": "PASS",
+                "state_file": str(state_path),
+                "assessment": imported,
+            }
+        elif args.action == "finding":
             try:
                 if args.finding_action == "add":
                     finding = register_finding(
