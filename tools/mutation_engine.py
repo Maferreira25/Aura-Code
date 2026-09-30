@@ -16,7 +16,7 @@ import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Tuple, Optional, Dict, Any
+from typing import List, Tuple, Optional, Dict, Any, Set
 
 from tools.assurance_result import build_result
 
@@ -78,8 +78,97 @@ class Mutant:
     original_op: str
     mutated_op: str
     mutated_code: str
-    status: str = "PENDING"  # KILLED, SURVIVED, TIMEOUT, ERROR
+    status: str = "PENDING"
     error_output: Optional[str] = None
+    criticality: str = "NORMAL"
+    security_relevant: bool = False
+    disposition_reason: Optional[str] = None
+
+
+MUTANT_STATUSES = {
+    "PENDING",
+    "KILLED",
+    "SURVIVED",
+    "NO_COVERAGE",
+    "TIMEOUT",
+    "ERROR",
+    "LIKELY_EQUIVALENT",
+    "WAIVED",
+}
+
+_SECURITY_GUARD_KEYWORDS = {
+    "AUTHORIZATION": ("authorized", "authorization", "authz", "permission", "role", "can_access", "is_admin"),
+    "AUTHENTICATION": ("authenticated", "authentication", "login", "session", "is_authenticated"),
+    "TENANCY": ("tenant", "organization_id", "org_id", "company_id", "account_id"),
+    "CSRF": ("csrf",),
+    "RATE_LIMIT": ("rate_limit", "rate_limited", "throttle", "too_many_requests"),
+    "SIGNATURE": ("signature", "verify_signature", "hmac"),
+    "EXPIRATION": ("expired", "expiry", "expires", "expiration"),
+}
+
+_BUSINESS_GUARD_KEYWORDS = (
+    "balance",
+    "amount",
+    "inventory",
+    "stock",
+    "quota",
+    "state",
+    "status",
+    "transition",
+)
+
+_SANITIZER_KEYWORDS = ("sanitize", "sanitise", "escape_html", "escape_sql", "scrub", "clean_input")
+
+
+def _call_name(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        prefix = _call_name(node.value)
+        return f"{prefix}.{node.attr}" if prefix else node.attr
+    return ""
+
+
+def _guard_body_rejects(body: List[ast.stmt]) -> bool:
+    for stmt in body:
+        if isinstance(stmt, ast.Raise):
+            return True
+        if isinstance(stmt, ast.Return):
+            value = stmt.value
+            if value is None:
+                return True
+            if isinstance(value, ast.Constant):
+                if value.value in {False, None, 401, 403, 429}:
+                    return True
+                if isinstance(value.value, str) and value.value.lower() in {
+                    "denied", "forbidden", "unauthorized", "invalid"
+                }:
+                    return True
+    return False
+
+
+def _guard_mutation_type(node: ast.If) -> Optional[str]:
+    if not _guard_body_rejects(node.body):
+        return None
+    try:
+        text = ast.unparse(node.test).lower()
+    except Exception:
+        return None
+
+    for category, keywords in _SECURITY_GUARD_KEYWORDS.items():
+        if any(keyword in text for keyword in keywords):
+            return f"SECURITY_{category}_GUARD_BYPASS"
+    if any(keyword in text for keyword in _BUSINESS_GUARD_KEYWORDS):
+        return "BUSINESS_INVARIANT_GUARD_BYPASS"
+    return None
+
+
+def _mutant_metadata(mutation_type: str) -> Tuple[str, bool]:
+    if mutation_type.startswith("SECURITY_"):
+        return "CRITICAL", True
+    if mutation_type in {"BUSINESS_INVARIANT_GUARD_BYPASS", "EXCEPTION_SUPPRESSION"}:
+        return "HIGH", False
+    return "NORMAL", False
 
 
 class ASTMutantGenerator(ast.NodeTransformer):
@@ -114,6 +203,78 @@ class ASTMutantGenerator(ast.NodeTransformer):
         self.current_index = 0
         self.mutated = False
         self.recorded_mutation: Optional[Tuple[int, str, str, str]] = None
+
+    def visit_If(self, node: ast.If) -> ast.AST:
+        guard_type = _guard_mutation_type(node)
+        mutation_type = guard_type or "FLOW_CONDITION_NEGATION"
+        if self.current_index == self.target_node_index:
+            original = ast.unparse(node.test) if hasattr(ast, "unparse") else "condition"
+            if guard_type:
+                node.test = ast.Constant(value=False)
+                mutated = "False"
+            else:
+                node.test = ast.UnaryOp(op=ast.Not(), operand=node.test)
+                mutated = f"not ({original})"
+            self.mutated = True
+            self.recorded_mutation = (
+                node.lineno,
+                mutation_type,
+                original,
+                mutated,
+            )
+        self.current_index += 1
+        return self.generic_visit(node)
+
+    def visit_Raise(self, node: ast.Raise) -> ast.AST:
+        if self.current_index == self.target_node_index:
+            original = ast.unparse(node) if hasattr(ast, "unparse") else "raise"
+            replacement = ast.copy_location(ast.Pass(), node)
+            self.mutated = True
+            self.recorded_mutation = (
+                node.lineno,
+                "EXCEPTION_SUPPRESSION",
+                original,
+                "pass",
+            )
+            self.current_index += 1
+            return replacement
+        self.current_index += 1
+        return self.generic_visit(node)
+
+    def visit_Expr(self, node: ast.Expr) -> ast.AST:
+        if isinstance(node.value, ast.Call):
+            if self.current_index == self.target_node_index:
+                original = ast.unparse(node) if hasattr(ast, "unparse") else "call"
+                replacement = ast.copy_location(ast.Pass(), node)
+                self.mutated = True
+                self.recorded_mutation = (
+                    node.lineno,
+                    "STATEMENT_DELETION",
+                    original,
+                    "pass",
+                )
+                self.current_index += 1
+                return replacement
+            self.current_index += 1
+        return self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> ast.AST:
+        call_name = _call_name(node.func).lower()
+        if node.args and any(keyword in call_name for keyword in _SANITIZER_KEYWORDS):
+            if self.current_index == self.target_node_index:
+                original = ast.unparse(node) if hasattr(ast, "unparse") else call_name
+                replacement = ast.copy_location(copy.deepcopy(node.args[0]), node)
+                self.mutated = True
+                self.recorded_mutation = (
+                    getattr(node, "lineno", 0),
+                    "SECURITY_SANITIZER_REMOVAL",
+                    original,
+                    ast.unparse(replacement) if hasattr(ast, "unparse") else "raw_input",
+                )
+                self.current_index += 1
+                return replacement
+            self.current_index += 1
+        return self.generic_visit(node)
 
     def visit_Compare(self, node: ast.Compare) -> ast.AST:
         new_ops = []
@@ -227,13 +388,16 @@ def generate_mutants_for_source(source_code: str, max_mutants: int = 25) -> List
                 # Python < 3.9 fallback
                 continue
 
+            criticality, security_relevant = _mutant_metadata(m_type)
             mutants.append(Mutant(
                 mutant_id=m_id,
                 line_number=line_no,
                 mutation_type=m_type,
                 original_op=orig_op,
                 mutated_op=new_op,
-                mutated_code=mut_code
+                mutated_code=mut_code,
+                criticality=criticality,
+                security_relevant=security_relevant,
             ))
 
     return mutants
@@ -385,7 +549,10 @@ def execute_mutation_analysis(
     target_file: Path,
     test_file_or_dir: Path,
     max_mutants: int = 15,
-    timeout_sec: float = 20.0
+    timeout_sec: float = 20.0,
+    covered_lines: Optional[Set[int]] = None,
+    likely_equivalent: Optional[Dict[int, str]] = None,
+    waivers: Optional[Dict[int, str]] = None,
 ) -> Dict[str, Any]:
     """Execute mutation testing against a single source file and its test suite."""
     target_file = target_file.resolve()
@@ -453,10 +620,15 @@ def execute_mutation_analysis(
 
     killed = 0
     survived = 0
+    no_coverage = 0
+    likely_equivalent_count = 0
+    waived_count = 0
     timed_out = 0
     evaluator_errors = 0
     mutants_report = []
     remediations = []
+    likely_equivalent = likely_equivalent or {}
+    waivers = waivers or {}
 
     code_lines = original_code.splitlines()
     tree = None
@@ -468,24 +640,32 @@ def execute_mutation_analysis(
     # Run tests against each mutant by safe swap in place with try/finally restore
     try:
         for m in mutants:
-            # Write mutant to target file
-            target_file.write_text(m.mutated_code, encoding="utf-8")
+            if covered_lines is not None and m.line_number not in covered_lines:
+                m.status = "NO_COVERAGE"
+                no_coverage += 1
+            else:
+                # Write mutant to target file only when the mutated line was observed
+                # or when no independent coverage evidence was supplied.
+                target_file.write_text(m.mutated_code, encoding="utf-8")
 
             try:
-                run_res = subprocess.run(
-                    baseline_cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout_sec,
-                    cwd=common_root,
-                    env=run_env
-                )
-                if run_res.returncode != 0:
-                    m.status = "KILLED"
-                    killed += 1
+                if m.status == "NO_COVERAGE":
+                    run_res = None
                 else:
-                    m.status = "SURVIVED"
-                    survived += 1
+                    run_res = subprocess.run(
+                        baseline_cmd,
+                        capture_output=True,
+                        text=True,
+                        timeout=timeout_sec,
+                        cwd=common_root,
+                        env=run_env
+                    )
+                    if run_res.returncode != 0:
+                        m.status = "KILLED"
+                        killed += 1
+                    else:
+                        m.status = "SURVIVED"
+                        survived += 1
             except subprocess.TimeoutExpired as exc:
                 # A stalled evaluator is not evidence that the test suite killed the mutant.
                 m.status = "TIMEOUT"
@@ -497,6 +677,24 @@ def execute_mutation_analysis(
                 m.error_output = str(exc)
                 evaluator_errors += 1
 
+            if m.status == "SURVIVED" and m.mutant_id in likely_equivalent:
+                reason = str(likely_equivalent[m.mutant_id]).strip()
+                if reason:
+                    m.status = "LIKELY_EQUIVALENT"
+                    m.disposition_reason = reason
+                    survived -= 1
+                    likely_equivalent_count += 1
+            if m.status in {"SURVIVED", "NO_COVERAGE"} and m.mutant_id in waivers:
+                reason = str(waivers[m.mutant_id]).strip()
+                if reason:
+                    if m.status in {"SURVIVED", "NO_COVERAGE"}:
+                        survived -= 1
+                    else:
+                        no_coverage -= 1
+                    m.status = "WAIVED"
+                    m.disposition_reason = reason
+                    waived_count += 1
+
             mutant_dict: Dict[str, Any] = {
                 "mutant_id": m.mutant_id,
                 "line": m.line_number,
@@ -504,6 +702,10 @@ def execute_mutation_analysis(
                 "original": m.original_op,
                 "mutated": m.mutated_op,
                 "status": m.status,
+                "criticality": m.criticality,
+                "security_relevant": m.security_relevant,
+                "covered": None if covered_lines is None else (m.line_number in covered_lines),
+                "disposition_reason": m.disposition_reason,
                 "error": m.error_output,
             }
 
@@ -527,22 +729,28 @@ def execute_mutation_analysis(
         # Always guarantee original code is restored
         target_file.write_text(original_code, encoding="utf-8")
 
-    evaluated = killed + survived
-    total = evaluated + timed_out + evaluator_errors
-    score = (killed / evaluated * 100.0) if evaluated > 0 else 0.0
-    passed = survived == 0 or score >= 75.0
+    total = len(mutants)
+    score_denominator = killed + survived + no_coverage
+    score = (killed / score_denominator * 100.0) if score_denominator > 0 else 100.0
+    evaluated_mutants = total - timed_out - evaluator_errors
     execution_failed = timed_out > 0 or evaluator_errors > 0
+    unresolved = survived + no_coverage
 
     return _attach_canonical_result({
-        "status": "ERROR" if execution_failed else ("PASS" if passed else "WARN"),
+        "status": "ERROR" if execution_failed else ("WARN" if unresolved > 0 else "PASS"),
         "target_file": str(target_file),
         "total_mutants": total,
-        "evaluated_mutants": evaluated,
+        "evaluated_mutants": evaluated_mutants,
         "killed": killed,
         "survived": survived,
+        "no_coverage": no_coverage,
+        "likely_equivalent": likely_equivalent_count,
+        "waived": waived_count,
         "timeouts": timed_out,
         "errors": evaluator_errors,
         "mutation_score": round(score, 1),
+        "coverage_evidence_supplied": covered_lines is not None,
+        "survived_mutants_detected": survived > 0,
         "vitiated_oracles_detected": survived > 0,
         "mutants": mutants_report,
         "remediations": remediations
@@ -581,7 +789,7 @@ def format_prescriptive_report(res: Dict[str, Any]) -> str:
         return "\n".join(lines)
 
     lines.append(f"\n[ALERTA DE SEGURANÇA]: Foram detectados {len(remediations)} ORÁCULOS VICIADOS / FALSOS na suíte!")
-    lines.append("Os testes atuais continuam 'verdes' mesmo quando o código produtivo tem sua lógica invertida.")
+    lines.append("A suíte não distinguiu uma ou mais alterações semânticas; isso pode indicar ausência de cobertura, oráculo fraco ou mutação equivalente.")
     lines.append("-" * 80)
 
     for idx, rem in enumerate(remediations, 1):
