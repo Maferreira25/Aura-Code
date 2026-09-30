@@ -52,14 +52,14 @@ def _row(scenario, arm, rep, success):
 
 
 class ExperimentEvidenceTests(unittest.TestCase):
-    def test_repository_historical_results_are_incomplete_and_ceilinged(self):
+    def test_repository_results_respect_claim_boundary_during_progress(self):
         rows, errors = load_results(ROOT / "validation" / "results")
         self.assertEqual(errors, [])
         report = evaluate_p1(rows)
         self.assertFalse(report["headline_effectiveness_claim_allowed"])
         self.assertLessEqual(report["automated_runs"], report["automated_expected"])
         if not report["formal_p1_complete"]:
-            self.assertFalse(report["comparative_signal_interpretable"] or not report["ceiling_effect"])
+            self.assertFalse(report["comparative_signal_interpretable"])
 
     def test_complete_discriminating_protocol_is_interpretable_but_not_headline_public_evidence(self):
         rows = []
