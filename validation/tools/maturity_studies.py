@@ -511,11 +511,179 @@ def analyze_burden(rows: Iterable[Mapping[str, Any]]) -> Dict[str, Any]:
     }
 
 
+
+def validate_multilang_qualification(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate evidence for MAT-08 without inventing acceptance thresholds."""
+    errors: List[str] = []
+    if not bool(data.get("preregistered")):
+        errors.append("multilang qualification must be preregistered")
+    revision = str(data.get("revision", "")).strip()
+    if not revision:
+        errors.append("revision is required")
+    thresholds = data.get("acceptance_thresholds")
+    if not isinstance(thresholds, dict):
+        errors.append("acceptance_thresholds object is required")
+        thresholds = {}
+    languages = data.get("languages")
+    if not isinstance(languages, dict):
+        errors.append("languages object is required")
+        languages = {}
+
+    required_languages = ("python", "typescript")
+    results: Dict[str, Any] = {}
+    for language in required_languages:
+        entry = languages.get(language)
+        if not isinstance(entry, dict):
+            errors.append(f"{language}: qualification result is required")
+            continue
+        cases = entry.get("cases")
+        tp = entry.get("true_positive")
+        tn = entry.get("true_negative")
+        fp = entry.get("false_positive")
+        fn = entry.get("false_negative")
+        for name, value in (("cases", cases), ("true_positive", tp), ("true_negative", tn), ("false_positive", fp), ("false_negative", fn)):
+            if not isinstance(value, int) or value < 0:
+                errors.append(f"{language}.{name} must be a non-negative integer")
+        if not bool(entry.get("parser_available")):
+            errors.append(f"{language}: parser_available must be true")
+        if not str(entry.get("engine", "")).strip():
+            errors.append(f"{language}: engine is required")
+        evidence = _nonempty_list(entry.get("evidence"))
+        if not any(str(item).strip() for item in evidence):
+            errors.append(f"{language}: evidence is required")
+        if all(isinstance(v, int) and v >= 0 for v in (tp, tn, fp, fn)):
+            total = int(tp) + int(tn) + int(fp) + int(fn)
+            if isinstance(cases, int) and cases != total:
+                errors.append(f"{language}: cases must equal TP+TN+FP+FN")
+            precision = (tp / (tp + fp)) if (tp + fp) else None
+            recall = (tp / (tp + fn)) if (tp + fn) else None
+            fpr = (fp / (fp + tn)) if (fp + tn) else None
+            results[language] = {"precision": precision, "recall": recall, "false_positive_rate": fpr, "cases": total}
+
+    for metric in ("min_recall", "max_false_positive_rate"):
+        value = thresholds.get(metric)
+        if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0 <= float(value) <= 1:
+            errors.append(f"acceptance_thresholds.{metric} must be between 0 and 1")
+
+    if not errors:
+        min_recall = float(thresholds["min_recall"])
+        max_fpr = float(thresholds["max_false_positive_rate"])
+        for language, metrics in results.items():
+            recall = metrics["recall"]
+            fpr = metrics["false_positive_rate"]
+            if recall is None or recall < min_recall:
+                errors.append(f"{language}: recall does not meet preregistered threshold")
+            if fpr is None or fpr > max_fpr:
+                errors.append(f"{language}: false-positive rate exceeds preregistered threshold")
+
+    return {
+        "study": "MULTILANG_QUALIFICATION",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+        "results": results,
+        "claim_boundary": "Qualification is limited to the frozen corpus, rules and thresholds in this evidence package.",
+    }
+
+
+def validate_independent_security_audit(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate MAT-09 evidence package structure and blocking finding status."""
+    errors: List[str] = []
+    if not bool(data.get("independence_attestation")):
+        errors.append("independence_attestation must be true")
+    for field in ("assessor_id", "revision", "scope"):
+        if not str(data.get(field, "")).strip():
+            errors.append(f"{field} is required")
+    for section in ("threat_model", "supply_chain"):
+        item = data.get(section)
+        if not isinstance(item, dict):
+            errors.append(f"{section} assessment is required")
+            continue
+        if str(item.get("status", "")).upper() != "PASS":
+            errors.append(f"{section}.status must be PASS")
+        evidence = _nonempty_list(item.get("evidence"))
+        if not any(str(x).strip() for x in evidence):
+            errors.append(f"{section}.evidence is required")
+    open_findings = data.get("open_findings")
+    if not isinstance(open_findings, dict):
+        errors.append("open_findings object is required")
+    else:
+        for severity in ("critical", "high"):
+            value = open_findings.get(severity)
+            if not isinstance(value, int) or value < 0:
+                errors.append(f"open_findings.{severity} must be a non-negative integer")
+            elif value != 0:
+                errors.append(f"open {severity} findings must be zero for MAT-09")
+    return {
+        "study": "INDEPENDENT_SECURITY_AUDIT",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+    }
+
+
+def validate_governance_1_0(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Validate that stable-1.0 governance roles and decision rules are explicitly established."""
+    errors: List[str] = []
+    if str(data.get("status", "")).upper() != "ADOPTED":
+        errors.append("governance status must be ADOPTED")
+    roles = data.get("roles")
+    if not isinstance(roles, dict):
+        errors.append("roles object is required")
+        roles = {}
+    for role in ("maintainers", "release_manager", "security_response"):
+        value = roles.get(role)
+        if isinstance(value, list):
+            if not any(str(x).strip() for x in value):
+                errors.append(f"roles.{role} must contain at least one identity")
+        elif not str(value or "").strip():
+            errors.append(f"roles.{role} is required")
+    for field in ("normative_change_rule", "release_authority_rule", "security_response_rule", "appeal_rule"):
+        if not str(data.get(field, "")).strip():
+            errors.append(f"{field} is required")
+    evidence = _nonempty_list(data.get("evidence"))
+    if not any(str(x).strip() for x in evidence):
+        errors.append("governance evidence is required")
+    return {
+        "study": "GOVERNANCE_1_0",
+        "status": "VALID" if not errors else "INVALID",
+        "errors": errors,
+    }
+
+
+def validate_evidence_for_criterion(
+    criterion_id: str,
+    data: Mapping[str, Any],
+    benchmark_registry: Optional[Mapping[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Dispatch maturity evidence to the semantic validator for its criterion."""
+    cid = criterion_id.strip().upper()
+    if cid == "MAT-02":
+        return validate_p2_result(data)
+    if cid == "MAT-03":
+        return validate_replication_result(data)
+    if cid == "MAT-04":
+        if benchmark_registry is None:
+            raise ValueError("MAT-04 validation requires benchmark registry")
+        return validate_p3_result(data, benchmark_registry)
+    if cid == "MAT-05":
+        return validate_p4_result(data)
+    if cid == "MAT-06":
+        return analyze_inter_rater(data)
+    if cid == "MAT-07":
+        return validate_burden_error_result(data)
+    if cid == "MAT-08":
+        return validate_multilang_qualification(data)
+    if cid == "MAT-09":
+        return validate_independent_security_audit(data)
+    if cid == "MAT-10":
+        return validate_governance_1_0(data)
+    raise ValueError(f"No semantic maturity validator for {cid}")
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="AuraCode maturity-study validation toolkit")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("p2", "p2-result", "p4", "inter-rater", "burden", "replication", "burden-errors"):
+    for name in ("p2", "p2-result", "p4", "inter-rater", "burden", "replication", "burden-errors", "multilang-qualification", "security-audit", "governance"):
         p = sub.add_parser(name)
         p.add_argument("input")
         p.add_argument("--json", action="store_true")
@@ -548,6 +716,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         result = validate_burden_error_result(data)
     elif args.command == "inter-rater":
         result = analyze_inter_rater(data)
+    elif args.command == "multilang-qualification":
+        result = validate_multilang_qualification(data)
+    elif args.command == "security-audit":
+        result = validate_independent_security_audit(data)
+    elif args.command == "governance":
+        result = validate_governance_1_0(data)
     else:
         rows = data.get("results", [])
         if not isinstance(rows, list):
