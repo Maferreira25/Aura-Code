@@ -130,7 +130,11 @@ def _verify_nested_evidence(root: Path, data: Mapping[str, Any]) -> Dict[str, An
         if ref.lower().startswith(("http://", "https://", "ftp://", "urn:")):
             rejected.append(ref)
             continue
-        candidate = (root_resolved / ref).resolve()
+        raw_path = Path(ref)
+        if raw_path.is_absolute():
+            rejected.append(ref)
+            continue
+        candidate = (root_resolved / raw_path).resolve()
         try:
             candidate.relative_to(root_resolved)
         except ValueError:
