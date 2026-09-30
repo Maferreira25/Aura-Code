@@ -1,0 +1,142 @@
+{
+  "study_id": "P2-PRIVATE-001",
+  "preregistered": true,
+  "private_or_fresh_split": true,
+  "arms": [
+    "A0",
+    "A1",
+    "A2"
+  ],
+  "repetitions_per_arm": 5,
+  "private_split_commitment_sha256": "REPLACE_WITH_64_HEX_SHA256_BEFORE_EXECUTION",
+  "model_agent_pairings": [
+    {
+      "model_family": "REPLACE_BEFORE_EXECUTION",
+      "model_display_name": "REPLACE_BEFORE_EXECUTION",
+      "agent": "REPLACE_BEFORE_EXECUTION",
+      "reasoning_effort": "REPLACE_BEFORE_EXECUTION"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "PRIVATE-01",
+      "family": "security"
+    },
+    {
+      "id": "PRIVATE-02",
+      "family": "data-integrity"
+    },
+    {
+      "id": "PRIVATE-03",
+      "family": "supply-chain"
+    },
+    {
+      "id": "PRIVATE-04",
+      "family": "evaluator-integrity"
+    },
+    {
+      "id": "PRIVATE-05",
+      "family": "architecture"
+    },
+    {
+      "id": "PRIVATE-06",
+      "family": "reliability"
+    },
+    {
+      "id": "PRIVATE-07",
+      "family": "security"
+    },
+    {
+      "id": "PRIVATE-08",
+      "family": "data-integrity"
+    },
+    {
+      "id": "PRIVATE-09",
+      "family": "supply-chain"
+    },
+    {
+      "id": "PRIVATE-10",
+      "family": "evaluator-integrity"
+    },
+    {
+      "id": "PRIVATE-11",
+      "family": "architecture"
+    },
+    {
+      "id": "PRIVATE-12",
+      "family": "reliability"
+    },
+    {
+      "id": "PRIVATE-13",
+      "family": "security"
+    },
+    {
+      "id": "PRIVATE-14",
+      "family": "data-integrity"
+    },
+    {
+      "id": "PRIVATE-15",
+      "family": "supply-chain"
+    },
+    {
+      "id": "PRIVATE-16",
+      "family": "evaluator-integrity"
+    },
+    {
+      "id": "PRIVATE-17",
+      "family": "architecture"
+    },
+    {
+      "id": "PRIVATE-18",
+      "family": "reliability"
+    },
+    {
+      "id": "PRIVATE-19",
+      "family": "security"
+    },
+    {
+      "id": "PRIVATE-20",
+      "family": "data-integrity"
+    },
+    {
+      "id": "PRIVATE-21",
+      "family": "supply-chain"
+    },
+    {
+      "id": "PRIVATE-22",
+      "family": "evaluator-integrity"
+    },
+    {
+      "id": "PRIVATE-23",
+      "family": "architecture"
+    },
+    {
+      "id": "PRIVATE-24",
+      "family": "reliability"
+    },
+    {
+      "id": "PRIVATE-25",
+      "family": "security"
+    },
+    {
+      "id": "PRIVATE-26",
+      "family": "data-integrity"
+    },
+    {
+      "id": "PRIVATE-27",
+      "family": "supply-chain"
+    },
+    {
+      "id": "PRIVATE-28",
+      "family": "evaluator-integrity"
+    },
+    {
+      "id": "PRIVATE-29",
+      "family": "architecture"
+    },
+    {
+      "id": "PRIVATE-30",
+      "family": "reliability"
+    }
+  ]
+}
