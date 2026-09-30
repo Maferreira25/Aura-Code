@@ -1,0 +1,157 @@
+{
+  "version": "1.0",
+  "target": "stable-1.0",
+  "policy": "This workplan describes how to produce evidence. It is never a source of PASS status.",
+  "criteria": [
+    {
+      "id": "MAT-01",
+      "owner_role": "experiment_operator",
+      "independence_required": false,
+      "human_required": true,
+      "prerequisites": [
+        "Frozen P1 protocol and environment"
+      ],
+      "validator": "python validation/tools/validate_experiment_evidence.py validation/results --require-complete --json",
+      "evidence_package": "validation/results",
+      "completion_condition": "formal_p1_complete=true and comparative_signal_interpretable=true",
+      "next_action": "Execute only MISSING runs from validation/tools/p1_matrix.py using fresh isolated sessions."
+    },
+    {
+      "id": "MAT-02",
+      "owner_role": "confirmatory_study_operator",
+      "independence_required": false,
+      "human_required": true,
+      "prerequisites": [
+        "Private/fresh split",
+        "P2 preregistration",
+        "private split commitment"
+      ],
+      "validator": "python validation/tools/maturity_studies.py p2-result <package.json> --root . --json",
+      "evidence_package": "completed P2 canonical JSON package",
+      "completion_condition": "P2_RESULT validator returns VALID and reviewed package is pinned in maturity ledger",
+      "next_action": "Freeze a private/fresh P2 preregistration, execute the full matrix, then prepare a reviewed maturity entry."
+    },
+    {
+      "id": "MAT-03",
+      "owner_role": "replication_operator",
+      "independence_required": false,
+      "human_required": true,
+      "prerequisites": [
+        "At least two completed studies using distinct model/agent identities"
+      ],
+      "validator": "python validation/tools/maturity_studies.py replication <package.json> --json",
+      "evidence_package": "replication canonical JSON package",
+      "completion_condition": "REPLICATION validator returns VALID and reviewed package is pinned in maturity ledger",
+      "next_action": "Complete studies on at least two distinct model/agent pairings and record comparative rates without inventing effect thresholds post hoc."
+    },
+    {
+      "id": "MAT-04",
+      "owner_role": "external_benchmark_operator",
+      "independence_required": false,
+      "human_required": true,
+      "prerequisites": [
+        "P3 preregistration",
+        "license verification",
+        "immutable upstream revisions",
+        "task subset commitments"
+      ],
+      "validator": "python validation/tools/maturity_studies.py p3-result <package.json> --registry validation/benchmark-registry.json --root . --json",
+      "evidence_package": "completed P3 canonical JSON package",
+      "completion_condition": "P3_RESULT validator returns VALID for at least two benchmark families and reviewed package is pinned",
+      "next_action": "Freeze P3 on two or more eligible external benchmark families and execute A0/A1/A2 without collapsing heterogeneous scores."
+    },
+    {
+      "id": "MAT-05",
+      "owner_role": "operational_validation_operator",
+      "independence_required": false,
+      "human_required": true,
+      "prerequisites": [
+        "Representative service",
+        "safe staging environment",
+        "P4 preregistration"
+      ],
+      "validator": "python validation/tools/maturity_studies.py p4 <package.json> --root . --json",
+      "evidence_package": "completed P4 canonical JSON package",
+      "completion_condition": "P4_RESULT validator returns VALID with PASS load/soak/rollback/recovery/observability and reviewed package is pinned",
+      "next_action": "Run preregistered load, soak, rollback, recovery and observability exercises on a representative safe environment."
+    },
+    {
+      "id": "MAT-06",
+      "owner_role": "independent_assessors",
+      "independence_required": true,
+      "human_required": true,
+      "prerequisites": [
+        "Two or more independent assessors",
+        "frozen assurance profile",
+        "identical control set"
+      ],
+      "validator": "python validation/tools/maturity_studies.py inter-rater <package.json> --root . --json",
+      "evidence_package": "inter-rater canonical JSON package",
+      "completion_condition": "INTER_RATER validator returns VALID with complete paired ratings and reviewed package is pinned",
+      "next_action": "Have at least two independent assessors rate the full selected profile without implementation roles."
+    },
+    {
+      "id": "MAT-07",
+      "owner_role": "measurement_operator",
+      "independence_required": false,
+      "human_required": true,
+      "prerequisites": [
+        "Runs with burden metrics",
+        "error-calibration cases"
+      ],
+      "validator": "python validation/tools/maturity_studies.py burden-errors <package.json> --json",
+      "evidence_package": "burden/error canonical JSON package",
+      "completion_condition": "BURDEN_ERRORS validator returns VALID and reviewed package is pinned",
+      "next_action": "Collect elapsed time and human interventions for A0/A1/A2 plus false-positive/false-negative calibration; preserve missing metrics as missing."
+    },
+    {
+      "id": "MAT-08",
+      "owner_role": "verification_qualification_operator",
+      "independence_required": true,
+      "human_required": true,
+      "prerequisites": [
+        "Private/fresh independently labeled corpus",
+        "corpus commitment",
+        "frozen thresholds",
+        "Python and TypeScript engines"
+      ],
+      "validator": "python validation/tools/maturity_studies.py multilang-qualification <package.json> --json",
+      "evidence_package": "private multi-language qualification canonical JSON package",
+      "completion_condition": "MULTILANG_QUALIFICATION validator returns VALID and maturity_eligible=true, then reviewed package is pinned",
+      "next_action": "Create an independently labeled private/fresh Python+TypeScript corpus, freeze thresholds and execute qualification. Do not use the public baseline as stable evidence."
+    },
+    {
+      "id": "MAT-09",
+      "owner_role": "independent_security_assessor",
+      "independence_required": true,
+      "human_required": true,
+      "prerequisites": [
+        "Frozen revision",
+        "independent assessor",
+        "threat-model review",
+        "supply-chain review"
+      ],
+      "validator": "python validation/tools/maturity_studies.py security-audit <package.json> --json",
+      "evidence_package": "independent security/supply-chain canonical JSON package",
+      "completion_condition": "INDEPENDENT_SECURITY_AUDIT validator returns VALID with zero open Critical/High findings and reviewed package is pinned",
+      "next_action": "Commission independent threat-model and supply-chain review using docs/audit/INDEPENDENT-SECURITY-REVIEW-GUIDE.md."
+    },
+    {
+      "id": "MAT-10",
+      "owner_role": "human_project_governance",
+      "independence_required": true,
+      "human_required": true,
+      "prerequisites": [
+        "Human governance decision",
+        "named roles",
+        "release authority",
+        "security response",
+        "appeal rule"
+      ],
+      "validator": "python validation/tools/maturity_studies.py governance <package.json> --json",
+      "evidence_package": "adopted governance canonical JSON package",
+      "completion_condition": "GOVERNANCE_1_0 validator returns VALID after explicit human adoption and reviewed package is pinned",
+      "next_action": "Humans must decide and adopt the governance items in docs/GOVERNANCE-1.0-PROPOSAL.md. AI must not appoint authority."
+    }
+  ]
+}
