@@ -131,6 +131,47 @@ def validate_state(state: Mapping[str, Any]) -> List[str]:
                 errors.append(f"control '{control_id}' must be an object")
             elif normalize_status(result.get("status")) not in VALID_STATUSES:
                 errors.append(f"control '{control_id}' has invalid status")
+
+    findings = state.get("open_findings")
+    if not isinstance(findings, list):
+        errors.append("open_findings must be an array")
+    else:
+        for index, finding in enumerate(findings):
+            if not isinstance(finding, dict):
+                errors.append(f"open_findings[{index}] must be an object")
+                continue
+            if not str(finding.get("id", "")).strip():
+                errors.append(f"open_findings[{index}] is missing id")
+            if str(finding.get("severity", "")).upper() not in VALID_FINDING_SEVERITIES:
+                errors.append(f"open_findings[{index}] has invalid severity")
+            if str(finding.get("status", "")).upper() not in VALID_FINDING_STATUSES:
+                errors.append(f"open_findings[{index}] has invalid status")
+            if not isinstance(finding.get("evidence", []), list):
+                errors.append(f"open_findings[{index}].evidence must be an array")
+            if not isinstance(finding.get("history", []), list):
+                errors.append(f"open_findings[{index}].history must be an array")
+
+    audit_history = state.get("audit_history")
+    if not isinstance(audit_history, list):
+        errors.append("audit_history must be an array")
+    else:
+        for index, audit_item in enumerate(audit_history):
+            if not isinstance(audit_item, dict):
+                errors.append(f"audit_history[{index}] must be an object")
+                continue
+            if str(audit_item.get("status", "")).upper() not in {"PASS", "FAIL", "ERROR", "NOT_RUN"}:
+                errors.append(f"audit_history[{index}] has invalid status")
+            if not isinstance(audit_item.get("guarantees", {}), dict):
+                errors.append(f"audit_history[{index}].guarantees must be an object")
+            if not isinstance(audit_item.get("evidence", []), list):
+                errors.append(f"audit_history[{index}].evidence must be an array")
+
+    for field in ("material_decisions", "transition_history"):
+        entries = state.get(field)
+        if not isinstance(entries, list):
+            errors.append(f"{field} must be an array")
+        elif any(not isinstance(item, dict) for item in entries):
+            errors.append(f"{field} entries must be objects")
     return errors
 
 
