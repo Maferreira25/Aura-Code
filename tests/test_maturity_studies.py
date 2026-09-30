@@ -164,9 +164,14 @@ class MaturityStudiesTests(unittest.TestCase):
     def test_valid_p4_result_requires_all_operational_dimensions(self):
         evidence = ["report.json"]
         data = {
+            "study": "P4",
+            "preregistered": True,
+            "preregistration_path": "p4-plan.json",
+            "preregistration_sha256": "a" * 64,
             "service_id": "svc",
             "revision": "abc",
-            "load": {"status": "PASS", "evidence": evidence, "target_rps": 100},
+            "environment": "staging",
+            "load": {"status": "PASS", "evidence": evidence, "target_rps": 100, "duration_minutes": 10},
             "soak": {"status": "PASS", "evidence": evidence, "duration_minutes": 60},
             "rollback": {"status": "PASS", "evidence": evidence},
             "recovery": {"status": "PASS", "evidence": evidence},
@@ -178,7 +183,12 @@ class MaturityStudiesTests(unittest.TestCase):
 
     def test_inter_rater_computes_agreement_without_claiming_correctness(self):
         data = {
-            "assessors": [{"id": "r1"}, {"id": "r2"}],
+            "assurance_level": "AL1",
+            "control_ids": ["C1", "C2", "C3"],
+            "assessors": [
+                {"id": "r1", "independence_attestation": True, "implementation_role": False},
+                {"id": "r2", "independence_attestation": True, "implementation_role": False},
+            ],
             "ratings": [
                 {"control_id": "C1", "assessor_id": "r1", "rating": "PASS"},
                 {"control_id": "C1", "assessor_id": "r2", "rating": "PASS"},
@@ -316,6 +326,7 @@ class MaturityStudiesTests(unittest.TestCase):
     def test_independent_security_audit_rejects_open_high(self):
         data = {
             "independence_attestation": True,
+            "implementation_role": False,
             "assessor_id": "external-reviewer",
             "revision": "abc123",
             "scope": "threat model and supply chain",
