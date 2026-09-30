@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 443,
+  "file_count": 447,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -384,8 +384,8 @@
       "bytes": 1424
     },
     "pyproject.toml": {
-      "sha256": "d8401f1f769dfc9ab4740a0fbbffa30ffb27503104965222631b12322b6ccde7",
-      "bytes": 2394
+      "sha256": "a60579b2702c9d76da17593050ac423667c791627e038330c44caa9a25bda1fe",
+      "bytes": 2429
     },
     "README.md": {
       "sha256": "962bf970d9a0993a6a9aabaa65b943f67dbec6f7fd04371abad86644ea1dcafe",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "cc40d76a26591925595dbfc46e1bbd791bd9c97a3302835b84aa7a35e0d939fc",
-      "bytes": 47649
+      "sha256": "28d6f9139066bc7c91baa9fc126f8418eb0e50e78646ab2cfe70247d09961aba",
+      "bytes": 48871
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "fe5d463031496d3ca4246c040a2fd623ad0359e11a707e51018b34a206f8976f",
-      "bytes": 15302
+      "sha256": "944f3f872f3d9b97bb6e80aec9bb497fa58e60b7e7cc1c2c50530899e372a965",
+      "bytes": 15378
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,16 +1748,16 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "b372e1727894cce51976c3380773519dd5f49175abe5ae0ed287090972a10058",
-      "bytes": 1112
+      "sha256": "ca13f84fdb96b7cdda006af2d106b226d4a5a939d6016d0ade5d29e5c944ce07",
+      "bytes": 1144
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
       "bytes": 7182
     },
     "tests/test_protected_assurance_plane.py": {
-      "sha256": "93e06ef154002a471bb87fedfe0a1f41c0aeff49b400e3342396a77ed9b6c6f2",
-      "bytes": 3752
+      "sha256": "e0b6ddd8b7075d5f8c73e792a6ca3c0a7c42d3ad7be4e67112619f5a6733a99b",
+      "bytes": 3996
     },
     "schemas/held-out-suite.schema.json": {
       "sha256": "22359b62ba7e2a0e68de66ce96bc5becc1a4a895b3235e5ec8b659cd52c51505",
@@ -1774,6 +1774,22 @@
     "tests/test_heldout_runner.py": {
       "sha256": "1d16cd7dcf5e965469fe98d299ceeb7c58bd96bd10687eeee18095d4fe887a7d",
       "bytes": 8229
+    },
+    "schemas/property-suite.schema.json": {
+      "sha256": "582842714d6fecb1da165d95a441d150c74269c68d51c492ed36c9c3f353148e",
+      "bytes": 1016
+    },
+    "templates/property-suite.json": {
+      "sha256": "3cafeafd2f917d7358e619715c6ec82678827a600cbd0f56c2c5331e9af38215",
+      "bytes": 266
+    },
+    "tools/property_engine.py": {
+      "sha256": "7065221f49a0d2b24a7be7799c419a31c5cf86ebf452c19a18ee005c2fb3318e",
+      "bytes": 9528
+    },
+    "tests/test_property_engine.py": {
+      "sha256": "048d19c18f6581ba50a80598dd951327cf4dd303e0b7329bdea52c7a3f177fac",
+      "bytes": 5330
     }
   }
 }
