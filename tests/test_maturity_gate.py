@@ -188,6 +188,9 @@ class MaturityGateTests(unittest.TestCase):
             governance_path.write_text(
                 json.dumps({
                     "status": "ADOPTED",
+                    "human_adoption_attestation": True,
+                    "adopted_at": "2026-09-30",
+                    "adopted_by": ["human-authority"],
                     "roles": {
                         "maintainers": ["maintainer-1"],
                         "release_manager": "release-1",
