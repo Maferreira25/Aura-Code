@@ -1696,8 +1696,8 @@
       "bytes": 11
     },
     "tools/assurance_state.py": {
-      "sha256": "807954c95db93f987968ea7a77c5431419b701fe77b0df66499fefabcfd48c54",
-      "bytes": 21470
+      "sha256": "70ee81269d1d42df3c86a1529752f78d9fbe6fafa3add24ece933c688098fb6d",
+      "bytes": 21526
     },
     "controls/gates.json": {
       "sha256": "d1c4425e4166c2180a137120426f0294552119fd87ec99aefa145b6ead6a6cac",
