@@ -53,6 +53,9 @@ from tools import heldout_runner
 from tools import property_engine
 from tools import metamorphic_engine
 from tools import differential_engine
+from tools import taint_engine
+from tools import static_analyzer_adapters
+from tools import detector_diversity
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -311,6 +314,17 @@ def main() -> None:
     differential_p.add_argument("manifest", help="Path to differential-suite manifest")
     differential_p.add_argument("--target", default=".", help="Target workspace directory")
     differential_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: taint
+    taint_p = subparsers.add_parser("taint", help="Run native Python taint/data-flow analysis")
+    taint_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
+    taint_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+
+    # Subcommand: analyzer-report
+    analyzer_p = subparsers.add_parser("analyzer-report", help="Normalize an external SARIF static-analysis report")
+    analyzer_p.add_argument("report", help="Path to SARIF report")
+    analyzer_p.add_argument("--id", required=True, help="Stable analyzer identifier, e.g. semgrep or codeql")
+    analyzer_p.add_argument("--json", action="store_true", help="Output normalized report in JSON format")
 
     # Subcommand: traceability
     trace_p = subparsers.add_parser("traceability", help="Verify Requirement -> Invariant -> Implementation -> Test -> Evidence chains")
@@ -606,6 +620,24 @@ def main() -> None:
                     f"Matches: {res.get('matches', 0)}/{res.get('cases_total', 0)}"
                 )
         sys.exit(0 if res.get("status") == "PASS" else 1)
+
+    elif args.command == "taint":
+        import json
+        workspace = Path(args.target).resolve()
+        res = taint_engine.analyze_workspace(workspace)
+        if args.json:
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+        else:
+            print(f"AuraCode Taint Analysis: {res.get('status')}")
+            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
+            print(f"Findings: {len(res.get('findings', []))}")
+        sys.exit(0 if res.get("status") == "PASS" else 1)
+
+    elif args.command == "analyzer-report":
+        import json
+        res = static_analyzer_adapters.normalize_sarif(Path(args.report), analyzer_id=args.id)
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+        sys.exit(0 if res.get("status") in {"PASS", "FAIL"} else 1)
 
     elif args.command == "traceability":
         import json
