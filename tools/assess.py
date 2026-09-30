@@ -59,6 +59,8 @@ def assess_data(
     missing_evidence = {}
     passed = []
     na = []
+    blocked = []
+    waived = []
 
     for cid in profile.get("included_controls", []):
         r = results.get(cid, {"status": "NOT_ASSESSED"})
@@ -90,15 +92,33 @@ def assess_data(
                     passed.append(cid)
         elif status == "FAIL":
             fail.append(cid)
-        elif status == "NA":
+        elif status in ("NA", "NOT_APPLICABLE"):
             if not isinstance(r, dict) or not r.get("rationale", "").strip():
                 bad_na.append(cid)
             else:
                 na.append(cid)
-        else:
+        elif status == "WAIVED":
+            waiver = r.get("waiver") if isinstance(r, dict) else None
+            rationale = r.get("rationale", "").strip() if isinstance(r, dict) else ""
+            if waiver and rationale:
+                waived.append(cid)
+            else:
+                blocked.append({"control_id": cid, "status": "WAIVED", "reason": "Waiver metadata and rationale are required."})
+        elif status in ("INCONCLUSIVE", "NOT_TESTED", "ERROR", "STALE"):
+            blocked.append({"control_id": cid, "status": status, "reason": "Canonical non-PASS state blocks profile satisfaction."})
+        elif status == "NOT_ASSESSED":
             not_assessed.append(cid)
+        else:
+            blocked.append({"control_id": cid, "status": "ERROR", "reason": f"Unknown assessment status: {status!r}"})
 
-    satisfied = (len(fail) == 0 and len(bad_na) == 0 and len(bad_pass) == 0 and len(not_assessed) == 0)
+    satisfied = (
+        len(fail) == 0
+        and len(bad_na) == 0
+        and len(bad_pass) == 0
+        and len(not_assessed) == 0
+        and len(blocked) == 0
+        and len(waived) == 0
+    )
     return {
         "success": satisfied,
         "project": a.get("project", "unnamed"),
@@ -110,6 +130,8 @@ def assess_data(
         "na": na,
         "invalid_na": bad_na,
         "not_assessed": not_assessed,
+        "blocked": blocked,
+        "waived": waived,
         "total_required": len(profile.get("included_controls", [])),
     }
 
@@ -163,7 +185,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     print(
         f"PASS={len(res['passed'])} NA={len(res['na'])} FAIL={len(res['fail'])} "
         f"NOT_ASSESSED={len(res['not_assessed'])} INVALID_NA={len(res['invalid_na'])} "
-        f"INVALID_PASS={len(res.get('invalid_pass', []))}"
+        f"INVALID_PASS={len(res.get('invalid_pass', []))} BLOCKED={len(res.get('blocked', []))} "
+        f"WAIVED={len(res.get('waived', []))}"
     )
 
     if res["fail"]:
@@ -177,6 +200,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         print("NA without rationale:", ", ".join(res["invalid_na"]))
     if res["not_assessed"]:
         print("NOT_ASSESSED:", ", ".join(res["not_assessed"]))
+    if res.get("blocked"):
+        print("BLOCKED:", ", ".join(f"{item['control_id']}={item['status']}" for item in res["blocked"]))
+    if res.get("waived"):
+        print("WAIVED (does not satisfy profile without policy authorization):", ", ".join(res["waived"]))
 
     if not res["success"]:
         print("\nPROFILE NOT SATISFIED")
