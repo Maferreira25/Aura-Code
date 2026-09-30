@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Maferreira25/Aura-Code/main/schemas/static-analyzer-report.schema.json",
+  "title": "Aura Code Normalized Static Analyzer Report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "analyzer_id",
+    "analyzer_type",
+    "status",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0.0"},
+    "analyzer_id": {"type": "string", "minLength": 1},
+    "analyzer_type": {"enum": ["native-taint", "sarif-external"]},
+    "status": {"enum": ["PASS", "FAIL", "INCONCLUSIVE", "NOT_TESTED", "ERROR"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fingerprint", "rule_id", "severity", "file", "line", "message", "source", "sink"],
+        "properties": {
+          "fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "rule_id": {"type": "string", "minLength": 1},
+          "severity": {"enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]},
+          "file": {"type": "string", "minLength": 1},
+          "line": {"type": "integer", "minimum": 1},
+          "message": {"type": "string", "minLength": 1},
+          "source": {"type": ["string", "null"]},
+          "sink": {"type": ["string", "null"]},
+          "tool": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": {"type": "object"}
+  },
+  "additionalProperties": false
+}
