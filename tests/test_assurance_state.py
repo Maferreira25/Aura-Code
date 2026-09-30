@@ -343,6 +343,19 @@ class AssuranceStateTests(unittest.TestCase):
         errors = validate_state(state)
         self.assertIn("unknown state field: unexpected", errors)
 
+    def test_ai_verifier_requires_distinct_session_at_al2(self):
+        state = new_state("demo", "AL2")
+        state["current_stage"] = "IMPLEMENTATION"
+        self.satisfy_gate(state, "VERIFICATION")
+        record_actor(state, "implementer", "agent-a", "AI_AGENT", None, "model-x")
+        record_actor(state, "verifier", "agent-b", "AI_AGENT", None, "model-y")
+        result = evaluate_gate(state, "VERIFICATION", ROOT)
+        self.assertEqual(result["decision"], "BLOCK")
+        self.assertIn(
+            "AI independence requires session_id for both implementer and verifier",
+            "\n".join(result["reasons"]),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
