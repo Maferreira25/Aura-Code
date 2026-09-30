@@ -110,3 +110,44 @@ The current historical public-smoke dataset is intentionally reported as incompl
 Use `p1_matrix.py` instead of manually counting or inventing reruns. It reconstructs the preregistered execution matrix, marks existing run IDs as complete, preserves the frozen arm order for each repetition, and emits the exact remaining work.
 
 At the current repository state the matrix contains 114 expected records: 90 automated, 15 ambiguity, and 9 architecture-sequence records. The historical dataset has 36, leaving 78 missing.
+
+
+## Maturity study tooling
+
+Stable-1.0 maturity studies are machine-checked but never auto-completed from plans alone.
+
+Useful commands:
+
+~~~bash
+# P2 private/fresh split commitment
+python validation/tools/private_split.py commit /private/p2-split --output /tmp/p2-commitment.json --json
+
+# Validate P2 preregistration and completed result
+python validation/tools/maturity_studies.py p2 validation/config/p2-preregistration.example.json --json
+python validation/tools/maturity_studies.py p2-result <p2-result.json> --root . --json
+
+# P3 external benchmark plan/result
+python validation/tools/maturity_studies.py p3 <p3-plan.json> --registry validation/benchmark-registry.json --json
+python validation/tools/maturity_studies.py p3-result <p3-result.json> --registry validation/benchmark-registry.json --root . --json
+
+# P4 operational plan/result
+python validation/tools/maturity_studies.py p4-plan <p4-plan.json> --json
+python validation/tools/maturity_studies.py p4 <p4-result.json> --root . --json
+
+# Independent assessor agreement
+python validation/tools/maturity_studies.py inter-rater <inter-rater.json> --root . --json
+
+# Burden and FP/FN calibration
+python validation/tools/maturity_studies.py burden-errors <burden-errors.json> --json
+
+# Public Python/TypeScript qualification baseline
+python validation/tools/qualify_multilang.py --revision <commit> --json
+
+# Prepare (but do not apply) a reviewed maturity ledger entry
+python validation/tools/prepare_maturity_evidence.py MAT-XX <package.json> \
+  --reviewed-by "<reviewer>" --reviewed-at "<ISO-8601>" --root . --json
+~~~
+
+The templates under validation/config are intentionally fail-closed. Placeholder or incomplete templates are not evidence.
+
+A maturity PASS requires a semantically valid canonical JSON package, real nested evidence files, reviewer metadata, and a matching SHA-256. The tooling does not turn a preregistration, template, or public development corpus into a completed maturity claim.
