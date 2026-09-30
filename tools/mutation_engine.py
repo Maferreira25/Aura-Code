@@ -403,6 +403,8 @@ def execute_mutation_analysis(
 
     killed = 0
     survived = 0
+    timed_out = 0
+    evaluator_errors = 0
     mutants_report = []
     remediations = []
 
@@ -434,12 +436,16 @@ def execute_mutation_analysis(
                 else:
                     m.status = "SURVIVED"
                     survived += 1
-            except subprocess.TimeoutExpired:
-                m.status = "KILLED"  # Timeout is considered killed by infinite loop/stall
-                killed += 1
-            except Exception as e:
-                m.status = "KILLED"
-                killed += 1
+            except subprocess.TimeoutExpired as exc:
+                # A stalled evaluator is not evidence that the test suite killed the mutant.
+                m.status = "TIMEOUT"
+                m.error_output = str(exc)
+                timed_out += 1
+            except Exception as exc:
+                # Evaluator failure must fail closed; never inflate the mutation score.
+                m.status = "ERROR"
+                m.error_output = str(exc)
+                evaluator_errors += 1
 
             mutant_dict: Dict[str, Any] = {
                 "mutant_id": m.mutant_id,
@@ -447,7 +453,8 @@ def execute_mutation_analysis(
                 "type": m.mutation_type,
                 "original": m.original_op,
                 "mutated": m.mutated_op,
-                "status": m.status
+                "status": m.status,
+                "error": m.error_output,
             }
 
             if m.status == "SURVIVED":
@@ -470,16 +477,21 @@ def execute_mutation_analysis(
         # Always guarantee original code is restored
         target_file.write_text(original_code, encoding="utf-8")
 
-    total = killed + survived
-    score = (killed / total * 100.0) if total > 0 else 100.0
+    evaluated = killed + survived
+    total = evaluated + timed_out + evaluator_errors
+    score = (killed / evaluated * 100.0) if evaluated > 0 else 0.0
     passed = survived == 0 or score >= 75.0
+    execution_failed = timed_out > 0 or evaluator_errors > 0
 
     return {
-        "status": "PASS" if passed else "WARN",
+        "status": "ERROR" if execution_failed else ("PASS" if passed else "WARN"),
         "target_file": str(target_file),
         "total_mutants": total,
+        "evaluated_mutants": evaluated,
         "killed": killed,
         "survived": survived,
+        "timeouts": timed_out,
+        "errors": evaluator_errors,
         "mutation_score": round(score, 1),
         "vitiated_oracles_detected": survived > 0,
         "mutants": mutants_report,
