@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuraCode Assurance State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "framework_version",
+    "project",
+    "assurance_level",
+    "current_stage",
+    "created_at",
+    "updated_at",
+    "actors",
+    "controls",
+    "open_findings",
+    "material_decisions",
+    "transition_history"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "framework_version": {"type": "string"},
+    "project": {"type": "string", "minLength": 1},
+    "assurance_level": {"enum": ["AL1", "AL2", "AL3", "AL4"]},
+    "current_stage": {
+      "enum": [
+        "INTAKE",
+        "RISK_CLASSIFIED",
+        "REQUIREMENTS_VERIFIED",
+        "ARCHITECTURE_VERIFIED",
+        "IMPLEMENTATION",
+        "VERIFICATION",
+        "SECURITY_VERIFIED",
+        "RELEASE_READY",
+        "RELEASE_APPROVED",
+        "DEPLOYED",
+        "PRODUCTION_VERIFIED",
+        "CONTINUOUS_ASSURANCE"
+      ]
+    },
+    "created_at": {"type": "string"},
+    "updated_at": {"type": "string"},
+    "actors": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["actor_id", "kind", "recorded_at"],
+        "properties": {
+          "actor_id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["AI_AGENT", "AI_MODEL", "HUMAN", "DETERMINISTIC_TOOL", "SERVICE"]},
+          "session_id": {"type": ["string", "null"]},
+          "model_id": {"type": ["string", "null"]},
+          "recorded_at": {"type": "string"}
+        }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status", "evidence", "rationale", "updated_at"],
+        "properties": {
+          "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_APPLICABLE", "WAIVED"]},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "rationale": {"type": "string"},
+          "updated_at": {"type": "string"},
+          "waiver": {
+            "type": "object",
+            "required": ["owner", "rationale", "expires"],
+            "properties": {
+              "owner": {"type": "string", "minLength": 1},
+              "rationale": {"type": "string", "minLength": 1},
+              "expires": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"}
+            }
+          }
+        }
+      }
+    },
+    "open_findings": {"type": "array", "items": {"type": "object"}},
+    "material_decisions": {"type": "array", "items": {"type": "object"}},
+    "transition_history": {"type": "array", "items": {"type": "object"}}
+  }
+}
