@@ -1,0 +1,36 @@
+{
+  "$schema": "../schemas/protected-assurance-plane.schema.json",
+  "schema_version": "1.0.0",
+  "protected": [
+    "controls/**",
+    "profiles/**",
+    "schemas/**",
+    "policies/**",
+    ".github/workflows/**",
+    "MANIFEST.json",
+    "contracts.json",
+    "tools/assurance_result.py",
+    "tools/evidence_engine.py",
+    "tools/traceability_engine.py",
+    "tools/assess.py",
+    "tools/audit.py",
+    "tools/preflight.py",
+    "tools/check_surgical_diff.py",
+    "tools/pre_tool_guard.py",
+    "tools/validate_framework.py",
+    "tools/update_manifest.py",
+    "validation/tools/**",
+    "validation/schemas/**"
+  ],
+  "held_out": [
+    "_auracode_assurance/held_out/**",
+    "validation/held_out/**"
+  ],
+  "append_only": [
+    "_auracode_evidence/**",
+    "_auracode_assurance/evidence/**"
+  ],
+  "public_tests": [
+    "tests/**"
+  ]
+}
