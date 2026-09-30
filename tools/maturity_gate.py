@@ -72,6 +72,10 @@ def evaluate_maturity(root: Path = ROOT) -> Dict[str, Any]:
     evidence_map_raw = evidence_data.get("criteria", {})
     evidence_map = evidence_map_raw if isinstance(evidence_map_raw, dict) else {}
 
+    root_str = str(root)
+    added_root_path = root_str not in sys.path
+    if added_root_path:
+        sys.path.insert(0, root_str)
     try:
         from validation.tools.validate_experiment_evidence import evaluate_p1, load_results
         rows, result_load_errors = load_results(root / "validation" / "results")
@@ -89,6 +93,12 @@ def evaluate_maturity(root: Path = ROOT) -> Dict[str, Any]:
             "automated_expected": 90,
             "errors": [f"P1 evaluator unavailable: {exc}"],
         }
+    finally:
+        if added_root_path:
+            try:
+                sys.path.remove(root_str)
+            except ValueError:
+                pass
 
     results: List[Dict[str, Any]] = []
     blockers: List[str] = []
