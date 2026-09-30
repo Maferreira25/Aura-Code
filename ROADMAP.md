@@ -39,6 +39,15 @@
 - Red-teaming indirect prompt injection vectors inside DevContainers.
 
 ## 1.0 Enterprise Candidate
+
+A machine-enforced **Maturity Gate** now protects this boundary. Run:
+
+```bash
+auracode maturity . --json
+```
+
+A stable numeric `1.x.y` version is rejected by `tools/validate_framework.py` unless every non-waivable maturity criterion has evidence and the gate returns `ALLOW`.
+
 Requires:
 - Completed empirical multi-repository validation protocol;
 - Independent external assessor certification;
