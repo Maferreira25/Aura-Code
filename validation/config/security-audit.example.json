@@ -18,5 +18,6 @@
   "open_findings": {
     "critical": 1,
     "high": 1
-  }
+  },
+  "implementation_role": false
 }
