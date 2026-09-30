@@ -20,7 +20,14 @@
     "tools/validate_framework.py",
     "tools/update_manifest.py",
     "validation/tools/**",
-    "validation/schemas/**"
+    "validation/schemas/**",
+    "tools/assurance.py",
+    "tools/assurance_mcp.py",
+    "tools/protected_assurance_plane.py",
+    "tools/mutation_engine.py",
+    "tools/sarif_aggregator.py",
+    "tools/loop_runner.py",
+    "tools/check_*.py"
   ],
   "held_out": [
     "_auracode_assurance/held_out/**",
