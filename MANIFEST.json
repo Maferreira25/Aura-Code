@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 432,
+  "file_count": 434,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -348,8 +348,8 @@
       "bytes": 1091
     },
     "docs/VALIDATION.md": {
-      "sha256": "700a280b55bd02c6e94374fcac2fbc66213d6cb32272b75f96da437cb2c1d8a2",
-      "bytes": 4385
+      "sha256": "52fbd000ac6a02bc680f97dc0adc9492d57371d8841f2e4670bd02fce2c8d060",
+      "bytes": 5646
     },
     "GOVERNANCE.md": {
       "sha256": "43715416ce28d96d2a88de5cfd4de6c000b1ab7d21b3ec9eee559f66cfba98c6",
@@ -1148,8 +1148,8 @@
       "bytes": 5729
     },
     "validation/README.md": {
-      "sha256": "8d6f715af3781334c2679e6496bb318955285f5bd12e84deec55afc7e42868d9",
-      "bytes": 4141
+      "sha256": "528b58b101416441bcb104317b850502b197346e99fdade510a19801c4de25b1",
+      "bytes": 4629
     },
     "validation/reference/public/DAT-ATOMIC-001/ledger.py": {
       "sha256": "cc56d11ce46278675723aaa67307e51f542dca672acc7b1d37ab5d5ce57b5fbd",
@@ -1668,8 +1668,8 @@
       "bytes": 1880
     },
     "validation/tools/analyze_results.py": {
-      "sha256": "eedcd99004600ca5d1bc9d315c4ab9ac0db008ca7405e79640c6028ede37b36a",
-      "bytes": 1642
+      "sha256": "9eec89d01bd4b625341de5e994047c50d67449444cc89697c33b2840bd6efe61",
+      "bytes": 2444
     },
     "validation/tools/harness.py": {
       "sha256": "818562fed7561ce5f308925075e6555d10bb21c6ad0f5c5370bf0c6e8f1d18c0",
@@ -1730,6 +1730,14 @@
     "tests/test_continuous_assurance.py": {
       "sha256": "b3e910c6e601f6544af2676e844b3ca2ad080ba38bb81c3e16daa22055401276",
       "bytes": 2904
+    },
+    "validation/tools/validate_experiment_evidence.py": {
+      "sha256": "2fb1882c0a246c7d8b75472ec828a3ae02e32d9dfdf06c03dbffce7ac84c6d2a",
+      "bytes": 10617
+    },
+    "tests/test_experiment_evidence.py": {
+      "sha256": "80a5460d3425befc43e8ccc324ad5a704f20ff3f9fe8b4468f16e07ca36368ec",
+      "bytes": 4011
     }
   }
 }
