@@ -1,0 +1,13 @@
+{
+  "status": "DRAFT",
+  "roles": {
+    "maintainers": [],
+    "release_manager": "",
+    "security_response": []
+  },
+  "normative_change_rule": "",
+  "release_authority_rule": "",
+  "security_response_rule": "",
+  "appeal_rule": "",
+  "evidence": []
+}
