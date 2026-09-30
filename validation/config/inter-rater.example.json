@@ -1,22 +1,17 @@
 {
+  "assurance_level": "AL2",
+  "control_ids": [],
   "assessors": [
     {
-      "id": "assessor-1"
+      "id": "REPLACE_WITH_ASSESSOR_1",
+      "independence_attestation": false,
+      "implementation_role": false
     },
     {
-      "id": "assessor-2"
+      "id": "REPLACE_WITH_ASSESSOR_2",
+      "independence_attestation": false,
+      "implementation_role": false
     }
   ],
-  "ratings": [
-    {
-      "control_id": "EXAMPLE-01",
-      "assessor_id": "assessor-1",
-      "rating": "FAIL"
-    },
-    {
-      "control_id": "EXAMPLE-01",
-      "assessor_id": "assessor-2",
-      "rating": "FAIL"
-    }
-  ]
+  "ratings": []
 }
