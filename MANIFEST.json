@@ -1696,20 +1696,20 @@
       "bytes": 11
     },
     "tools/assurance_state.py": {
-      "sha256": "70ee81269d1d42df3c86a1529752f78d9fbe6fafa3add24ece933c688098fb6d",
-      "bytes": 21526
+      "sha256": "7ab0cf651093b15592e653b4d49290ab746b6e9f2cfbf41c931b30c569ad8bd3",
+      "bytes": 26791
     },
     "controls/gates.json": {
       "sha256": "d1c4425e4166c2180a137120426f0294552119fd87ec99aefa145b6ead6a6cac",
       "bytes": 3605
     },
     "schemas/assurance-state.schema.json": {
-      "sha256": "b5f1e2cefb198fd9a04ba0fdb464b451a38c77032b88db64f84e7e3bd729efa5",
-      "bytes": 2693
+      "sha256": "b6c23e0d57f05f1c376e299da12625bd43052f0f0e3c4c1b1cd69bf4ed8cffca",
+      "bytes": 5343
     },
     "tests/test_assurance_state.py": {
-      "sha256": "f0a9a4cb966b5097cd89b7cccabe17d0051d85d97190b3e68e01d073c0ebba4f",
-      "bytes": 4946
+      "sha256": "b5be53adb9129f0aad1c75845450886d26301aa5def2bc6e54768757dc8207f5",
+      "bytes": 7841
     }
   }
 }
