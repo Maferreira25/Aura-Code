@@ -20,12 +20,83 @@ from typing import List, Tuple, Optional, Dict, Any
 
 from tools.assurance_result import build_result
 
+MUTANT_STATUSES = {
+    "KILLED",
+    "SURVIVED",
+    "NO_COVERAGE",
+    "TIMEOUT",
+    "ERROR",
+    "LIKELY_EQUIVALENT",
+    "WAIVED",
+}
+
+SECURITY_GUARD_TOKENS = {
+    "auth",
+    "authoriz",
+    "permission",
+    "role",
+    "tenant",
+    "csrf",
+    "sanit",
+    "rate_limit",
+    "ratelimit",
+    "signature",
+    "verify",
+    "expiry",
+    "expire",
+    "token",
+}
+
+
+def validate_mutant_status(status: str) -> str:
+    """Validate Mutation 2.0 status exactly; unknown states fail closed."""
+    if status not in MUTANT_STATUSES:
+        raise ValueError(f"Unknown Mutation 2.0 status: {status!r}")
+    return status
+
+
+def disposition_survivor(
+    mutant: Dict[str, Any],
+    disposition: str,
+    *,
+    rationale: str,
+    approver: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Apply an explicit post-analysis disposition to a surviving mutant.
+
+    NO_COVERAGE and LIKELY_EQUIVALENT require rationale. WAIVED additionally
+    requires an identified approver. This function never silently turns a
+    survivor into KILLED or PASS.
+    """
+    current = str(mutant.get("status") or "")
+    if current != "SURVIVED":
+        raise ValueError("Only SURVIVED mutants may receive a post-analysis disposition.")
+    if disposition not in {"NO_COVERAGE", "LIKELY_EQUIVALENT", "WAIVED"}:
+        raise ValueError("Unsupported survivor disposition.")
+    if not isinstance(rationale, str) or not rationale.strip():
+        raise ValueError("Survivor disposition requires rationale.")
+    if disposition == "WAIVED" and (not isinstance(approver, str) or not approver.strip()):
+        raise ValueError("WAIVED mutant requires an explicit approver.")
+
+    updated = dict(mutant)
+    updated["status"] = disposition
+    updated["disposition"] = {
+        "rationale": rationale.strip(),
+        "approver": approver.strip() if isinstance(approver, str) else None,
+    }
+    return updated
+
+
+
 
 def _attach_canonical_result(result: Dict[str, Any], target_file: Path) -> Dict[str, Any]:
     """Attach a canonical shadow-mode result without changing legacy mutation status."""
     legacy_status = result.get("status")
     total_mutants = int(result.get("total_mutants", 0) or 0)
     survived = int(result.get("survived", 0) or 0)
+    no_coverage = int(result.get("no_coverage", 0) or 0)
+    likely_equivalent = int(result.get("likely_equivalent", 0) or 0)
+    waived = int(result.get("waived", 0) or 0)
     timed_out = int(result.get("timeouts", 0) or 0)
     evaluator_errors = int(result.get("errors", 0) or 0)
 
@@ -38,9 +109,15 @@ def _attach_canonical_result(result: Dict[str, Any], target_file: Path) -> Dict[
     elif timed_out > 0 or evaluator_errors > 0:
         canonical_status = "ERROR"
         reason = "One or more mutation evaluations timed out or failed."
-    elif survived > 0:
+    elif survived > 0 or no_coverage > 0 or likely_equivalent > 0:
         canonical_status = "INCONCLUSIVE"
-        reason = f"{survived} mutant(s) survived; the suite did not distinguish all evaluated mutations."
+        reason = (
+            f"Mutation analysis has unresolved outcomes: survived={survived}, "
+            f"no_coverage={no_coverage}, likely_equivalent={likely_equivalent}."
+        )
+    elif waived > 0:
+        canonical_status = "WAIVED"
+        reason = f"{waived} mutant(s) were explicitly waived; policy authorization is required for progression."
     else:
         canonical_status = "PASS"
         reason = "All evaluated mutants were killed by the test suite."
@@ -78,7 +155,7 @@ class Mutant:
     original_op: str
     mutated_op: str
     mutated_code: str
-    status: str = "PENDING"  # KILLED, SURVIVED, TIMEOUT, ERROR
+    status: str = "PENDING"  # Mutation 2.0 runtime status; see MUTANT_STATUSES
     error_output: Optional[str] = None
 
 
@@ -108,12 +185,20 @@ class ASTMutantGenerator(ast.NodeTransformer):
         ast.Or: ast.And,
     }
 
-    def __init__(self, target_node_index: int = -1):
+    def __init__(self, target_node_index: int = -1, source_code: str = ""):
         super().__init__()
         self.target_node_index = target_node_index
+        self.source_code = source_code
         self.current_index = 0
         self.mutated = False
         self.recorded_mutation: Optional[Tuple[int, str, str, str]] = None
+
+    def _is_security_guard(self, node: ast.AST) -> bool:
+        try:
+            text = ast.unparse(node).lower()
+        except Exception:
+            text = ""
+        return any(token in text for token in SECURITY_GUARD_TOKENS)
 
     def visit_Compare(self, node: ast.Compare) -> ast.AST:
         new_ops = []
@@ -184,6 +269,55 @@ class ASTMutantGenerator(ast.NodeTransformer):
             self.current_index += 1
         return node
 
+    def visit_If(self, node: ast.If) -> ast.AST:
+        """Bypass security-relevant guards by forcing their condition false."""
+        if self._is_security_guard(node.test):
+            if self.current_index == self.target_node_index:
+                original_repr = ast.unparse(node.test) if hasattr(ast, "unparse") else "guard"
+                node.test = ast.Constant(value=False)
+                self.mutated = True
+                self.recorded_mutation = (
+                    node.lineno,
+                    "SECURITY_GUARD_BYPASS",
+                    original_repr,
+                    "False",
+                )
+            self.current_index += 1
+        return self.generic_visit(node)
+
+    def visit_Raise(self, node: ast.Raise) -> ast.AST:
+        """Delete explicit failure paths to test rejection/error oracles."""
+        if self.current_index == self.target_node_index:
+            original_repr = ast.unparse(node) if hasattr(ast, "unparse") else "raise"
+            self.mutated = True
+            self.recorded_mutation = (
+                node.lineno,
+                "EXCEPTION_SUPPRESSION",
+                original_repr,
+                "pass",
+            )
+            self.current_index += 1
+            return ast.copy_location(ast.Pass(), node)
+        self.current_index += 1
+        return self.generic_visit(node)
+
+    def visit_Expr(self, node: ast.Expr) -> ast.AST:
+        """Delete side-effect call statements to expose missing behavioral assertions."""
+        if isinstance(node.value, ast.Call):
+            if self.current_index == self.target_node_index:
+                original_repr = ast.unparse(node.value) if hasattr(ast, "unparse") else "call"
+                self.mutated = True
+                self.recorded_mutation = (
+                    node.lineno,
+                    "STATEMENT_DELETION",
+                    original_repr,
+                    "pass",
+                )
+                self.current_index += 1
+                return ast.copy_location(ast.Pass(), node)
+            self.current_index += 1
+        return self.generic_visit(node)
+
     def visit_Return(self, node: ast.Return) -> ast.AST:
         if node.value is not None and not (isinstance(node.value, ast.Constant) and node.value.value is None):
             if self.current_index == self.target_node_index:
@@ -208,7 +342,7 @@ def generate_mutants_for_source(source_code: str, max_mutants: int = 25) -> List
         return []
 
     # Count total mutable locations
-    counter = ASTMutantGenerator(target_node_index=-1)
+    counter = ASTMutantGenerator(target_node_index=-1, source_code=source_code)
     counter.visit(copy.deepcopy(base_tree))
     total_sites = counter.current_index
 
@@ -217,7 +351,7 @@ def generate_mutants_for_source(source_code: str, max_mutants: int = 25) -> List
     selected_indices = list(range(0, total_sites, step))[:max_mutants]
 
     for m_id, idx in enumerate(selected_indices, start=1):
-        mut_gen = ASTMutantGenerator(target_node_index=idx)
+        mut_gen = ASTMutantGenerator(target_node_index=idx, source_code=source_code)
         mut_tree = mut_gen.visit(copy.deepcopy(base_tree))
         if mut_gen.mutated and mut_gen.recorded_mutation:
             line_no, m_type, orig_op, new_op = mut_gen.recorded_mutation
@@ -453,6 +587,9 @@ def execute_mutation_analysis(
 
     killed = 0
     survived = 0
+    no_coverage = 0
+    likely_equivalent = 0
+    waived = 0
     timed_out = 0
     evaluator_errors = 0
     mutants_report = []
@@ -527,9 +664,10 @@ def execute_mutation_analysis(
         # Always guarantee original code is restored
         target_file.write_text(original_code, encoding="utf-8")
 
-    evaluated = killed + survived
+    evaluated = killed + survived + no_coverage + likely_equivalent + waived
     total = evaluated + timed_out + evaluator_errors
-    score = (killed / evaluated * 100.0) if evaluated > 0 else 0.0
+    score_denominator = killed + survived
+    score = (killed / score_denominator * 100.0) if score_denominator > 0 else 0.0
     passed = survived == 0 or score >= 75.0
     execution_failed = timed_out > 0 or evaluator_errors > 0
 
@@ -540,6 +678,9 @@ def execute_mutation_analysis(
         "evaluated_mutants": evaluated,
         "killed": killed,
         "survived": survived,
+        "no_coverage": no_coverage,
+        "likely_equivalent": likely_equivalent,
+        "waived": waived,
         "timeouts": timed_out,
         "errors": evaluator_errors,
         "mutation_score": round(score, 1),
