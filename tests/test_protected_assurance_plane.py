@@ -59,6 +59,10 @@ class TestProtectedAssurancePlane(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertFalse(can_write(path, self.policy, actor="developer"))
 
+    def test_property_engine_is_protected(self):
+        self.assertEqual(classify_path("tools/property_engine.py", self.policy), PLANE_PROTECTED)
+        self.assertFalse(can_write("tools/property_engine.py", self.policy, actor="developer"))
+
     def test_developer_cannot_read_or_write_held_out(self):
         path = "validation/held_out/secret_case.py"
         self.assertFalse(can_read(path, self.policy, actor="developer"))
