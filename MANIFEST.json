@@ -348,8 +348,8 @@
       "bytes": 1091
     },
     "docs/VALIDATION.md": {
-      "sha256": "098170d94305a694aee4fe1fc6e0dbb96e4c14b68f9724456943eb763e112535",
-      "bytes": 5680
+      "sha256": "90c8def81f37d45860efe38701dd19814768ae99e8252600225d86b760949981",
+      "bytes": 6554
     },
     "GOVERNANCE.md": {
       "sha256": "43715416ce28d96d2a88de5cfd4de6c000b1ab7d21b3ec9eee559f66cfba98c6",
@@ -400,8 +400,8 @@
       "bytes": 111887
     },
     "ROADMAP.md": {
-      "sha256": "ebd282059581f7daf941094bda75e724aeca5d09c6b365ee01a272382d3a6c5b",
-      "bytes": 2444
+      "sha256": "70f7034ea19425ed994cae60f8926f45b9d829778ba97b05f3fd1455e33f7f63",
+      "bytes": 2723
     },
     "schemas/__init__.py": {
       "sha256": "6884f42dd0ef14b8763af10fc022bb5d180298f07ea6b2391dd9279231cc2791",
