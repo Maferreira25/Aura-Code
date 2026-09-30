@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 443,
+  "file_count": 456,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -384,8 +384,8 @@
       "bytes": 1424
     },
     "pyproject.toml": {
-      "sha256": "d8401f1f769dfc9ab4740a0fbbffa30ffb27503104965222631b12322b6ccde7",
-      "bytes": 2394
+      "sha256": "1ea89d50132e5c88796078d543c2ebef48832d8fe41184a15b8b4ac12d3af387",
+      "bytes": 2415
     },
     "README.md": {
       "sha256": "962bf970d9a0993a6a9aabaa65b943f67dbec6f7fd04371abad86644ea1dcafe",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "cc40d76a26591925595dbfc46e1bbd791bd9c97a3302835b84aa7a35e0d939fc",
-      "bytes": 47649
+      "sha256": "e8e625dd30fa0f05513047dd95a069c6618fbc6712943f57cf52a2260549362e",
+      "bytes": 51362
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "fe5d463031496d3ca4246c040a2fd623ad0359e11a707e51018b34a206f8976f",
-      "bytes": 15302
+      "sha256": "d2e79150dc3b6cdcde16818f8cb3beca5a82dbef4c47d05ede13f5ea74f2ef7f",
+      "bytes": 15837
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,8 +1748,8 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "b372e1727894cce51976c3380773519dd5f49175abe5ae0ed287090972a10058",
-      "bytes": 1112
+      "sha256": "3150fb3cb7006dc4b2c9d79b38724acda565b3488f68a18fb5c4a93e246abc59",
+      "bytes": 1237
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
@@ -1774,6 +1774,58 @@
     "tests/test_heldout_runner.py": {
       "sha256": "1d16cd7dcf5e965469fe98d299ceeb7c58bd96bd10687eeee18095d4fe887a7d",
       "bytes": 8229
+    },
+    "schemas/property-suite.schema.json": {
+      "sha256": "6b66a5b2255daa0caff6bcff8b29d37079ab9407ca04535161e7581b83bb6d27",
+      "bytes": 902
+    },
+    "tools/property_engine.py": {
+      "sha256": "74282a2c9df023463945a557495b893075e8d2c87c70485957dc766e1d6f5d03",
+      "bytes": 9595
+    },
+    "tests/test_property_engine.py": {
+      "sha256": "6d2a7283567122fe1908ed864c61816e6a1d068508e8dedd5a1be1ff834170a0",
+      "bytes": 5966
+    },
+    "templates/property-suite.json": {
+      "sha256": "406f57b98d1986baad853b64551df99e28eb42ecdf432c2787ee24856cc2f8b8",
+      "bytes": 190
+    },
+    "schemas/metamorphic-suite.schema.json": {
+      "sha256": "2154ab30c4302cc41416fb978d658c3d72a2cbd967671ffdfb35fb551cb5271e",
+      "bytes": 1136
+    },
+    "tools/metamorphic_engine.py": {
+      "sha256": "2890c4616117d57850ecad91f344235d68f9462696a74b02731bc5e6f5e14f54",
+      "bytes": 8794
+    },
+    "tests/test_metamorphic_engine.py": {
+      "sha256": "b65b0ed1857b08df6b9280c803278829015d525b70df3fc1cb7c4a6a4853a251",
+      "bytes": 3624
+    },
+    "templates/metamorphic-suite.json": {
+      "sha256": "f3e6b666bd19fd6496fd002bfbc14a2a264e798b80610a8455487e53b8648b46",
+      "bytes": 376
+    },
+    "schemas/differential-suite.schema.json": {
+      "sha256": "ffdce137f6ad72e77f4ef5b19bf81e19cd1afd5e005a4a3441214044bf17f215",
+      "bytes": 1147
+    },
+    "tools/differential_engine.py": {
+      "sha256": "604e08f4618de39ac9baec3515927b79e94cc1ddf73cd97a0756e5f0175a73ea",
+      "bytes": 9530
+    },
+    "tests/test_differential_engine.py": {
+      "sha256": "22646cbec5ac5f202bc3678c662216634007186a89d7722fdf366bb4aa20b965",
+      "bytes": 3812
+    },
+    "templates/differential-suite.json": {
+      "sha256": "b1ea3b0cf90adc5da692c32f67c29cdebc74114c045d4bb732462a7b23f984eb",
+      "bytes": 323
+    },
+    "tests/test_behavioral_cli.py": {
+      "sha256": "5537a074e98bde60eb47cc342264fa1dfd704e7032173a3e1b52a12795a7e5cf",
+      "bytes": 811
     }
   }
 }

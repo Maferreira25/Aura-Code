@@ -42,7 +42,8 @@ dependencies = []
 [project.optional-dependencies]
 test = [
   "pytest>=7.0",
-  "pytest-cov"
+  "pytest-cov",
+  "hypothesis>=6.0"
 ]
 multilang = [
   "tree-sitter>=0.21.0",
