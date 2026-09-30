@@ -10,6 +10,10 @@ from tools.assurance_state import (
     normalize_status,
     record_actor,
     record_control,
+    register_finding,
+    start_remediation,
+    mark_remediation_implemented,
+    revalidate_finding,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -100,6 +104,47 @@ class AssuranceStateTests(unittest.TestCase):
 
     def test_legacy_not_assessed_maps_to_unknown(self):
         self.assertEqual(normalize_status("NOT_ASSESSED"), "UNKNOWN")
+
+    def test_remediator_cannot_self_revalidate(self):
+        state = new_state("demo", "AL2")
+        register_finding(state, "AUD-001", "HIGH", "Example", status="CONFIRMED", evidence=["audit.md"])
+        record_actor(state, "remediator", "agent-fix", "AI_AGENT", "fix-session", "model-x")
+        start_remediation(state, "AUD-001", ["plan.md"])
+        mark_remediation_implemented(state, "AUD-001", ["patch.diff", "test.txt"])
+        record_actor(state, "revalidator", "agent-fix", "AI_AGENT", "verify-session", "model-y")
+        with self.assertRaisesRegex(ValueError, "must be different actors"):
+            revalidate_finding(state, "AUD-001", "PASS", ["retest.txt"])
+
+    def test_independent_revalidator_resolves_finding(self):
+        state = new_state("demo", "AL2")
+        finding = register_finding(state, "AUD-002", "HIGH", "Example", status="CONFIRMED", evidence=["audit.md"])
+        record_actor(state, "remediator", "agent-fix", "AI_AGENT", "fix-session", "model-x")
+        start_remediation(state, "AUD-002", ["plan.md"])
+        mark_remediation_implemented(state, "AUD-002", ["patch.diff", "test.txt"])
+        record_actor(state, "revalidator", "agent-review", "AI_AGENT", "review-session", "model-x")
+        revalidate_finding(state, "AUD-002", "PASS", ["retest.txt"])
+        self.assertEqual(finding["status"], "RESOLVED")
+        self.assertEqual(finding["revalidation"]["result"], "PASS")
+
+    def test_same_model_revalidator_blocks_al3(self):
+        state = new_state("demo", "AL3")
+        register_finding(state, "AUD-003", "HIGH", "Example", status="CONFIRMED", evidence=["audit.md"])
+        record_actor(state, "remediator", "agent-fix", "AI_AGENT", "fix-session", "model-x")
+        start_remediation(state, "AUD-003", ["plan.md"])
+        mark_remediation_implemented(state, "AUD-003", ["patch.diff", "test.txt"])
+        record_actor(state, "revalidator", "agent-review", "AI_AGENT", "review-session", "model-x")
+        with self.assertRaisesRegex(ValueError, "different model_id"):
+            revalidate_finding(state, "AUD-003", "PASS", ["retest.txt"])
+
+    def test_failed_revalidation_reopens_finding(self):
+        state = new_state("demo", "AL2")
+        finding = register_finding(state, "AUD-004", "HIGH", "Example", status="CONFIRMED", evidence=["audit.md"])
+        record_actor(state, "remediator", "agent-fix", "AI_AGENT", "fix-session", "model-x")
+        start_remediation(state, "AUD-004", ["plan.md"])
+        mark_remediation_implemented(state, "AUD-004", ["patch.diff", "test.txt"])
+        record_actor(state, "revalidator", "agent-review", "AI_AGENT", "review-session", "model-x")
+        revalidate_finding(state, "AUD-004", "FAIL", ["retest-failed.txt"])
+        self.assertEqual(finding["status"], "REVALIDATION_FAILED")
 
 
 if __name__ == "__main__":
