@@ -23,6 +23,8 @@ import subprocess
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 
+from tools.assurance_result import aggregate_status, build_result
+
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -37,54 +39,64 @@ def get_preflight_steps(root: Path) -> List[Dict[str, Any]]:
     return [
         {
             "name": "Integridade do Framework e Manifesto Criptografico",
+            "check_id": "framework-integrity",
             "cmd": [sys.executable, framework_val],
             "condition": lambda r: (r / "MANIFEST.json").is_file(),
             "description": "Verifica se todos os arquivos correspondem aos hashes SHA-256 do MANIFEST.json.",
         },
         {
             "name": "Cenarios Empiricos de Referencia",
+            "check_id": "empirical-validation-suite",
             "cmd": [sys.executable, str(root / "validation" / "tools" / "validate_suite.py")],
             "condition": lambda r: (r / "validation" / "tools" / "validate_suite.py").is_file(),
             "description": "Verifica a consistencia dos cenarios de teste empiricos.",
         },
         {
             "name": "Suite Completa de Testes Unitarios",
+            "check_id": "unit-tests",
             "cmd": [sys.executable, "-m", "unittest", "discover", "-s", "tests"],
             "condition": lambda r: (r / "tests").is_dir(),
             "description": "Executa todos os testes unitarios da aplicacao.",
         },
         {
             "name": "Limites de Camadas (Clean Architecture)",
+            "check_id": "architecture",
             "cmd": [sys.executable, assurance_script, "arch"],
             "description": "Verifica se nenhuma camada externa viola as regras de dominio.",
         },
         {
             "name": "AI Slop e Erros Silenciados (except: pass)",
+            "check_id": "slop",
             "cmd": [sys.executable, assurance_script, "slop"],
             "description": "Caca codigo morto, stubs abandonados e excecoes engolidas.",
         },
         {
             "name": "Vazamentos de Recursos (Arquivos e Conexoes)",
+            "check_id": "resource-leaks",
             "cmd": [sys.executable, assurance_script, "leaks"],
             "description": "Exige context managers ('with') em todos os arquivos e conexoes.",
         },
         {
             "name": "Tipagem Estrita (Type Annotations)",
+            "check_id": "strict-types",
             "cmd": [sys.executable, assurance_script, "types"],
             "description": "Garante assinaturas tipadas e combate o abuso irrestrito de 'Any'.",
         },
         {
             "name": "Integridade de Assercoes nos Testes",
+            "check_id": "test-integrity",
             "cmd": [sys.executable, assurance_script, "tests"],
             "description": "Verifica que nenhum teste e viciado ou vazio (sem assercoes).",
         },
         {
             "name": "Vetores de Injecao e Seguranca (sec)",
+            "check_id": "injection-vectors",
             "cmd": [sys.executable, assurance_script, "sec"],
             "description": "Bloqueia eval, exec, shell=True e injecoes de SQL.",
         },
         {
             "name": "Ambiguidade de Requisitos (Gate G1)",
+            "check_id": "requirements-ambiguity",
             "cmd": [sys.executable, assurance_script, "ambiguity"],
             "description": "Avalia o grau de clareza das especificacoes teoricas.",
         },
@@ -109,6 +121,7 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
     steps_executed = 0
     passed_steps = 0
     failed_step: Optional[Dict[str, Any]] = None
+    canonical_results: List[Dict[str, Any]] = []
 
     run_env = os.environ.copy()
     run_env["PYTHONPATH"] = str(root) + os.pathsep + run_env.get("PYTHONPATH", "")
@@ -116,10 +129,22 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
     for idx, step in enumerate(steps, 1):
         condition = step.get("condition")
         if condition and not condition(root):
+            canonical_results.append(
+                build_result(
+                    check_id=str(step["check_id"]),
+                    status="NOT_TESTED",
+                    producer_tool="preflight",
+                    producer_method="subprocess_gate",
+                    workspace=str(root),
+                    reason=f"Preflight condition was not satisfied; gate was not executed: {step['description']}",
+                    legacy={"source": "tools/preflight.py", "source_status": "SKIPPED"},
+                )
+            )
             continue
 
         steps_executed += 1
         name = step["name"]
+        check_id = str(step["check_id"])
         cmd = step["cmd"]
 
         if not quiet:
@@ -138,9 +163,36 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
 
             if res.returncode == 0:
                 passed_steps += 1
+                canonical_results.append(
+                    build_result(
+                        check_id=check_id,
+                        status="PASS",
+                        producer_tool="preflight",
+                        producer_method="subprocess_gate",
+                        workspace=str(root),
+                        reason=step["description"],
+                        exit_code=res.returncode,
+                        legacy={"source": "tools/preflight.py", "source_status": "PASS"},
+                    )
+                )
                 if not quiet:
                     print("APROVADO [OK]")
             else:
+                canonical_results.append(
+                    build_result(
+                        check_id=check_id,
+                        status="INCONCLUSIVE",
+                        producer_tool="preflight",
+                        producer_method="subprocess_gate",
+                        workspace=str(root),
+                        reason=(
+                            "Legacy preflight subprocess returned non-zero; violation versus evaluator failure "
+                            "has not yet been classified canonically."
+                        ),
+                        exit_code=res.returncode,
+                        legacy={"source": "tools/preflight.py", "source_status": "FAIL"},
+                    )
+                )
                 if not quiet:
                     print("FALHOU [X]")
                 failed_step = {
@@ -155,6 +207,18 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
                 break
 
         except subprocess.TimeoutExpired:
+            canonical_results.append(
+                build_result(
+                    check_id=check_id,
+                    status="ERROR",
+                    producer_tool="preflight",
+                    producer_method="subprocess_gate",
+                    workspace=str(root),
+                    reason="Preflight gate timed out; no positive assurance may be inferred.",
+                    exit_code=None,
+                    legacy={"source": "tools/preflight.py", "source_status": "TIMEOUT"},
+                )
+            )
             if not quiet:
                 print("TIMEOUT [X]")
             failed_step = {
@@ -168,6 +232,18 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
             }
             break
         except Exception as exc:
+            canonical_results.append(
+                build_result(
+                    check_id=check_id,
+                    status="ERROR",
+                    producer_tool="preflight",
+                    producer_method="subprocess_gate",
+                    workspace=str(root),
+                    reason=f"Preflight evaluator raised an exception: {exc}",
+                    exit_code=None,
+                    legacy={"source": "tools/preflight.py", "source_status": "ERROR"},
+                )
+            )
             if not quiet:
                 print(f"ERRO [{exc}] [X]")
             failed_step = {
@@ -207,7 +283,9 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
             "status": "FAIL",
             "steps_executed": steps_executed,
             "passed_steps": passed_steps,
-            "failed_step": failed_step
+            "failed_step": failed_step,
+            "canonical_status": aggregate_status(item["status"] for item in canonical_results).value,
+            "canonical_results": canonical_results,
         }
 
     if not quiet:
@@ -221,7 +299,9 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
         "status": "PASS",
         "steps_executed": steps_executed,
         "passed_steps": passed_steps,
-        "failed_step": None
+        "failed_step": None,
+        "canonical_status": aggregate_status(item["status"] for item in canonical_results).value,
+        "canonical_results": canonical_results,
     }
 
 

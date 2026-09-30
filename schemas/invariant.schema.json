@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Maferreira25/Aura-Code/main/schemas/invariant.schema.json",
+  "title": "Aura Code Invariant Record",
+  "type": "object",
+  "required": [
+    "invariant_id",
+    "title",
+    "statement",
+    "criticality",
+    "verification_mode"
+  ],
+  "properties": {
+    "invariant_id": {
+      "type": "string",
+      "pattern": "^INV-[A-Z0-9][A-Z0-9._-]*$"
+    },
+    "title": {"type": "string", "minLength": 3},
+    "statement": {"type": "string", "minLength": 10},
+    "criticality": {
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    },
+    "verification_mode": {
+      "enum": ["STATIC", "RUNTIME", "TEST", "MANUAL", "HYBRID"]
+    },
+    "requirements": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^REQ-[A-Z0-9][A-Z0-9._-]*$"},
+      "uniqueItems": true
+    },
+    "tests": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "checks": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "human_assurance_required": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "additionalProperties": false
+}

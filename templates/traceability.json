@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "requirements": [
+    {
+      "requirement_id": "REQ-EXAMPLE-001",
+      "title": "Replace with requirement title",
+      "description": "Replace with an approved, observable requirement.",
+      "criticality": "HIGH",
+      "source": {
+        "document": "_auracode_sdd/01_PRD.md",
+        "locator": "section 1",
+        "approved": true
+      },
+      "acceptance_criteria": [
+        "Replace with an observable acceptance criterion."
+      ],
+      "invariants": [
+        "INV-EXAMPLE-001"
+      ],
+      "implementation": [
+        "src/example.py:example"
+      ],
+      "tests": [
+        "tests/test_example.py"
+      ],
+      "evidence": [
+        "_auracode_evidence/example.json"
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "invariant_id": "INV-EXAMPLE-001",
+      "title": "Replace with invariant title",
+      "statement": "Replace with a property that must remain true across future changes.",
+      "criticality": "HIGH",
+      "verification_mode": "TEST",
+      "requirements": [
+        "REQ-EXAMPLE-001"
+      ],
+      "tests": [
+        "tests/test_example.py"
+      ],
+      "checks": [],
+      "evidence": [
+        "_auracode_evidence/example.json"
+      ],
+      "human_assurance_required": false
+    }
+  ]
+}

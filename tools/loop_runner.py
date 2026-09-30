@@ -17,6 +17,8 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from tools.assurance_result import aggregate_status, build_result, progression_state
+
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
@@ -109,7 +111,22 @@ def run_5_level_verification(workspace_root: Path, allow_tests: bool = False) ->
         "levels": {},
         "reward_hacking_detected": False,
         "errors": [],
+        "canonical_results": [],
     }
+
+    def record_canonical(check_id: str, status: str, reason: str, exit_code: Optional[int]) -> None:
+        results["canonical_results"].append(
+            build_result(
+                check_id=check_id,
+                status=status,
+                producer_tool="loop_runner",
+                producer_method="subprocess_gate",
+                workspace=str(workspace_root),
+                reason=reason,
+                exit_code=exit_code,
+                legacy={"source": "tools/loop_runner.py"},
+            )
+        )
 
     assurance_mod = [sys.executable, "-m", "tools.assurance"]
 
@@ -123,6 +140,16 @@ def run_5_level_verification(workspace_root: Path, allow_tests: bool = False) ->
         if code != 0:
             l1_passed = False
             results["errors"].append(f"Level 1 AST check failed: {check}")
+        record_canonical(
+            check,
+            "PASS" if code == 0 else "INCONCLUSIVE",
+            (
+                f"Loop subprocess gate '{check}' completed successfully."
+                if code == 0
+                else f"Loop subprocess gate '{check}' returned non-zero; failure class is not yet canonicalized."
+            ),
+            code,
+        )
         l1_details[check] = {"code": code, "output": out[:200]}
 
     results["levels"]["level_1_ast_linters"] = {"passed": l1_passed, "details": l1_details}
@@ -132,6 +159,12 @@ def run_5_level_verification(workspace_root: Path, allow_tests: bool = False) ->
     l2_passed = (code_ti == 0)
     if not l2_passed:
         results["errors"].append("Level 2 Test integrity check failed (vacuous tests or syntax error)")
+    record_canonical(
+        "test-integrity",
+        "PASS" if l2_passed else "INCONCLUSIVE",
+        "Test-integrity gate completed successfully." if l2_passed else "Test-integrity gate returned non-zero; failure class is not yet canonicalized.",
+        code_ti,
+    )
     results["levels"]["level_2_test_integrity"] = {"passed": l2_passed, "output": out_ti[:200]}
 
     # --- LEVEL 3: Test Execution ---
@@ -139,6 +172,12 @@ def run_5_level_verification(workspace_root: Path, allow_tests: bool = False) ->
     l3_passed = (code_t == 0)
     if not l3_passed:
         results["errors"].append("Level 3 Unit test execution failed")
+    record_canonical(
+        "unit-tests",
+        "PASS" if l3_passed else "INCONCLUSIVE",
+        "Unit-test execution completed successfully." if l3_passed else "Unit-test execution returned non-zero; assertion failure versus evaluator error is not yet classified.",
+        code_t,
+    )
     results["levels"]["level_3_test_execution"] = {"passed": l3_passed, "output": out_t[:200] or err_t[:200]}
 
     # --- LEVEL 4: Surgical Diff & Anti-Reward-Hacking ---
@@ -154,12 +193,30 @@ def run_5_level_verification(workspace_root: Path, allow_tests: bool = False) ->
             results["errors"].append("CRITICAL: Reward hacking detected (agent modified test files to bypass verification)")
         else:
             results["errors"].append("Level 4 Surgical diff check failed (exceeded churn limit)")
+    record_canonical(
+        "surgical-diff",
+        "PASS" if l4_passed else ("FAIL" if results["reward_hacking_detected"] else "INCONCLUSIVE"),
+        (
+            "Surgical diff and anti-reward-hacking gate passed."
+            if l4_passed
+            else (
+                "Unauthorized test/evaluator tampering was detected."
+                if results["reward_hacking_detected"]
+                else "Surgical diff gate returned non-zero; failure class is not yet canonicalized."
+            )
+        ),
+        code_d,
+    )
     results["levels"]["level_4_surgical_diff"] = {"passed": l4_passed, "output": out_d[:200]}
 
     # --- LEVEL 5: Gate Synthesis ---
     all_levels_passed = l1_passed and l2_passed and l3_passed and l4_passed
     results["levels"]["level_5_gate_synthesis"] = {"passed": all_levels_passed}
     results["passed"] = all_levels_passed
+    results["canonical_status"] = aggregate_status(
+        item["status"] for item in results["canonical_results"]
+    ).value
+    results["canonical_progression"] = progression_state(results["canonical_results"])
 
     return results
 

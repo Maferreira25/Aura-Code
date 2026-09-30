@@ -18,6 +18,56 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple, Optional, Dict, Any
 
+from tools.assurance_result import build_result
+
+
+def _attach_canonical_result(result: Dict[str, Any], target_file: Path) -> Dict[str, Any]:
+    """Attach a canonical shadow-mode result without changing legacy mutation status."""
+    legacy_status = result.get("status")
+    total_mutants = int(result.get("total_mutants", 0) or 0)
+    survived = int(result.get("survived", 0) or 0)
+    timed_out = int(result.get("timeouts", 0) or 0)
+    evaluator_errors = int(result.get("errors", 0) or 0)
+
+    if legacy_status == "ERROR":
+        canonical_status = "ERROR"
+        reason = str(result.get("message") or "Mutation evaluator failed; assurance cannot advance.")
+    elif total_mutants == 0:
+        canonical_status = "NOT_APPLICABLE"
+        reason = "No mutable AST sites were found; mutation evidence was not produced."
+    elif timed_out > 0 or evaluator_errors > 0:
+        canonical_status = "ERROR"
+        reason = "One or more mutation evaluations timed out or failed."
+    elif survived > 0:
+        canonical_status = "INCONCLUSIVE"
+        reason = f"{survived} mutant(s) survived; the suite did not distinguish all evaluated mutations."
+    else:
+        canonical_status = "PASS"
+        reason = "All evaluated mutants were killed by the test suite."
+
+    findings = [
+        item for item in result.get("mutants", [])
+        if isinstance(item, dict) and item.get("status") != "KILLED"
+    ]
+
+    enriched = dict(result)
+    enriched["canonical_result"] = build_result(
+        check_id="mutation",
+        status=canonical_status,
+        producer_tool="mutation_engine",
+        producer_method="python_ast_mutation",
+        workspace=str(target_file.parent),
+        reason=reason,
+        scope={"files_scanned": 1, "languages": ["python"]},
+        findings=findings,
+        legacy={
+            "source": "tools/mutation_engine.py",
+            "source_status": legacy_status,
+            "mutation_score": result.get("mutation_score"),
+        },
+    )
+    return enriched
+
 
 @dataclass
 class Mutant:
@@ -342,16 +392,16 @@ def execute_mutation_analysis(
     test_file_or_dir = test_file_or_dir.resolve()
 
     if not target_file.is_file():
-        return {
+        return _attach_canonical_result({
             "status": "ERROR",
             "message": f"Target source file not found: {target_file}"
-        }
+        }, target_file)
 
     original_code = target_file.read_text(encoding="utf-8", errors="replace")
     mutants = generate_mutants_for_source(original_code, max_mutants=max_mutants)
 
     if not mutants:
-        return {
+        return _attach_canonical_result({
             "status": "PASS",
             "target_file": str(target_file),
             "message": "No mutable AST sites found in target file.",
@@ -360,7 +410,7 @@ def execute_mutation_analysis(
             "survived": 0,
             "mutation_score": 100.0,
             "mutants": []
-        }
+        }, target_file)
 
     # Determine working directory: common ancestor or repo root
     try:
@@ -390,19 +440,21 @@ def execute_mutation_analysis(
             env=run_env
         )
         if baseline_res.returncode != 0:
-            return {
+            return _attach_canonical_result({
                 "status": "ERROR",
                 "message": "Baseline test suite failed before mutation testing. Tests must be green first.",
                 "baseline_stderr": baseline_res.stderr[:500]
-            }
+            }, target_file)
     except Exception as exc:
-        return {
+        return _attach_canonical_result({
             "status": "ERROR",
             "message": f"Failed to execute baseline tests: {exc}"
-        }
+        }, target_file)
 
     killed = 0
     survived = 0
+    timed_out = 0
+    evaluator_errors = 0
     mutants_report = []
     remediations = []
 
@@ -434,12 +486,16 @@ def execute_mutation_analysis(
                 else:
                     m.status = "SURVIVED"
                     survived += 1
-            except subprocess.TimeoutExpired:
-                m.status = "KILLED"  # Timeout is considered killed by infinite loop/stall
-                killed += 1
-            except Exception as e:
-                m.status = "KILLED"
-                killed += 1
+            except subprocess.TimeoutExpired as exc:
+                # A stalled evaluator is not evidence that the test suite killed the mutant.
+                m.status = "TIMEOUT"
+                m.error_output = str(exc)
+                timed_out += 1
+            except Exception as exc:
+                # Evaluator failure must fail closed; never inflate the mutation score.
+                m.status = "ERROR"
+                m.error_output = str(exc)
+                evaluator_errors += 1
 
             mutant_dict: Dict[str, Any] = {
                 "mutant_id": m.mutant_id,
@@ -447,7 +503,8 @@ def execute_mutation_analysis(
                 "type": m.mutation_type,
                 "original": m.original_op,
                 "mutated": m.mutated_op,
-                "status": m.status
+                "status": m.status,
+                "error": m.error_output,
             }
 
             if m.status == "SURVIVED":
@@ -470,21 +527,26 @@ def execute_mutation_analysis(
         # Always guarantee original code is restored
         target_file.write_text(original_code, encoding="utf-8")
 
-    total = killed + survived
-    score = (killed / total * 100.0) if total > 0 else 100.0
+    evaluated = killed + survived
+    total = evaluated + timed_out + evaluator_errors
+    score = (killed / evaluated * 100.0) if evaluated > 0 else 0.0
     passed = survived == 0 or score >= 75.0
+    execution_failed = timed_out > 0 or evaluator_errors > 0
 
-    return {
-        "status": "PASS" if passed else "WARN",
+    return _attach_canonical_result({
+        "status": "ERROR" if execution_failed else ("PASS" if passed else "WARN"),
         "target_file": str(target_file),
         "total_mutants": total,
+        "evaluated_mutants": evaluated,
         "killed": killed,
         "survived": survived,
+        "timeouts": timed_out,
+        "errors": evaluator_errors,
         "mutation_score": round(score, 1),
         "vitiated_oracles_detected": survived > 0,
         "mutants": mutants_report,
         "remediations": remediations
-    }
+    }, target_file)
 
 
 def format_prescriptive_report(res: Dict[str, Any]) -> str:

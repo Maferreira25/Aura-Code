@@ -90,6 +90,35 @@ class TestSarifAggregatorAndPhase2(unittest.TestCase):
         finally:
             os.unlink(tmp_path)
 
+    def test_nonblocking_sarif_findings_are_inconclusive_without_policy(self):
+        aggregator = SarifAggregator()
+        sample_sarif = {
+            "version": "2.1.0",
+            "runs": [
+                {
+                    "tool": {"driver": {"name": "ExampleLinter"}},
+                    "results": [
+                        {
+                            "ruleId": "style-warning",
+                            "level": "warning",
+                            "message": {"text": "Potential issue"}
+                        }
+                    ]
+                }
+            ]
+        }
+
+        with tempfile.NamedTemporaryFile("w", suffix=".sarif", delete=False) as tmp:
+            json.dump(sample_sarif, tmp)
+            tmp_path = tmp.name
+
+        try:
+            res = aggregator.parse_sarif_file(tmp_path)
+            self.assertEqual(res["status"], "WARN")
+            self.assertEqual(res["canonical_result"]["status"], "INCONCLUSIVE")
+        finally:
+            os.unlink(tmp_path)
+
     def test_sarif_ingestion(self):
         aggregator = SarifAggregator()
         sample_sarif = {
@@ -137,6 +166,7 @@ class TestSarifAggregatorAndPhase2(unittest.TestCase):
             self.assertEqual(res["findings"][0]["tool"], "ESLint")
             self.assertEqual(res["findings"][0]["rule_id"], "no-eval")
             self.assertEqual(res["findings"][0]["line"], 42)
+            self.assertEqual(res["canonical_result"]["status"], "FAIL")
         finally:
             os.unlink(tmp_path)
 

@@ -116,6 +116,26 @@ class AuditTests(unittest.TestCase):
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
+    def test_missing_traceability_manifest_is_not_tested_canonically(self):
+        """Missing traceability must be visible as NOT_TESTED in canonical audit output."""
+        temp_dir = Path(tempfile.mkdtemp())
+        try:
+            (temp_dir / "app.py").write_text(
+                "def answer(value: int) -> int:\n    return value + 1\n",
+                encoding="utf-8",
+            )
+            res = audit_workspace(temp_dir)
+            self.assertEqual(res["traceability"]["status"], "NOT_TESTED")
+            self.assertEqual(res["traceability"]["progression"]["state"], "BLOCKED")
+            trace_results = [
+                item for item in res["canonical_results"]
+                if item.get("check_id") == "traceability"
+            ]
+            self.assertEqual(len(trace_results), 1)
+            self.assertEqual(trace_results[0]["status"], "NOT_TESTED")
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
     def test_missing_required_evidence_prevents_pass(self):
         """Clean source alone cannot prove architecture, requirements, or tests."""
         temp_dir = Path(tempfile.mkdtemp())

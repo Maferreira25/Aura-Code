@@ -44,6 +44,8 @@ class PreflightTests(unittest.TestCase):
             self.assertIsNone(report["failed_step"])
             self.assertGreaterEqual(report["passed_steps"], 1)
             self.assertEqual(report["steps_executed"], report["passed_steps"])
+            self.assertEqual(report["canonical_status"], "PASS")
+            self.assertTrue(all(item["status"] == "PASS" for item in report["canonical_results"]))
 
     def test_preflight_catches_failure(self):
         """Verify that when a step fails, preflight halts and reports the failure."""
@@ -58,6 +60,26 @@ class PreflightTests(unittest.TestCase):
             self.assertIsNotNone(report["failed_step"])
             self.assertEqual(report["failed_step"]["returncode"], 1)
             self.assertIn("Violation detected", report["failed_step"]["stdout"])
+            self.assertEqual(report["canonical_status"], "INCONCLUSIVE")
+            self.assertEqual(report["canonical_results"][-1]["status"], "INCONCLUSIVE")
+
+    def test_skipped_required_condition_is_not_tested_canonically(self):
+        """A skipped gate must never be silently treated as positive assurance."""
+        temp_dir = Path(tempfile.mkdtemp())
+        try:
+            mock_res = MagicMock()
+            mock_res.returncode = 0
+            mock_res.stdout = "OK"
+            mock_res.stderr = ""
+
+            with patch("subprocess.run", return_value=mock_res):
+                report = run_preflight_checks(workspace_root=temp_dir, quiet=True)
+
+            self.assertEqual(report["status"], "PASS")
+            self.assertEqual(report["canonical_status"], "NOT_TESTED")
+            self.assertTrue(any(item["status"] == "NOT_TESTED" for item in report["canonical_results"]))
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
     def test_install_git_pre_push_hook(self):
         """Verify that pre-push hook is written to .git/hooks/pre-push when .git exists."""
