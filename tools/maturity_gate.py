@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
@@ -62,6 +64,46 @@ def _verify_local_evidence(root: Path, values: object) -> Dict[str, Any]:
     return {"valid": True, "missing": [], "reason": ""}
 
 
+
+
+
+def _verify_pass_metadata(root: Path, entry: Mapping[str, Any], evidence: object) -> Dict[str, Any]:
+    """Require reviewer provenance and a pinned hash for any declared maturity PASS."""
+    reviewer = str(entry.get("reviewed_by", "")).strip()
+    reviewed_at = str(entry.get("reviewed_at", "")).strip()
+    expected_hash = str(entry.get("evidence_sha256", "")).strip().lower()
+    if not reviewer:
+        return {"valid": False, "reason": "PASS requires reviewed_by"}
+    if not reviewed_at:
+        return {"valid": False, "reason": "PASS requires reviewed_at"}
+    try:
+        datetime.fromisoformat(reviewed_at.replace("Z", "+00:00"))
+    except ValueError:
+        return {"valid": False, "reason": "reviewed_at must be ISO-8601"}
+    if len(expected_hash) != 64 or any(ch not in "0123456789abcdef" for ch in expected_hash):
+        return {"valid": False, "reason": "PASS requires a 64-character evidence_sha256"}
+
+    values = evidence if isinstance(evidence, list) else []
+    normalized = [str(item).strip() for item in values if str(item).strip()]
+    if len(normalized) != 1:
+        return {"valid": False, "reason": "PASS requires exactly one canonical evidence file"}
+    candidate = Path(normalized[0])
+    if candidate.is_absolute():
+        return {"valid": False, "reason": "canonical evidence path must be repository-relative"}
+    path = (root.resolve() / candidate).resolve()
+    try:
+        path.relative_to(root.resolve())
+    except ValueError:
+        return {"valid": False, "reason": "canonical evidence path escapes repository root"}
+    if not path.is_file():
+        return {"valid": False, "reason": "canonical evidence file does not exist"}
+    actual_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+    if actual_hash != expected_hash:
+        return {
+            "valid": False,
+            "reason": f"canonical evidence hash mismatch: expected {expected_hash}, got {actual_hash}",
+        }
+    return {"valid": True, "reason": "", "actual_sha256": actual_hash}
 
 
 def _collect_nested_evidence(value: object) -> List[str]:
@@ -234,13 +276,18 @@ def evaluate_maturity(root: Path = ROOT) -> Dict[str, Any]:
             evidence = entry.get("evidence", [])
             verification = _verify_local_evidence(root, evidence)
             if declared == "PASS" and verification["valid"]:
-                semantic = _semantic_validate_evidence(root, criterion_id, evidence)
-                if semantic["valid"]:
-                    status = "PASS"
-                    reason = str(entry.get("rationale", "")).strip() or "Evidence verified."
-                else:
+                metadata = _verify_pass_metadata(root, entry, evidence)
+                if not metadata["valid"]:
                     status = "INVALID_PASS"
-                    reason = str(semantic["reason"])
+                    reason = str(metadata["reason"])
+                else:
+                    semantic = _semantic_validate_evidence(root, criterion_id, evidence)
+                    if semantic["valid"]:
+                        status = "PASS"
+                        reason = str(entry.get("rationale", "")).strip() or "Evidence verified."
+                    else:
+                        status = "INVALID_PASS"
+                        reason = str(semantic["reason"])
             elif declared == "PASS":
                 status = "INVALID_PASS"
                 reason = str(verification["reason"])
