@@ -81,6 +81,7 @@ python validation/tools/harness.py evaluate SEC-AUTHZ-001 /tmp/run-authz --isola
 python validation/tools/harness.py evaluate SEC-AUTHZ-001 /tmp/run-authz --isolation local --run-id example-local
 
 python validation/tools/analyze_results.py validation/results
+python validation/tools/validate_experiment_evidence.py validation/results
 ```
 
 ## External benchmark adapters
@@ -94,3 +95,10 @@ See `EXTERNAL-BENCHMARKS.md`.
 - `PILOT-PLAN.md` — P0–P4 empirical program;
 - `PREREGISTRATION-TEMPLATE.md` — freeze hypotheses before results;
 - `ANTIGRAVITY-EXPERIMENT.md` — A0/A1/A2 operating procedure for Antigravity.
+
+
+## Evidence-validity guard
+
+Benchmark scores are not sufficient by themselves. `validate_experiment_evidence.py` checks the frozen P1 sample plan, matched execution environment, Qualified Success formula, repetition coverage, and ceiling effects.
+
+The current historical public-smoke dataset is intentionally reported as incomplete and non-discriminative rather than being upgraded into an effectiveness claim.
