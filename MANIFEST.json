@@ -856,8 +856,8 @@
       "bytes": 14102
     },
     "tests/test_loop_runner.py": {
-      "sha256": "27dbd6907b637acfa8467337169072be3d6811a664fddfba7056bf12c3a2c7c8",
-      "bytes": 6575
+      "sha256": "d9eb36fb141179e9cf40772104590fd0cb46db989336fb5d4ce5959023b86eaa",
+      "bytes": 7321
     },
     "tests/test_manage_worktree.py": {
       "sha256": "fd355a1cea328a97fb9bd5ba524ff2bea0fbe73435317284bc3f57d5c2b180b7",
@@ -1024,8 +1024,8 @@
       "bytes": 24529
     },
     "tools/loop_runner.py": {
-      "sha256": "6528062e68e3ed15edb0c9271472777c66a3c8b0e4303c6d297d2836e2a154ab",
-      "bytes": 20017
+      "sha256": "9a4b90909580ffdf95fd35ec9181850576c1d12b02245f4d031a557a15a1bdd3",
+      "bytes": 20443
     },
     "tools/manage_cage.py": {
       "sha256": "c13daa23f24a49831f8b48d3f40134b257daa8fe283ffea4c89e32094a871306",
