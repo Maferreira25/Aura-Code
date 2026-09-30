@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "HO-EXAMPLE-001",
+  "title": "Protected acceptance suite",
+  "category": "FUNCTIONAL",
+  "requirements": [
+    "REQ-EXAMPLE-001"
+  ],
+  "test_glob": "test*.py",
+  "disclosure": "REQUIREMENT_ONLY",
+  "timeout_seconds": 30
+}

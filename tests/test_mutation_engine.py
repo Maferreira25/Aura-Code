@@ -16,6 +16,9 @@ from tools.mutation_engine import (
     generate_mutants_for_source,
     execute_mutation_analysis,
     format_prescriptive_report,
+    disposition_survivor,
+    validate_mutant_status,
+    evaluate_mutation_assurance,
 )
 
 
@@ -53,6 +56,154 @@ class TestMutationEngine(unittest.TestCase):
         mutants = generate_mutants_for_source(code)
         types = [m.mutation_type for m in mutants]
         self.assertTrue("BOOLEAN_CONSTANT" in types or "RETURN_NULLIFICATION" in types)
+
+    def test_security_guard_bypass_mutant_is_generated(self):
+        code = (
+            "def protected(user):\n"
+            "    if not user.is_authorized:\n"
+            "        raise PermissionError('denied')\n"
+            "    return True\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=50)
+        types = {m.mutation_type for m in mutants}
+        self.assertIn("SECURITY_GUARD_BYPASS", types)
+
+    def test_exception_suppression_mutant_is_generated(self):
+        code = (
+            "def parse(value):\n"
+            "    if value is None:\n"
+            "        raise ValueError('missing')\n"
+            "    return value\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=50)
+        self.assertIn("EXCEPTION_SUPPRESSION", {m.mutation_type for m in mutants})
+
+    def test_statement_deletion_mutant_is_generated(self):
+        code = (
+            "def save(repo, item):\n"
+            "    repo.persist(item)\n"
+            "    return item\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=50)
+        self.assertIn("STATEMENT_DELETION", {m.mutation_type for m in mutants})
+
+    def test_mutation2_status_rejects_unknown_value(self):
+        with self.assertRaises(ValueError):
+            validate_mutant_status("PASS")
+
+    def test_survivor_can_be_marked_likely_equivalent_only_with_rationale(self):
+        survivor = {"mutant_id": 1, "status": "SURVIVED"}
+        with self.assertRaises(ValueError):
+            disposition_survivor(survivor, "LIKELY_EQUIVALENT", rationale="")
+        updated = disposition_survivor(
+            survivor,
+            "LIKELY_EQUIVALENT",
+            rationale="Mutation is semantically equivalent for all integer inputs by construction.",
+        )
+        self.assertEqual(updated["status"], "LIKELY_EQUIVALENT")
+        self.assertIn("rationale", updated["disposition"])
+
+    def test_survivor_waiver_requires_explicit_approver(self):
+        survivor = {"mutant_id": 1, "status": "SURVIVED"}
+        with self.assertRaises(ValueError):
+            disposition_survivor(
+                survivor,
+                "WAIVED",
+                rationale="Accepted temporarily.",
+            )
+        updated = disposition_survivor(
+            survivor,
+            "WAIVED",
+            rationale="Accepted temporarily.",
+            approver="human-reviewer",
+        )
+        self.assertEqual(updated["status"], "WAIVED")
+        self.assertEqual(updated["disposition"]["approver"], "human-reviewer")
+
+    def test_only_survivors_can_receive_post_analysis_disposition(self):
+        with self.assertRaises(ValueError):
+            disposition_survivor(
+                {"mutant_id": 1, "status": "KILLED"},
+                "NO_COVERAGE",
+                rationale="Not executed.",
+            )
+
+    def test_critical_survivor_blocks_even_with_high_score(self):
+        result = {
+            "status": "PASS",
+            "total_mutants": 10,
+            "mutation_score": 90.0,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "SECURITY_GUARD_BYPASS",
+                    "status": "SURVIVED",
+                }
+            ] + [
+                {
+                    "mutant_id": i,
+                    "type": "ARITHMETIC",
+                    "status": "KILLED",
+                }
+                for i in range(2, 11)
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL3")
+        self.assertEqual(policy["status"], "FAIL")
+        self.assertTrue(policy["blocking"])
+        self.assertEqual(len(policy["critical_survivors"]), 1)
+
+    def test_noncritical_survivor_is_inconclusive(self):
+        result = {
+            "status": "WARN",
+            "total_mutants": 1,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "ARITHMETIC",
+                    "status": "SURVIVED",
+                }
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL2")
+        self.assertEqual(policy["status"], "INCONCLUSIVE")
+        self.assertTrue(policy["blocking"])
+
+    def test_runtime_error_blocks_mutation_assurance(self):
+        result = {
+            "status": "ERROR",
+            "total_mutants": 1,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "RELATIONAL",
+                    "status": "TIMEOUT",
+                }
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL3")
+        self.assertEqual(policy["status"], "ERROR")
+        self.assertTrue(policy["blocking"])
+
+    def test_waived_mutant_does_not_become_pass(self):
+        result = {
+            "status": "PASS",
+            "total_mutants": 1,
+            "mutants": [
+                {
+                    "mutant_id": 1,
+                    "type": "ARITHMETIC",
+                    "status": "WAIVED",
+                    "disposition": {
+                        "rationale": "Temporary exception.",
+                        "approver": "reviewer",
+                    },
+                }
+            ],
+        }
+        policy = evaluate_mutation_assurance(result, "AL2")
+        self.assertEqual(policy["status"], "WAIVED")
+        self.assertTrue(policy["blocking"])
 
     def test_mutation_execution_kills_mutants_with_real_assertions(self):
         # Production code

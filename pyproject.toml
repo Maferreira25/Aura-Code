@@ -52,6 +52,9 @@ multilang = [
   "tree-sitter-java>=0.21.0",
   "tree-sitter-c-sharp>=0.21.0"
 ]
+property = [
+  "hypothesis>=6.0"
+]
 
 [project.scripts]
 auracode = "auracode.cli:main"

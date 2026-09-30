@@ -18,6 +18,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from tools.protected_assurance_plane import can_read, load_policy
+
 
 # Critical OS targets that must never be recursively removed
 FORBIDDEN_RM_TARGETS = {
@@ -187,7 +189,10 @@ def is_target_sensitive(token: str) -> bool:
     return False
 
 
-def inspect_subcommand(sub_cmd: str) -> Optional[Dict[str, Any]]:
+def inspect_subcommand(
+    sub_cmd: str,
+    workspace_root: Optional[Path] = None,
+) -> Optional[Dict[str, Any]]:
     """Evaluates a single atomic subcommand."""
     sub_clean = sub_cmd.strip()
     if not sub_clean:
@@ -375,6 +380,12 @@ def inspect_subcommand(sub_cmd: str) -> Optional[Dict[str, Any]]:
 
     # --- Check SECRET LEAKS / INSPECTION ---
     if bin_name in INSPECTION_BINARIES:
+        policy = None
+        try:
+            policy = load_policy()
+        except (OSError, ValueError):
+            policy = None
+
         for t in tokens[1:]:
             if t.startswith("-"):
                 continue
@@ -387,10 +398,30 @@ def inspect_subcommand(sub_cmd: str) -> Optional[Dict[str, Any]]:
                     "command": sub_clean,
                 }
 
+            if policy is not None:
+                candidate = t.strip("'\"")
+                if workspace_root:
+                    try:
+                        candidate_path = Path(candidate)
+                        if candidate_path.is_absolute():
+                            candidate = candidate_path.resolve().relative_to(workspace_root.resolve()).as_posix()
+                    except (OSError, ValueError):
+                        # Keep the original repository-relative candidate. The policy
+                        # matcher remains fail-closed for known held-out patterns.
+                        candidate = candidate.replace("\\", "/")
+                if not can_read(candidate, policy, actor="developer"):
+                    return {
+                        "safe": False,
+                        "rule": "HELD_OUT_READ",
+                        "reason": f"Developer actor attempted to inspect held-out assurance asset: '{t}'",
+                        "severity": "CRITICAL",
+                        "command": sub_clean,
+                    }
+
     return None
 
 
-def inspect_command(command: str) -> Dict[str, Any]:
+def inspect_command(command: str, workspace_root: Optional[Path] = None) -> Dict[str, Any]:
     """Inspects a complete shell command string across pipelines and operators."""
     cmd_clean = command.strip()
     if not cmd_clean:
@@ -418,7 +449,7 @@ def inspect_command(command: str) -> Dict[str, Any]:
         sub_commands = [cmd_clean]
 
     for sub in sub_commands:
-        violation = inspect_subcommand(sub)
+        violation = inspect_subcommand(sub, workspace_root=workspace_root)
         if violation:
             return violation
 
@@ -460,7 +491,7 @@ def generate_hooks_config(workspace_root: Path) -> Dict[str, Any]:
                     "match_tools": ["write_to_file", "replace_file_content", "multi_replace_file_content"],
                     "action": "execute",
                     "command": diff_cmd,
-                    "fail_closed": False,
+                    "fail_closed": True,
                 }
             ]
         }

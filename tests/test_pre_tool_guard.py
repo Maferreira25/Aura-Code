@@ -152,6 +152,19 @@ class TestPreToolGuard(unittest.TestCase):
             self.assertEqual(res["rule"], "SECRET_LEAK")
             self.assertEqual(res["severity"], "CRITICAL")
 
+    def test_held_out_assurance_reads_are_blocked(self):
+        blocked = [
+            "cat validation/held_out/secret_test.py",
+            "head -n 20 _auracode_assurance/held_out/auth_cases.json",
+            "Get-Content validation/held_out/scenario.json",
+        ]
+        for cmd in blocked:
+            with self.subTest(cmd=cmd):
+                res = inspect_command(cmd)
+                self.assertFalse(res["safe"])
+                self.assertEqual(res["rule"], "HELD_OUT_READ")
+                self.assertEqual(res["severity"], "CRITICAL")
+
     def test_dangerous_db_mutations_blocked(self):
         blocked_db_commands = [
             "DROP DATABASE production;",
@@ -188,6 +201,7 @@ class TestPreToolGuard(unittest.TestCase):
             self.assertIn("PreToolUse", data["hooks"])
             self.assertIn("PostToolUse", data["hooks"])
             self.assertTrue(data["hooks"]["PreToolUse"][0]["fail_closed"])
+            self.assertTrue(data["hooks"]["PostToolUse"][0]["fail_closed"])
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 

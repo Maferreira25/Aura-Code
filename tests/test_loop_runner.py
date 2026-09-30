@@ -101,6 +101,23 @@ class TestLoopRunner(unittest.TestCase):
         self.assertEqual(res["status"], "MAX_ITERATIONS_REACHED")
         self.assertEqual(res["iterations_run"], 2)
 
+    @patch("tools.loop_runner._run_cmd")
+    def test_assurance_plane_tampering_is_critical_reward_hacking(self, mock_run_cmd):
+        success = (0, "OK", "")
+        protected_failure = (
+            1,
+            "[CRITICAL] tools/assess.py: Protected assurance asset cannot be modified by the implementing developer/agent",
+            "",
+        )
+        mock_run_cmd.side_effect = [success] * 7 + [protected_failure]
+
+        res = run_5_level_verification(self.temp_dir)
+
+        self.assertFalse(res["passed"])
+        self.assertTrue(res["reward_hacking_detected"])
+        self.assertEqual(res["canonical_progression"]["state"], "BLOCKED")
+        self.assertTrue(any("Assurance-plane tampering" in item for item in res["errors"]))
+
     @patch("tools.loop_runner.run_5_level_verification")
     def test_circuit_breaker_stuck_oscillation(self, mock_verify):
         # Mock repeated failure
