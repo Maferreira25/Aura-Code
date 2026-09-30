@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Maferreira25/Aura-Code/main/schemas/metamorphic-suite.schema.json",
+  "title": "Aura Code Metamorphic Test Suite",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "suite_id",
+    "title",
+    "requirements",
+    "test_target",
+    "relations",
+    "timeout_seconds"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0.0"},
+    "suite_id": {"type": "string", "pattern": "^MR-[A-Z0-9][A-Z0-9._-]*$"},
+    "title": {"type": "string", "minLength": 3},
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "test_target": {"type": "string", "minLength": 1},
+    "relations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "relation_id",
+          "title",
+          "transformation",
+          "expected_relation",
+          "test_selector"
+        ],
+        "properties": {
+          "relation_id": {"type": "string", "pattern": "^MR-[A-Z0-9][A-Z0-9._-]*$"},
+          "title": {"type": "string", "minLength": 3},
+          "transformation": {"type": "string", "minLength": 5},
+          "expected_relation": {"type": "string", "minLength": 5},
+          "test_selector": {"type": "string", "pattern": "^test_mr_[A-Za-z0-9_]+$"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 600}
+  },
+  "additionalProperties": false
+}
