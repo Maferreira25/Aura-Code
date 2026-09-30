@@ -9,6 +9,7 @@
     "project",
     "assurance_level",
     "current_stage",
+    "assurance_status",
     "created_at",
     "updated_at",
     "actors",
@@ -245,6 +246,13 @@
       "items": {
         "type": "object"
       }
+    },
+    "assurance_status": {
+      "enum": [
+        "ACTIVE",
+        "REOPENED",
+        "BLOCKED"
+      ]
     }
   }
 }
