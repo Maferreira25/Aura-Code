@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 443,
+  "file_count": 447,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -384,8 +384,8 @@
       "bytes": 1424
     },
     "pyproject.toml": {
-      "sha256": "d8401f1f769dfc9ab4740a0fbbffa30ffb27503104965222631b12322b6ccde7",
-      "bytes": 2394
+      "sha256": "1ea89d50132e5c88796078d543c2ebef48832d8fe41184a15b8b4ac12d3af387",
+      "bytes": 2415
     },
     "README.md": {
       "sha256": "962bf970d9a0993a6a9aabaa65b943f67dbec6f7fd04371abad86644ea1dcafe",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "fe5d463031496d3ca4246c040a2fd623ad0359e11a707e51018b34a206f8976f",
-      "bytes": 15302
+      "sha256": "55c48e2e2369105eba8cdadebb3db90d99b8f367135d2e684f4b550ef47e325a",
+      "bytes": 15471
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,8 +1748,8 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "b372e1727894cce51976c3380773519dd5f49175abe5ae0ed287090972a10058",
-      "bytes": 1112
+      "sha256": "937ff76947560907ea3478808fbd51eb2e877520a69597521dbea82565fa1539",
+      "bytes": 1166
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
@@ -1774,6 +1774,22 @@
     "tests/test_heldout_runner.py": {
       "sha256": "1d16cd7dcf5e965469fe98d299ceeb7c58bd96bd10687eeee18095d4fe887a7d",
       "bytes": 8229
+    },
+    "schemas/property-suite.schema.json": {
+      "sha256": "6b66a5b2255daa0caff6bcff8b29d37079ab9407ca04535161e7581b83bb6d27",
+      "bytes": 902
+    },
+    "tools/property_engine.py": {
+      "sha256": "74282a2c9df023463945a557495b893075e8d2c87c70485957dc766e1d6f5d03",
+      "bytes": 9595
+    },
+    "tests/test_property_engine.py": {
+      "sha256": "6d2a7283567122fe1908ed864c61816e6a1d068508e8dedd5a1be1ff834170a0",
+      "bytes": 5966
+    },
+    "templates/property-suite.json": {
+      "sha256": "406f57b98d1986baad853b64551df99e28eb42ecdf432c2787ee24856cc2f8b8",
+      "bytes": 190
     }
   }
 }
