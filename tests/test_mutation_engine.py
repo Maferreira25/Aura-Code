@@ -16,6 +16,8 @@ from tools.mutation_engine import (
     generate_mutants_for_source,
     execute_mutation_analysis,
     format_prescriptive_report,
+    disposition_survivor,
+    validate_mutant_status,
 )
 
 
@@ -53,6 +55,77 @@ class TestMutationEngine(unittest.TestCase):
         mutants = generate_mutants_for_source(code)
         types = [m.mutation_type for m in mutants]
         self.assertTrue("BOOLEAN_CONSTANT" in types or "RETURN_NULLIFICATION" in types)
+
+    def test_security_guard_bypass_mutant_is_generated(self):
+        code = (
+            "def protected(user):\n"
+            "    if not user.is_authorized:\n"
+            "        raise PermissionError('denied')\n"
+            "    return True\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=50)
+        types = {m.mutation_type for m in mutants}
+        self.assertIn("SECURITY_GUARD_BYPASS", types)
+
+    def test_exception_suppression_mutant_is_generated(self):
+        code = (
+            "def parse(value):\n"
+            "    if value is None:\n"
+            "        raise ValueError('missing')\n"
+            "    return value\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=50)
+        self.assertIn("EXCEPTION_SUPPRESSION", {m.mutation_type for m in mutants})
+
+    def test_statement_deletion_mutant_is_generated(self):
+        code = (
+            "def save(repo, item):\n"
+            "    repo.persist(item)\n"
+            "    return item\n"
+        )
+        mutants = generate_mutants_for_source(code, max_mutants=50)
+        self.assertIn("STATEMENT_DELETION", {m.mutation_type for m in mutants})
+
+    def test_mutation2_status_rejects_unknown_value(self):
+        with self.assertRaises(ValueError):
+            validate_mutant_status("PASS")
+
+    def test_survivor_can_be_marked_likely_equivalent_only_with_rationale(self):
+        survivor = {"mutant_id": 1, "status": "SURVIVED"}
+        with self.assertRaises(ValueError):
+            disposition_survivor(survivor, "LIKELY_EQUIVALENT", rationale="")
+        updated = disposition_survivor(
+            survivor,
+            "LIKELY_EQUIVALENT",
+            rationale="Mutation is semantically equivalent for all integer inputs by construction.",
+        )
+        self.assertEqual(updated["status"], "LIKELY_EQUIVALENT")
+        self.assertIn("rationale", updated["disposition"])
+
+    def test_survivor_waiver_requires_explicit_approver(self):
+        survivor = {"mutant_id": 1, "status": "SURVIVED"}
+        with self.assertRaises(ValueError):
+            disposition_survivor(
+                survivor,
+                "WAIVED",
+                rationale="Accepted temporarily.",
+            )
+        updated = disposition_survivor(
+            survivor,
+            "WAIVED",
+            rationale="Accepted temporarily.",
+            approver="human-reviewer",
+        )
+        self.assertEqual(updated["status"], "WAIVED")
+        self.assertEqual(updated["disposition"]["approver"], "human-reviewer")
+
+    def test_only_survivors_can_receive_post_analysis_disposition(self):
+        with self.assertRaises(ValueError):
+            disposition_survivor(
+                {"mutant_id": 1, "status": "KILLED"},
+                "NO_COVERAGE",
+                rationale="Not executed.",
+            )
 
     def test_mutation_execution_kills_mutants_with_real_assertions(self):
         # Production code
