@@ -184,7 +184,8 @@ class MaturityGateTests(unittest.TestCase):
                 }),
                 encoding="utf-8",
             )
-            (root / "governance.json").write_text(
+            governance_path = root / "governance.json"
+            governance_path.write_text(
                 json.dumps({
                     "status": "ADOPTED",
                     "roles": {
@@ -200,6 +201,14 @@ class MaturityGateTests(unittest.TestCase):
                 }),
                 encoding="utf-8",
             )
+            evidence_sha = hashlib.sha256(governance_path.read_bytes()).hexdigest()
+            ledger = json.loads((root / "validation" / "maturity-evidence.json").read_text(encoding="utf-8"))
+            ledger["criteria"]["MAT-10"].update({
+                "reviewed_by": "human-reviewer",
+                "reviewed_at": "2026-09-30T00:00:00Z",
+                "evidence_sha256": evidence_sha,
+            })
+            (root / "validation" / "maturity-evidence.json").write_text(json.dumps(ledger), encoding="utf-8")
             report = evaluate_maturity(root)
             self.assertFalse(report["ready"])
             self.assertEqual(report["criteria"][0]["status"], "INVALID_PASS")
