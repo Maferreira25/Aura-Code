@@ -6,7 +6,8 @@
     "evidence": [
       "REPLACE_WITH_LOAD_REPORT"
     ],
-    "target_rps": 1
+    "target_rps": 1,
+    "duration_minutes": 1
   },
   "soak": {
     "status": "FAIL",
@@ -32,5 +33,10 @@
     "evidence": [
       "REPLACE_WITH_OBSERVABILITY_REPORT"
     ]
-  }
+  },
+  "study": "P4",
+  "preregistered": false,
+  "preregistration_path": "REPLACE_WITH_P4_PLAN.json",
+  "preregistration_sha256": "REPLACE_WITH_64_HEX_SHA256",
+  "environment": "staging"
 }
