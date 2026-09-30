@@ -1,0 +1,31 @@
+{
+  "study_id": "P3-EXTERNAL-001",
+  "preregistered": false,
+  "arms": [
+    "A0",
+    "A1",
+    "A2"
+  ],
+  "model_agent_pairing": {
+    "model_display_name": "REPLACE_BEFORE_EXECUTION",
+    "agent": "REPLACE_BEFORE_EXECUTION",
+    "reasoning_effort": "REPLACE_BEFORE_EXECUTION"
+  },
+  "benchmarks": [
+    {
+      "id": "BAXBENCH",
+      "license_verified": false,
+      "upstream_revision": "REPLACE_WITH_IMMUTABLE_UPSTREAM_REVISION",
+      "task_subset_commitment_sha256": "REPLACE_WITH_64_HEX_SHA256",
+      "attempts_per_arm": 1
+    },
+    {
+      "id": "SWE-BENCH-LIVE",
+      "license_verified": false,
+      "upstream_revision": "REPLACE_WITH_IMMUTABLE_UPSTREAM_REVISION",
+      "task_subset_commitment_sha256": "REPLACE_WITH_64_HEX_SHA256",
+      "attempts_per_arm": 1
+    }
+  ],
+  "combine_heterogeneous_scores": false
+}
