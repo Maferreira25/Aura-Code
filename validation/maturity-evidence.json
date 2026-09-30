@@ -1,0 +1,15 @@
+{
+  "target": "stable-1.0",
+  "updated_at": "2026-09-30",
+  "criteria": {
+    "MAT-02": {"status": "UNKNOWN", "evidence": [], "rationale": "P2 private/fresh confirmatory study not yet completed."},
+    "MAT-03": {"status": "UNKNOWN", "evidence": [], "rationale": "Multi-model/agent replication not yet completed."},
+    "MAT-04": {"status": "UNKNOWN", "evidence": [], "rationale": "P3 external ecological validation not yet completed."},
+    "MAT-05": {"status": "UNKNOWN", "evidence": [], "rationale": "P4 operational validation not yet completed."},
+    "MAT-06": {"status": "UNKNOWN", "evidence": [], "rationale": "Independent assessor/inter-rater study not yet completed."},
+    "MAT-07": {"status": "UNKNOWN", "evidence": [], "rationale": "Burden and error-rate analysis not yet completed."},
+    "MAT-08": {"status": "UNKNOWN", "evidence": [], "rationale": "Current multi-language checks are not yet sufficient evidence for 1.0 maturity."},
+    "MAT-09": {"status": "UNKNOWN", "evidence": [], "rationale": "Independent threat-model and supply-chain audit evidence not yet complete."},
+    "MAT-10": {"status": "UNKNOWN", "evidence": [], "rationale": "Governance remains maintainer-led draft before 1.0."}
+  }
+}
