@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 455,
+  "file_count": 456,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "cc40d76a26591925595dbfc46e1bbd791bd9c97a3302835b84aa7a35e0d939fc",
-      "bytes": 47649
+      "sha256": "e8e625dd30fa0f05513047dd95a069c6618fbc6712943f57cf52a2260549362e",
+      "bytes": 51362
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1822,6 +1822,10 @@
     "templates/differential-suite.json": {
       "sha256": "b1ea3b0cf90adc5da692c32f67c29cdebc74114c045d4bb732462a7b23f984eb",
       "bytes": 323
+    },
+    "tests/test_behavioral_cli.py": {
+      "sha256": "5537a074e98bde60eb47cc342264fa1dfd704e7032173a3e1b52a12795a7e5cf",
+      "bytes": 811
     }
   }
 }
