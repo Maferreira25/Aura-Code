@@ -1760,8 +1760,8 @@
       "bytes": 1217
     },
     "tests/test_maturity_gate.py": {
-      "sha256": "e688d9b94e72a1a8a5c01cda3d686ea305f8f1b405433c41f9a667889eb99b07",
-      "bytes": 11496
+      "sha256": "5d0ce9130d7b732cb3557010823c7f984b4714c548ecb5c3baf16ecc31f5166b",
+      "bytes": 11653
     },
     "tools/dogfood_assurance.py": {
       "sha256": "4f77e302a782fb75b3b474c5377d7d77b9ac120b6c04fb4b0cde5442ee75d4e6",
@@ -1832,8 +1832,8 @@
       "bytes": 3063
     },
     "tests/test_prepare_maturity_evidence.py": {
-      "sha256": "2bddb5847ceb809c842cba852e5d5a55932b27b399e9cccd072d7e6c4fded15b",
-      "bytes": 3187
+      "sha256": "f60b0a75af8438381bda8bce5e5d7343aed63d16e83d023423cc916acfa701a9",
+      "bytes": 3344
     },
     "validation/config/governance-1.0.example.json": {
       "sha256": "a6a8768db739239a2a687ec14863aa658b43e038350202b06bf4782247b5ca98",
