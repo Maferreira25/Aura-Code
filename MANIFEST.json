@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "aa2aa768d457d48e201cb7824c05cd5b1b83bfff77a056a6f292c6a90299a336",
-      "bytes": 17464
+      "sha256": "bb70af5af912b4632fd0742efd2f9fcf145024b58fcf9dc2e3df5b69d7b9a3dd",
+      "bytes": 17637
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1696,8 +1696,8 @@
       "bytes": 11
     },
     "tools/assurance_state.py": {
-      "sha256": "01a1876d42583d82b149f08bd9c1f591337b4ea5226d4db90ca23a865a3676a3",
-      "bytes": 39338
+      "sha256": "eeee3cc096c334c3fbc6ccd3a89546f6ce162f3baa3f42d6f50742eac024a54b",
+      "bytes": 42714
     },
     "controls/gates.json": {
       "sha256": "d1c4425e4166c2180a137120426f0294552119fd87ec99aefa145b6ead6a6cac",
@@ -1760,8 +1760,8 @@
       "bytes": 1217
     },
     "tests/test_maturity_gate.py": {
-      "sha256": "a3023f9ae1a1dc567f04c5f979f745b13e0f2062558f54f3681031e21ac3b44d",
-      "bytes": 2642
+      "sha256": "4d839a2889ce51bc1620af9458d4dee917e3212899f234d34cdc717f7d412f07",
+      "bytes": 3136
     },
     "tools/dogfood_assurance.py": {
       "sha256": "4f77e302a782fb75b3b474c5377d7d77b9ac120b6c04fb4b0cde5442ee75d4e6",
