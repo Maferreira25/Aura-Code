@@ -16,6 +16,8 @@ LEGACY_STATUS_MAP = {"NA": "NOT_APPLICABLE", "NOT_ASSESSED": "UNKNOWN"}
 VALID_ACTOR_KINDS = {"AI_AGENT", "AI_MODEL", "HUMAN", "DETERMINISTIC_TOOL", "SERVICE"}
 VALID_ROLES = {"implementer", "verifier", "auditor", "remediator", "revalidator", "approver"}
 AI_KINDS = {"AI_AGENT", "AI_MODEL"}
+VALID_FINDING_SEVERITIES = {"CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"}
+VALID_FINDING_STATUSES = {"OPEN", "CONFIRMED", "PARTIALLY_CONFIRMED", "FALSE_POSITIVE", "IN_REMEDIATION", "IMPLEMENTED", "REVALIDATION_FAILED", "RESOLVED", "BLOCKED", "ACCEPTED_RISK"}
 STAGES = (
     "INTAKE",
     "RISK_CLASSIFIED",
@@ -313,6 +315,133 @@ def check_actor_independence(
                     f"strong independence requires different model_id values for {left_role} and {right_role}"
                 )
     return reasons
+
+
+
+def _find_finding(state: Mapping[str, Any], finding_id: str) -> Optional[Dict[str, Any]]:
+    findings = state.get("open_findings", [])
+    if not isinstance(findings, list):
+        return None
+    target = finding_id.strip().upper()
+    for item in findings:
+        if isinstance(item, dict) and str(item.get("id", "")).upper() == target:
+            return item
+    return None
+
+
+def register_finding(
+    state: Dict[str, Any],
+    finding_id: str,
+    severity: str,
+    title: str,
+    status: str = "OPEN",
+    evidence: Optional[Sequence[str]] = None,
+) -> Dict[str, Any]:
+    fid = finding_id.strip().upper()
+    sev = severity.strip().upper()
+    finding_status = status.strip().upper()
+    if not fid:
+        raise ValueError("finding_id must not be empty")
+    if sev not in VALID_FINDING_SEVERITIES:
+        raise ValueError(f"Invalid finding severity '{severity}'")
+    if finding_status not in VALID_FINDING_STATUSES:
+        raise ValueError(f"Invalid finding status '{status}'")
+    if _find_finding(state, fid) is not None:
+        raise ValueError(f"Finding '{fid}' already exists")
+    finding = {
+        "id": fid,
+        "title": title.strip() or fid,
+        "severity": sev,
+        "status": finding_status,
+        "evidence": [str(item).strip() for item in (evidence or []) if str(item).strip()],
+        "history": [{"status": finding_status, "at": utc_now()}],
+    }
+    state.setdefault("open_findings", []).append(finding)
+    return finding
+
+
+def start_remediation(
+    state: Dict[str, Any],
+    finding_id: str,
+    evidence: Optional[Sequence[str]] = None,
+) -> Dict[str, Any]:
+    finding = _find_finding(state, finding_id)
+    if finding is None:
+        raise ValueError(f"Finding '{finding_id}' not found")
+    if str(finding.get("status", "")).upper() not in {"CONFIRMED", "PARTIALLY_CONFIRMED", "REVALIDATION_FAILED"}:
+        raise ValueError("Finding must be confirmed before remediation")
+    remediator = _actor(state, "remediator")
+    if remediator is None:
+        raise ValueError("remediator actor provenance is required")
+    finding["status"] = "IN_REMEDIATION"
+    finding["remediator"] = dict(remediator)
+    finding["remediation_evidence"] = [str(item).strip() for item in (evidence or []) if str(item).strip()]
+    finding.setdefault("history", []).append({"status": "IN_REMEDIATION", "at": utc_now()})
+    return finding
+
+
+def mark_remediation_implemented(
+    state: Dict[str, Any],
+    finding_id: str,
+    evidence: Sequence[str],
+) -> Dict[str, Any]:
+    finding = _find_finding(state, finding_id)
+    if finding is None:
+        raise ValueError(f"Finding '{finding_id}' not found")
+    if str(finding.get("status", "")).upper() != "IN_REMEDIATION":
+        raise ValueError("Finding must be IN_REMEDIATION before implementation can be recorded")
+    ev = [str(item).strip() for item in evidence if str(item).strip()]
+    if not ev:
+        raise ValueError("Implemented remediation requires evidence")
+    finding["status"] = "IMPLEMENTED"
+    finding["implementation_evidence"] = ev
+    finding.setdefault("history", []).append({"status": "IMPLEMENTED", "at": utc_now()})
+    return finding
+
+
+def revalidate_finding(
+    state: Dict[str, Any],
+    finding_id: str,
+    result: str,
+    evidence: Sequence[str],
+) -> Dict[str, Any]:
+    finding = _find_finding(state, finding_id)
+    if finding is None:
+        raise ValueError(f"Finding '{finding_id}' not found")
+    if str(finding.get("status", "")).upper() != "IMPLEMENTED":
+        raise ValueError("Finding must be IMPLEMENTED before independent revalidation")
+    ev = [str(item).strip() for item in evidence if str(item).strip()]
+    if not ev:
+        raise ValueError("Revalidation requires evidence")
+    remediator = finding.get("remediator")
+    revalidator = _actor(state, "revalidator")
+    if not isinstance(remediator, dict):
+        raise ValueError("Finding is missing remediator provenance")
+    if revalidator is None:
+        raise ValueError("revalidator actor provenance is required")
+
+    level = str(state.get("assurance_level", "")).upper()
+    shadow_state = {"actors": {"remediator": remediator, "revalidator": revalidator}}
+    strong = level in {"AL3", "AL4"}
+    independence_errors = check_actor_independence(
+        shadow_state, "remediator", "revalidator", strong_model_independence=strong
+    )
+    if independence_errors:
+        raise ValueError("Independent revalidation failed: " + "; ".join(independence_errors))
+
+    normalized = result.strip().upper()
+    if normalized not in {"PASS", "FAIL"}:
+        raise ValueError("Revalidation result must be PASS or FAIL")
+    finding["revalidation"] = {
+        "result": normalized,
+        "evidence": ev,
+        "revalidator": dict(revalidator),
+        "at": utc_now(),
+    }
+    new_status = "RESOLVED" if normalized == "PASS" else "REVALIDATION_FAILED"
+    finding["status"] = new_status
+    finding.setdefault("history", []).append({"status": new_status, "at": utc_now()})
+    return finding
 
 
 def _blocking_findings(state: Mapping[str, Any], severities: Iterable[str]) -> List[str]:
