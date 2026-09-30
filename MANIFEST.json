@@ -872,8 +872,8 @@
       "bytes": 3575
     },
     "tests/test_mutation_engine.py": {
-      "sha256": "3360a753c34167fc9c4921a0972f2b625d7469070e299f21ce1fa32e36340171",
-      "bytes": 5168
+      "sha256": "bbb995fe1fe62ee1806a4655620860484927075755423d5b236f55ef4ddcdb7c",
+      "bytes": 7334
     },
     "tests/test_pre_tool_guard.py": {
       "sha256": "9cedd1454ce24e049b5aaeeeabf4aeb466742414791016cd8a807ba3c7140d51",
@@ -1044,8 +1044,8 @@
       "bytes": 4691
     },
     "tools/mutation_engine.py": {
-      "sha256": "e7dac60f61a826c39864e4acd5a499296258fd1980217447468434b292edc3f8",
-      "bytes": 21833
+      "sha256": "10426c489a2488ae7093085de5718ba6b2fd06c562b28b019e76e949f01a7980",
+      "bytes": 22416
     },
     "tools/pre_tool_guard.py": {
       "sha256": "cf0f8874d74e5ab8ff1df2f3933768adc5d8fdb4f77af8deb23fe24f72e1fe22",
