@@ -48,16 +48,7 @@ from tools import brainstorm_engine
 from tools import forward_engine
 from tools import debugger_engine
 from tools import refactor_engine
-from tools import traceability_engine
-from tools import heldout_runner
-from tools import property_engine
-from tools import metamorphic_engine
-from tools import differential_engine
-from tools import taint_engine
-from tools import static_analyzer_adapters
-from tools import detector_diversity
-from tools import fuzz_engine
-from tools import dynamic_security_engine
+from tools import assurance_v2_cli
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -291,61 +282,7 @@ def main() -> None:
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
 
-    # Subcommand: heldout
-    heldout_p = subparsers.add_parser("heldout", help="Execute protected held-out tests outside the candidate workspace")
-    heldout_p.add_argument("target", nargs="?", default=".", help="Candidate workspace directory")
-    heldout_p.add_argument("--suite", required=True, help="Protected held-out suite directory")
-    heldout_p.add_argument("--isolation", choices=["auto", "container", "local"], default="auto")
-    heldout_p.add_argument("--strict", action="store_true", help="Require strong container isolation when auto mode is used")
-    heldout_p.add_argument("--json", action="store_true", help="Output redacted result in JSON format")
-
-    # Subcommand: property
-    property_p = subparsers.add_parser("property", help="Execute declared property-based tests with reproducible seed")
-    property_p.add_argument("manifest", help="Path to property-suite manifest")
-    property_p.add_argument("--target", default=".", help="Target workspace directory")
-    property_p.add_argument("--json", action="store_true", help="Output result in JSON format")
-
-    # Subcommand: metamorphic
-    metamorphic_p = subparsers.add_parser("metamorphic", help="Execute declared metamorphic relations")
-    metamorphic_p.add_argument("manifest", help="Path to metamorphic-suite manifest")
-    metamorphic_p.add_argument("--target", default=".", help="Target workspace directory")
-    metamorphic_p.add_argument("--json", action="store_true", help="Output result in JSON format")
-
-    # Subcommand: differential
-    differential_p = subparsers.add_parser("differential", help="Compare candidate and independent reference behavior")
-    differential_p.add_argument("manifest", help="Path to differential-suite manifest")
-    differential_p.add_argument("--target", default=".", help="Target workspace directory")
-    differential_p.add_argument("--json", action="store_true", help="Output result in JSON format")
-
-    # Subcommand: taint
-    taint_p = subparsers.add_parser("taint", help="Run native Python taint/data-flow analysis")
-    taint_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
-    taint_p.add_argument("--json", action="store_true", help="Output result in JSON format")
-
-    # Subcommand: analyzer-report
-    analyzer_p = subparsers.add_parser("analyzer-report", help="Normalize an external SARIF static-analysis report")
-    analyzer_p.add_argument("report", help="Path to SARIF report")
-    analyzer_p.add_argument("--id", required=True, help="Stable analyzer identifier, e.g. semgrep or codeql")
-    analyzer_p.add_argument("--json", action="store_true", help="Output normalized report in JSON format")
-
-    # Subcommand: fuzz
-    fuzz_p = subparsers.add_parser("fuzz", help="Execute deterministic corpus fuzzing against a declared target")
-    fuzz_p.add_argument("manifest", help="Path to fuzz-suite manifest")
-    fuzz_p.add_argument("--target", default=".", help="Target workspace directory")
-    fuzz_p.add_argument("--json", action="store_true", help="Output result in JSON format")
-
-    # Subcommand: dast
-    dast_p = subparsers.add_parser("dast", help="Execute local-only runtime security contract checks")
-    dast_p.add_argument("manifest", help="Path to DAST suite manifest")
-    dast_p.add_argument("--target", default=".", help="Target workspace directory")
-    dast_p.add_argument("--json", action="store_true", help="Output result in JSON format")
-
-    # Subcommand: traceability
-    trace_p = subparsers.add_parser("traceability", help="Verify Requirement -> Invariant -> Implementation -> Test -> Evidence chains")
-    trace_p.add_argument("manifest", nargs="?", default="_auracode_sdd/traceability.json", help="Path to traceability manifest")
-    trace_p.add_argument("--target", default=".", help="Target workspace directory")
-    trace_p.add_argument("--no-evidence-verify", action="store_true", help="Do not verify linked evidence freshness (diagnostic use only)")
-    trace_p.add_argument("--json", action="store_true", help="Output result in JSON format")
+    assurance_v2_cli.register_commands(subparsers)
 
     # Subcommand: audit
     audit_p = subparsers.add_parser("audit", help="Evidence-based audit with explicit guarantee states")
@@ -447,6 +384,10 @@ def main() -> None:
     if not args.command:
         parser.print_help()
         sys.exit(0)
+
+    v2_exit = assurance_v2_cli.dispatch(args)
+    if v2_exit is not None:
+        sys.exit(v2_exit)
 
     if args.command == "init":
         profile = getattr(args, "profile", "basic")
@@ -560,163 +501,6 @@ def main() -> None:
         if args.json:
             assess_argv.append("--json")
         sys.exit(assess.main(assess_argv))
-
-    elif args.command == "heldout":
-        import json
-        res = heldout_runner.evaluate_held_out(
-            Path(args.target).resolve(),
-            Path(args.suite).resolve(),
-            isolation=args.isolation,
-            strict_mode=args.strict,
-        )
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode Held-Out Evaluation: {res.get('status')}")
-            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
-            disclosure = res.get("disclosure", {})
-            if disclosure.get("message"):
-                print(disclosure["message"])
-            if res.get("failure_category"):
-                print(f"Failure category: {res['failure_category']}")
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-
-    elif args.command == "property":
-        import json
-        workspace = Path(args.target).resolve()
-        manifest_path = Path(args.manifest)
-        if not manifest_path.is_absolute():
-            manifest_path = (workspace / manifest_path).resolve()
-        res = property_engine.evaluate_property_suite(workspace, manifest_path)
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode Property Testing: {res.get('status')}")
-            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
-            if res.get("suite_id"):
-                print(f"Suite: {res['suite_id']} | Seed: {res.get('seed', 'n/a')}")
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-
-    elif args.command == "metamorphic":
-        import json
-        workspace = Path(args.target).resolve()
-        manifest_path = Path(args.manifest)
-        if not manifest_path.is_absolute():
-            manifest_path = (workspace / manifest_path).resolve()
-        res = metamorphic_engine.evaluate_metamorphic_suite(workspace, manifest_path)
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode Metamorphic Testing: {res.get('status')}")
-            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
-            if res.get("suite_id"):
-                print(
-                    f"Suite: {res['suite_id']} | "
-                    f"Relations: {res.get('relations_pass', 0)}/{res.get('relations_total', 0)} PASS"
-                )
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-
-    elif args.command == "differential":
-        import json
-        workspace = Path(args.target).resolve()
-        manifest_path = Path(args.manifest)
-        if not manifest_path.is_absolute():
-            manifest_path = (workspace / manifest_path).resolve()
-        res = differential_engine.evaluate_differential_suite(workspace, manifest_path)
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode Differential Testing: {res.get('status')}")
-            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
-            if res.get("suite_id"):
-                print(
-                    f"Suite: {res['suite_id']} | "
-                    f"Matches: {res.get('matches', 0)}/{res.get('cases_total', 0)}"
-                )
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-
-    elif args.command == "taint":
-        import json
-        workspace = Path(args.target).resolve()
-        res = taint_engine.analyze_workspace(workspace)
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode Taint Analysis: {res.get('status')}")
-            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
-            print(f"Findings: {len(res.get('findings', []))}")
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-
-    elif args.command == "analyzer-report":
-        import json
-        res = static_analyzer_adapters.normalize_sarif(Path(args.report), analyzer_id=args.id)
-        print(json.dumps(res, indent=2, ensure_ascii=False))
-        sys.exit(0 if res.get("status") in {"PASS", "FAIL"} else 1)
-
-    elif args.command == "fuzz":
-        import json
-        workspace = Path(args.target).resolve()
-        manifest_path = Path(args.manifest)
-        if not manifest_path.is_absolute():
-            manifest_path = (workspace / manifest_path).resolve()
-        res = fuzz_engine.evaluate_fuzz_suite(workspace, manifest_path)
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode Fuzzing: {res.get('status')}")
-            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
-            if res.get("suite_id"):
-                print(
-                    f"Suite: {res['suite_id']} | Seed: {res.get('seed', 'n/a')} | "
-                    f"Iterations: {res.get('iterations', 0)} | Findings: {len(res.get('findings', []))}"
-                )
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-
-    elif args.command == "dast":
-        import json
-        workspace = Path(args.target).resolve()
-        manifest_path = Path(args.manifest)
-        if not manifest_path.is_absolute():
-            manifest_path = (workspace / manifest_path).resolve()
-        res = dynamic_security_engine.evaluate_dast_suite(workspace, manifest_path)
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode DAST: {res.get('status')}")
-            print(f"Progression: {res.get('progression', {}).get('state', 'BLOCKED')}")
-            if res.get("suite_id"):
-                print(
-                    f"Suite: {res['suite_id']} | "
-                    f"Checks: {res.get('checks_pass', 0)}/{res.get('checks_total', 0)} PASS"
-                )
-        sys.exit(0 if res.get("status") == "PASS" else 1)
-
-    elif args.command == "traceability":
-        import json
-        workspace = Path(args.target).resolve()
-        manifest_path = Path(args.manifest)
-        if not manifest_path.is_absolute():
-            manifest_path = (workspace / manifest_path).resolve()
-        res = traceability_engine.evaluate_traceability_file(
-            manifest_path,
-            workspace,
-            verify_evidence=not args.no_evidence_verify,
-        )
-        if args.json:
-            print(json.dumps(res, indent=2, ensure_ascii=False))
-        else:
-            print(f"AuraCode Traceability: {res.get('status')}")
-            summary = res.get("summary", {})
-            if summary:
-                print(
-                    f"Requirements: {summary.get('requirements_pass', 0)}/{summary.get('requirements_total', 0)} PASS | "
-                    f"Invariants: {summary.get('invariants_pass', 0)}/{summary.get('invariants_total', 0)} PASS"
-                )
-            progression = res.get("progression", {})
-            print(f"Progression: {progression.get('state', 'BLOCKED')}")
-            for blocker in progression.get("blocked_by", []):
-                print(f" - {blocker.get('check_id')}: {blocker.get('status')} - {blocker.get('reason', '')}")
-        sys.exit(0 if res.get("status") == "PASS" else 1)
 
     elif args.command == "mcp":
         if getattr(args, "unrestricted_root", False) or args.allowed_root == "*":
