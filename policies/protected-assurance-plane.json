@@ -35,7 +35,8 @@
     "tools/differential_engine.py",
     "tools/taint_engine.py",
     "tools/detector_diversity.py",
-    "tools/static_analyzer_adapters.py"
+    "tools/static_analyzer_adapters.py",
+    "tools/fuzz_engine.py"
   ],
   "held_out": [
     "_auracode_assurance/held_out/**",
