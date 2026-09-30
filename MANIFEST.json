@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 426,
+  "file_count": 427,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -408,8 +408,8 @@
       "bytes": 32
     },
     "schemas/assessment.schema.json": {
-      "sha256": "69b23d3f405bda5282aec0e86978e54fd9f2fa3aa50a319b4a0699641ab8e143",
-      "bytes": 1259
+      "sha256": "b829d56cb5e46bf80d88bfb48c44d12c58c553470beecec9b0dba7eeab3b8d05",
+      "bytes": 1419
     },
     "schemas/contracts.schema.json": {
       "sha256": "a8e10b83b112708d508e3f01a631bfb4e77cfa39b24ca715955ece361404f7ba",
@@ -948,8 +948,8 @@
       "bytes": 17835
     },
     "tools/assess.py": {
-      "sha256": "90fde6428fc9f7ee711fec8b9d36a521b75b25bf1032b46f2ba341e0608ce7e4",
-      "bytes": 6712
+      "sha256": "dd2b1bda709aff17443df0eec0cd5da4ac55e73de0b10399fb28ac777a70716d",
+      "bytes": 8040
     },
     "tools/assurance.py": {
       "sha256": "df047118d908343c6eeb092ef9bbdb82dc42ffd08042b2b290d686cf0d9899b6",
@@ -960,8 +960,8 @@
       "bytes": 24736
     },
     "tools/audit.py": {
-      "sha256": "d2ddadb5f0c04612f879783f464f4a124964b4ffc901e0a8197dacdf53ba16c7",
-      "bytes": 18185
+      "sha256": "46ddee7c231590b3638fe42d40ab0b09a3c00cbe77e5951085c7a9fe4e2f2079",
+      "bytes": 21239
     },
     "tools/brainstorm_engine.py": {
       "sha256": "1805a86ea9418600eb83adb1edf204abdaf7e99f8082484c304e9962f3b591a0",
@@ -1706,6 +1706,10 @@
     "tests/test_assurance_result.py": {
       "sha256": "2e6e4b0ffc6bd1968b091d5082288b1f1602f3fda6482964a3e817cbfb6db0d3",
       "bytes": 7208
+    },
+    "tests/test_assurance_shadow.py": {
+      "sha256": "f44950c4deb0fa94e3e4bfe59454fd856b7c8dc3a4d7a746b5bad2b3f2499ea3",
+      "bytes": 5134
     }
   }
 }
