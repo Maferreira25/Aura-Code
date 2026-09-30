@@ -1,11 +1,36 @@
 {
-  "evidence_id": "EV-EXAMPLE-001",
+  "schema_version": "2.0.0",
+  "evidence_id": "EV-00000000-0000-0000-0000-000000000000",
   "control_id": "VER-02",
-  "type": "protected-test-result",
+  "check_id": "protected-tests",
+  "type": "canonical-assurance-result",
   "description": "Replace with evidence description",
-  "producer": "independent-ci",
-  "timestamp": "2026-09-09T00:00:00Z",
+  "producer": {
+    "tool": "independent-ci",
+    "tool_version": null,
+    "method": "protected_test_execution",
+    "independence": "deterministic-tool"
+  },
+  "timestamp": "2026-09-09T00:00:00+00:00",
   "location": "ci://example/run/123",
-  "sha256": null,
-  "independence": "deterministic-tool"
+  "subject": {
+    "source_commit": null,
+    "source_tree_hash": null,
+    "workspace_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "artifact_digest": null,
+    "config_hash": null,
+    "ruleset_hash": null
+  },
+  "integrity": {
+    "result_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "record_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "freshness": "VALID",
+  "result": {
+    "schema_version": "1.0.0",
+    "result_id": "AR-00000000-0000-0000-0000-000000000000",
+    "check_id": "protected-tests",
+    "status": "PASS"
+  },
+  "metadata": {}
 }
