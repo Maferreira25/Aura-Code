@@ -12,6 +12,7 @@ SUBCOMMANDS = {
     "queue",
     "prepare",
     "infrastructure",
+    "handoff",
 }
 
 
@@ -49,6 +50,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if command == "infrastructure":
         from validation.tools import validate_maturity_infrastructure
         return validate_maturity_infrastructure.main(args)
+
+    if command == "handoff":
+        from validation.tools import maturity_handoff
+        return maturity_handoff.main(args)
 
     return 2
 
