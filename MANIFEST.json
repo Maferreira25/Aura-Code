@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 455,
+  "file_count": 460,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "ca95bcc458f0c7b32d9f7f031b658b2dbe7900e09da825f977334d26be7a53a7",
-      "bytes": 51571
+      "sha256": "58b898c534f67b43577385f49200b9d9016a5e40ff642f5784f5d64ef80c09da",
+      "bytes": 53251
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "87528976bacafc6499346b2a9eba6d6e7384fa4313c79ccf8fe5060873bbf9fa",
-      "bytes": 15560
+      "sha256": "e1551c28303540af3efdbdaa2ba1cf0bde7d440b7132d341a60e9156e090abda",
+      "bytes": 15668
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,16 +1748,16 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "eb89a9b9f6418d31efe9bc4418d8148d2810d8483717c346dc3b1675cea8bcb6",
-      "bytes": 1215
+      "sha256": "0183446bfd5a7a97bc8920cdc081b59eb2a58d38e93766978709cdad23fa5917",
+      "bytes": 1320
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
       "bytes": 7182
     },
     "tests/test_protected_assurance_plane.py": {
-      "sha256": "481456931c0312c79900b84eda105e4d063f6d8d79c7ee6aa726a92946c10e4f",
-      "bytes": 4505
+      "sha256": "4dc933398d8670bed89a40f6433e157afaac9c013f76affd451d8a1cc03c16c7",
+      "bytes": 4924
     },
     "schemas/held-out-suite.schema.json": {
       "sha256": "22359b62ba7e2a0e68de66ce96bc5becc1a4a895b3235e5ec8b659cd52c51505",
@@ -1822,6 +1822,26 @@
     "tests/test_differential_engine.py": {
       "sha256": "cf66824ec0a0901ec76076a23630a200922b30f2ac16bd472f32b13a2d2946f5",
       "bytes": 4602
+    },
+    "schemas/static-analyzer-report.schema.json": {
+      "sha256": "6f031b5bcc62eb394f123b83fb2261dc3850a39978ab62736c902e26b2bf60fc",
+      "bytes": 1519
+    },
+    "tools/taint_engine.py": {
+      "sha256": "273d432b532aee1f4dda5270947b80400c3b6b9d9dd526e1e479362fd828399b",
+      "bytes": 8581
+    },
+    "tools/detector_diversity.py": {
+      "sha256": "96803a923d46b4312576071fe3b02fce2f410a096cfef26190f2017dab25fcfd",
+      "bytes": 3044
+    },
+    "tools/static_analyzer_adapters.py": {
+      "sha256": "77a3bfe720307fb8fdd9cb5976b0c5c591b8f0a7452440954ef9f09784b44bbf",
+      "bytes": 3349
+    },
+    "tests/test_taint_and_diversity.py": {
+      "sha256": "9f4c6babf415ac4f6b90c2bd92b7b4f98ee75cb14718ab42ef192d884df7c54b",
+      "bytes": 5320
     }
   }
 }
