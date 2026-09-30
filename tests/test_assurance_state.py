@@ -1,9 +1,11 @@
+import tempfile
 import unittest
 from pathlib import Path
 
 from tools.assurance_state import (
     advance_state,
     evaluate_gate,
+    import_assessment,
     load_gate_policy,
     load_profile_controls,
     new_state,
@@ -145,6 +147,38 @@ class AssuranceStateTests(unittest.TestCase):
         record_actor(state, "revalidator", "agent-review", "AI_AGENT", "review-session", "model-x")
         revalidate_finding(state, "AUD-004", "FAIL", ["retest-failed.txt"])
         self.assertEqual(finding["status"], "REVALIDATION_FAILED")
+
+    def test_import_assessment_downgrades_invalid_pass_to_unknown(self):
+        state = new_state("demo", "AL1")
+        assessment = {
+            "framework_version": "0.3.0.dev0",
+            "assurance_level": "AL1",
+            "project": "demo",
+            "assessor": "test",
+            "controls": {
+                "GOV-01": {"status": "PASS", "evidence": ["missing-evidence.txt"]}
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            result = import_assessment(state, assessment, Path(tmp), ROOT)
+        self.assertIn("GOV-01", result["downgraded_to_unknown"])
+        self.assertEqual(state["controls"]["GOV-01"]["status"], "UNKNOWN")
+
+    def test_import_assessment_preserves_verified_pass(self):
+        state = new_state("demo", "AL1")
+        assessment = {
+            "framework_version": "0.3.0.dev0",
+            "assurance_level": "AL1",
+            "project": "demo",
+            "assessor": "test",
+            "controls": {
+                "GOV-01": {"status": "PASS", "evidence": ["risk.md"]}
+            },
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "risk.md").write_text("evidence", encoding="utf-8")
+            import_assessment(state, assessment, Path(tmp), ROOT)
+        self.assertEqual(state["controls"]["GOV-01"]["status"], "PASS")
 
 
 if __name__ == "__main__":
