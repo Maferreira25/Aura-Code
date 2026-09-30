@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 447,
+  "file_count": 451,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "55c48e2e2369105eba8cdadebb3db90d99b8f367135d2e684f4b550ef47e325a",
-      "bytes": 15471
+      "sha256": "0f5b5f160fb24bfe56170bb8436fc3d8a82dd35024d51d3adab7dcbc45e24226",
+      "bytes": 15652
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,8 +1748,8 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "937ff76947560907ea3478808fbd51eb2e877520a69597521dbea82565fa1539",
-      "bytes": 1166
+      "sha256": "94613bf879701065b10c1d4b3bc4c5710e04f158e3a5f55e2bf4b272c602d589",
+      "bytes": 1201
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
@@ -1790,6 +1790,22 @@
     "templates/property-suite.json": {
       "sha256": "406f57b98d1986baad853b64551df99e28eb42ecdf432c2787ee24856cc2f8b8",
       "bytes": 190
+    },
+    "schemas/metamorphic-suite.schema.json": {
+      "sha256": "2154ab30c4302cc41416fb978d658c3d72a2cbd967671ffdfb35fb551cb5271e",
+      "bytes": 1136
+    },
+    "tools/metamorphic_engine.py": {
+      "sha256": "2890c4616117d57850ecad91f344235d68f9462696a74b02731bc5e6f5e14f54",
+      "bytes": 8794
+    },
+    "tests/test_metamorphic_engine.py": {
+      "sha256": "b65b0ed1857b08df6b9280c803278829015d525b70df3fc1cb7c4a6a4853a251",
+      "bytes": 3624
+    },
+    "templates/metamorphic-suite.json": {
+      "sha256": "f3e6b666bd19fd6496fd002bfbc14a2a264e798b80610a8455487e53b8648b46",
+      "bytes": 376
     }
   }
 }
