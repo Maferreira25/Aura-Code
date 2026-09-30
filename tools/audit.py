@@ -32,6 +32,7 @@ from tools import check_strict_types
 from tools import check_test_integrity
 from tools import check_architecture
 from tools import check_requirements_ambiguity
+from tools import traceability_engine
 from tools.assurance_result import build_result, normalize_legacy_status
 
 
@@ -308,6 +309,43 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
     if sdd_dir.is_dir() and any(sdd_dir.glob("*.md")):
         ambiguity_result = check_requirements_ambiguity.analyze_workspace(str(sdd_dir))
 
+    traceability_manifest = sdd_dir / "traceability.json"
+    if not traceability_manifest.is_file():
+        traceability_manifest = workspace_dir / ".auracode" / "traceability.json"
+    if traceability_manifest.is_file():
+        traceability_result = traceability_engine.evaluate_traceability_file(
+            traceability_manifest,
+            workspace_dir,
+            verify_evidence=True,
+        )
+    else:
+        traceability_result = {
+            "status": "NOT_TESTED",
+            "progression": {
+                "state": "BLOCKED",
+                "blocked_by": [
+                    {
+                        "check_id": "traceability",
+                        "status": "NOT_TESTED",
+                        "reason": "No traceability manifest was found.",
+                    }
+                ],
+            },
+            "canonical_results": [
+                build_result(
+                    check_id="traceability",
+                    control_id="INT-02",
+                    status="NOT_TESTED",
+                    producer_tool="traceability_engine",
+                    producer_method="traceability_graph",
+                    workspace=str(workspace_dir),
+                    reason="No traceability manifest was found.",
+                )
+            ],
+            "requirements": [],
+            "invariants": [],
+        }
+
     if non_python_app_files:
         if HAS_TREE_SITTER:
             source_method = "python_ast_plus_treesitter_cst"
@@ -455,19 +493,23 @@ def audit_workspace(workspace_dir: Path, contracts_path: Optional[Path] = None) 
             "architecture": arch_result.get("violations", []) if arch_result else [],
             "requirements": ambiguity_result.get("unclear_requirements", []) if ambiguity_result else [],
         },
-        "canonical_results": _canonicalize_guarantees(
-            workspace_dir,
-            guarantees,
-            {
-                "security": sec_violations,
-                "resource_leaks": leaks_violations,
-                "slop": slop_violations,
-                "types": type_violations,
-                "tests": test_violations,
-                "architecture": arch_result.get("violations", []) if arch_result else [],
-                "requirements": ambiguity_result.get("unclear_requirements", []) if ambiguity_result else [],
-            },
-            languages_detected,
+        "traceability": traceability_result,
+        "canonical_results": (
+            _canonicalize_guarantees(
+                workspace_dir,
+                guarantees,
+                {
+                    "security": sec_violations,
+                    "resource_leaks": leaks_violations,
+                    "slop": slop_violations,
+                    "types": type_violations,
+                    "tests": test_violations,
+                    "architecture": arch_result.get("violations", []) if arch_result else [],
+                    "requirements": ambiguity_result.get("unclear_requirements", []) if ambiguity_result else [],
+                },
+                languages_detected,
+            )
+            + traceability_result.get("canonical_results", [])
         ),
     }
 
