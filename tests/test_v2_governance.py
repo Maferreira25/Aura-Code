@@ -214,8 +214,9 @@ class TestSurgicalDiff(unittest.TestCase):
             direct_stats={"total_added": 10, "total_deleted": 2}
         )
         self.assertFalse(res["success"])
-        self.assertEqual(res["violations_count"], 1)
-        self.assertEqual(res["violations"][0]["rule"], "unauthorized_test_tampering")
+        rules = {item["rule"] for item in res["violations"]}
+        self.assertIn("unauthorized_test_tampering", rules)
+        self.assertIn("public_test_tampering", rules)
 
     def test_out_of_scope_change_detected(self):
         changes = [
