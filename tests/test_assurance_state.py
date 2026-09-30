@@ -331,6 +331,18 @@ class AssuranceStateTests(unittest.TestCase):
         self.assertIn("distinct sessions", requirement)
         self.assertIn("distinct model identities", requirement)
 
+    def test_validate_state_rejects_missing_required_root_field(self):
+        state = new_state("demo", "AL2")
+        del state["actors"]
+        errors = validate_state(state)
+        self.assertIn("missing required state field: actors", errors)
+
+    def test_validate_state_rejects_unknown_root_field(self):
+        state = new_state("demo", "AL2")
+        state["unexpected"] = True
+        errors = validate_state(state)
+        self.assertIn("unknown state field: unexpected", errors)
+
 
 if __name__ == "__main__":
     unittest.main()
