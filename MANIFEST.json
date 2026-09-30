@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 427,
+  "file_count": 430,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -32,8 +32,8 @@
       "bytes": 958
     },
     "adapters/antigravity/.agents/agents/auracode-debugger-fix/agent.md": {
-      "sha256": "cd911a5e5dbc11a60e04cbee71b8aab717a5de223d1eedde62edee4f5617b002",
-      "bytes": 784
+      "sha256": "e471f26bb6bbf9858ccff5d05adb4a6146b59a593e0c9a121cc30718482b75e1",
+      "bytes": 1200
     },
     "adapters/antigravity/.agents/agents/auracode-debugger-graph/agent.md": {
       "sha256": "08ee77c4e96572b37fb201610874409a006e69813c3baba806dc42b44e72430b",
@@ -816,8 +816,8 @@
       "bytes": 2502
     },
     "tests/test_agent_engines.py": {
-      "sha256": "1ff1c155cf36c07f68c1b644f0bf0a19d62aeec424e7ab5604d42ce80dbc55ad",
-      "bytes": 5196
+      "sha256": "63694cb5090330adffdea44e6bfcfb6fc9ad8151929936e12fe5adc19b0ff1f6",
+      "bytes": 6015
     },
     "tests/test_ast_engines.py": {
       "sha256": "00803dfdf8caf57d690a152cc8bf3ab9cf9b9fedd910dd4efe59fa3b37248a94",
@@ -1004,8 +1004,8 @@
       "bytes": 12925
     },
     "tools/debugger_engine.py": {
-      "sha256": "98c41aec6c91599498d136abde35b22d4760b3a9895695835a7b549c19ea3336",
-      "bytes": 8441
+      "sha256": "6b7e0699198d77854988673c51a6698637e3f5b8faff0bb6f738d79839ff4c11",
+      "bytes": 8746
     },
     "tools/doctor.py": {
       "sha256": "fbada32ff5624f5c94d75fe9e64d1a7cba2602a8b28adc6efbf50eec2756d5be",
@@ -1696,8 +1696,8 @@
       "bytes": 11
     },
     "tools/assurance_state.py": {
-      "sha256": "7ab0cf651093b15592e653b4d49290ab746b6e9f2cfbf41c931b30c569ad8bd3",
-      "bytes": 26791
+      "sha256": "e2531c8a9753fef43e4a399e7c0e76001976265d21cb30ab1904da7e227507ef",
+      "bytes": 29865
     },
     "controls/gates.json": {
       "sha256": "d1c4425e4166c2180a137120426f0294552119fd87ec99aefa145b6ead6a6cac",
@@ -1710,6 +1710,18 @@
     "tests/test_assurance_state.py": {
       "sha256": "b5be53adb9129f0aad1c75845450886d26301aa5def2bc6e54768757dc8207f5",
       "bytes": 7841
+    },
+    "adapters/antigravity/.agents/agents/auracode-remediator/agent.md": {
+      "sha256": "2e108e662d89cd9c938c96e0ae7237667085c48fd26118b102fe16dfcabc8b20",
+      "bytes": 1463
+    },
+    "adapters/antigravity/.agents/agents/auracode-revalidator/agent.md": {
+      "sha256": "1d2b2b5a497175fad59c7be8e4f05137575ca11e8d1370f529b46eb971551861",
+      "bytes": 1505
+    },
+    "tests/test_assurance_agents.py": {
+      "sha256": "e3d17e748f2fb44711a686c0f8b2bef114c203b8c1701962d6159b70db0ce4ef",
+      "bytes": 1317
     }
   }
 }
