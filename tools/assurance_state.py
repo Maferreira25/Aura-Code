@@ -98,6 +98,37 @@ def new_state(project: str, assurance_level: str, framework_version: str = "unkn
 
 def validate_state(state: Mapping[str, Any]) -> List[str]:
     errors: List[str] = []
+    required_fields = {
+        "schema_version",
+        "framework_version",
+        "project",
+        "assurance_level",
+        "current_stage",
+        "assurance_status",
+        "created_at",
+        "updated_at",
+        "actors",
+        "controls",
+        "open_findings",
+        "audit_history",
+        "material_decisions",
+        "transition_history",
+    }
+    missing_fields = sorted(required_fields - set(state))
+    for field in missing_fields:
+        errors.append(f"missing required state field: {field}")
+    unknown_fields = sorted(set(state) - required_fields)
+    for field in unknown_fields:
+        errors.append(f"unknown state field: {field}")
+
+    if str(state.get("schema_version", "")) != "1.0":
+        errors.append("invalid schema_version")
+    if not isinstance(state.get("framework_version"), str):
+        errors.append("framework_version must be a string")
+    for field in ("created_at", "updated_at"):
+        if not isinstance(state.get(field), str) or not str(state.get(field, "")).strip():
+            errors.append(f"{field} must be a non-empty string")
+
     if str(state.get("assurance_level", "")).upper() not in VALID_LEVELS:
         errors.append("invalid assurance_level")
     if str(state.get("current_stage", "")) not in STAGES:
