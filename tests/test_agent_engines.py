@@ -12,6 +12,7 @@ import os
 import shutil
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from tools.clarify_engine import ClarifyEngine
@@ -103,6 +104,22 @@ class TestAgentEngines(unittest.TestCase):
         repro = engine.verify_reproduction("bug_test_01")
         self.assertEqual(repro["status"], "REPRODUCED")
         self.assertTrue(repro["fails_as_expected"])
+
+    @patch("tools.debugger_engine.audit_workspace")
+    def test_debugger_fix_cannot_self_declare_resolved(self, mock_audit):
+        engine = DebuggerEngine(workspace_dir=self.temp_dir)
+        test_dir = self.temp_dir / "tests"
+        test_dir.mkdir(parents=True)
+        (test_dir / "test_reproduce_bug_fixed.py").write_text(
+            "import unittest\n"
+            "class TestFixed(unittest.TestCase):\n"
+            "    def test_fixed(self): self.assertTrue(True)\n",
+            encoding="utf-8",
+        )
+        mock_audit.return_value = {"status": "PASS", "guarantees": {}}
+        result = engine.verify_fix("bug_fixed")
+        self.assertEqual(result["status"], "IMPLEMENTED_PENDING_REVALIDATION")
+        self.assertTrue(result["requires_independent_revalidation"])
 
     def test_refactor_engine_opportunities_and_plan(self):
         # Create sample workspace with a missing type annotation
