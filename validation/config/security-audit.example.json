@@ -1,0 +1,22 @@
+{
+  "independence_attestation": false,
+  "assessor_id": "REPLACE_WITH_INDEPENDENT_ASSESSOR",
+  "revision": "REPLACE_WITH_IMMUTABLE_COMMIT_SHA",
+  "scope": "Threat model and software supply-chain review",
+  "threat_model": {
+    "status": "FAIL",
+    "evidence": [
+      "REPLACE_WITH_THREAT_MODEL_REVIEW.json"
+    ]
+  },
+  "supply_chain": {
+    "status": "FAIL",
+    "evidence": [
+      "REPLACE_WITH_SUPPLY_CHAIN_REVIEW.json"
+    ]
+  },
+  "open_findings": {
+    "critical": 1,
+    "high": 1
+  }
+}
