@@ -59,6 +59,10 @@ class TestProtectedAssurancePlane(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertFalse(can_write(path, self.policy, actor="developer"))
 
+    def test_assurance_v2_cli_is_protected(self):
+        self.assertEqual(classify_path("tools/assurance_v2_cli.py", self.policy), PLANE_PROTECTED)
+        self.assertFalse(can_write("tools/assurance_v2_cli.py", self.policy, actor="developer"))
+
     def test_dynamic_security_engine_is_protected(self):
         self.assertEqual(classify_path("tools/dynamic_security_engine.py", self.policy), PLANE_PROTECTED)
         self.assertFalse(can_write("tools/dynamic_security_engine.py", self.policy, actor="developer"))
