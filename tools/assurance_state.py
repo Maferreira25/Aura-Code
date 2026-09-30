@@ -200,6 +200,74 @@ def record_control(
 
 
 
+
+def import_audit_result(
+    state: Dict[str, Any],
+    audit_result: Mapping[str, Any],
+    evidence: Sequence[str],
+) -> Dict[str, Any]:
+    """Ingest deterministic audit output without converting it into control PASS claims.
+
+    A clean audit is evidence of the checks it actually ran, not a blanket certification.
+    Any non-PASS overall audit creates a blocking finding so later gates fail closed.
+    """
+    overall = str(audit_result.get("status", "NOT_RUN")).upper()
+    if overall not in {"PASS", "FAIL", "ERROR", "NOT_RUN"}:
+        raise ValueError(f"Unsupported audit status '{overall}'")
+    ev = [str(item).strip() for item in evidence if str(item).strip()]
+    if not ev:
+        raise ValueError("Audit import requires evidence")
+
+    guarantees_raw = audit_result.get("guarantees", {})
+    guarantees = guarantees_raw if isinstance(guarantees_raw, dict) else {}
+    guarantee_statuses = {
+        str(name): str(result.get("status", "NOT_RUN")).upper()
+        for name, result in guarantees.items()
+        if isinstance(result, dict)
+    }
+    failed_guarantees = [
+        name
+        for name, status in guarantee_statuses.items()
+        if status not in {"PASS", "NOT_APPLICABLE"}
+    ]
+
+    state.setdefault("audit_history", []).append({
+        "status": overall,
+        "guarantees": guarantee_statuses,
+        "evidence": ev,
+        "at": utc_now(),
+    })
+
+    finding: Optional[Dict[str, Any]] = None
+    if overall != "PASS" or failed_guarantees:
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        finding_id = f"AUDIT-{timestamp}"
+        suffix = 1
+        while _find_finding(state, finding_id) is not None:
+            suffix += 1
+            finding_id = f"AUDIT-{timestamp}-{suffix}"
+        finding = register_finding(
+            state,
+            finding_id,
+            "HIGH",
+            "Deterministic assurance audit did not pass",
+            status="CONFIRMED",
+            evidence=ev,
+        )
+        finding["source"] = "AUDIT_ENGINE"
+        finding["audit_status"] = overall
+        finding["failed_guarantees"] = failed_guarantees
+        state["assurance_status"] = "REOPENED"
+
+    return {
+        "status": "PASS",
+        "audit_status": overall,
+        "failed_guarantees": failed_guarantees,
+        "finding_id": finding.get("id") if finding else None,
+        "assurance_status": state.get("assurance_status", "ACTIVE"),
+    }
+
+
 def import_assessment(
     state: Dict[str, Any],
     assessment: Mapping[str, Any],
@@ -721,6 +789,13 @@ def build_parser() -> "argparse.ArgumentParser":
     init_p.add_argument("--state")
     init_p.add_argument("--json", action="store_true")
 
+    audit_import_p = sub.add_parser("import-audit", help="Import a deterministic audit report into assurance state")
+    audit_import_p.add_argument("target", nargs="?", default=".")
+    audit_import_p.add_argument("--audit", required=True)
+    audit_import_p.add_argument("--evidence", action="append", default=[])
+    audit_import_p.add_argument("--state")
+    audit_import_p.add_argument("--json", action="store_true")
+
     import_p = sub.add_parser("import-assessment", help="Import a validated assessment into assurance state")
     import_p.add_argument("target", nargs="?", default=".")
     import_p.add_argument("--assessment", required=True)
@@ -808,7 +883,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             print(f"ERROR: {exc}")
             return 2
 
-        if args.action == "import-assessment":
+        if args.action == "import-audit":
+            try:
+                audit_path = Path(args.audit).resolve()
+                audit_result = _read_json(audit_path)
+                imported = import_audit_result(
+                    state,
+                    audit_result,
+                    args.evidence or [str(audit_path)],
+                )
+            except ValueError as exc:
+                print(f"ERROR: {exc}")
+                return 2
+            save_state(state_path, state)
+            payload = {
+                "status": "PASS",
+                "state_file": str(state_path),
+                "audit": imported,
+            }
+        elif args.action == "import-assessment":
             try:
                 assessment_path = Path(args.assessment).resolve()
                 assessment = _read_json(assessment_path)
