@@ -30,7 +30,15 @@
     "tools/check_*.py",
     "tools/heldout_runner.py",
     "templates/**",
-    "tools/property_engine.py"
+    "tools/property_engine.py",
+    "tools/metamorphic_engine.py",
+    "tools/differential_engine.py",
+    "tools/taint_engine.py",
+    "tools/detector_diversity.py",
+    "tools/static_analyzer_adapters.py",
+    "tools/fuzz_engine.py",
+    "tools/dynamic_security_engine.py",
+    "tools/assurance_v2_cli.py"
   ],
   "held_out": [
     "_auracode_assurance/held_out/**",

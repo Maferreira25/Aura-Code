@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "FUZZ-EXAMPLE-001",
+  "title": "Parser fuzzing",
+  "requirements": ["REQ-EXAMPLE-001"],
+  "adapter": "python-callable",
+  "target": "src.parser:parse",
+  "corpus": [
+    "",
+    "valid",
+    {"value": "example"}
+  ],
+  "seed": 424242,
+  "iterations": 100,
+  "timeout_seconds": 2
+}

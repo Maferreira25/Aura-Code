@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 447,
+  "file_count": 469,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -952,8 +952,8 @@
       "bytes": 8040
     },
     "tools/assurance.py": {
-      "sha256": "28d6f9139066bc7c91baa9fc126f8418eb0e50e78646ab2cfe70247d09961aba",
-      "bytes": 48871
+      "sha256": "78681a97d745148aa481d0c3b991ab53ad6dd5450cc53e2a76c66114809f9419",
+      "bytes": 44326
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1076,8 +1076,8 @@
       "bytes": 1639
     },
     "tools/validate_framework.py": {
-      "sha256": "944f3f872f3d9b97bb6e80aec9bb497fa58e60b7e7cc1c2c50530899e372a965",
-      "bytes": 15378
+      "sha256": "3c27c85f1a3ab2939251b4ededd61c9e1ebc6508cbb62d319404f27ee6fe1b81",
+      "bytes": 15820
     },
     "tools/verify_dependencies.py": {
       "sha256": "6b065985aea8b907bee500d05dcf119a7b9ea41ce5e01c87e2c4f2b722470bb8",
@@ -1748,16 +1748,16 @@
       "bytes": 998
     },
     "policies/protected-assurance-plane.json": {
-      "sha256": "ca13f84fdb96b7cdda006af2d106b226d4a5a939d6016d0ade5d29e5c944ce07",
-      "bytes": 1144
+      "sha256": "e83580bc1af324d23191b21e7df3aea47e2dfb6bd868984188d63ef6a69b0db0",
+      "bytes": 1421
     },
     "tools/protected_assurance_plane.py": {
       "sha256": "2414f4d162b53457e9f2e247763a3b08e991832b20e07d9daeb182848b18053a",
       "bytes": 7182
     },
     "tests/test_protected_assurance_plane.py": {
-      "sha256": "e0b6ddd8b7075d5f8c73e792a6ca3c0a7c42d3ad7be4e67112619f5a6733a99b",
-      "bytes": 3996
+      "sha256": "66ef44f909f064d5cc6ebed878367471fd1dae0d35840d884f7413f9249c51da",
+      "bytes": 5671
     },
     "schemas/held-out-suite.schema.json": {
       "sha256": "22359b62ba7e2a0e68de66ce96bc5becc1a4a895b3235e5ec8b659cd52c51505",
@@ -1790,6 +1790,94 @@
     "tests/test_property_engine.py": {
       "sha256": "048d19c18f6581ba50a80598dd951327cf4dd303e0b7329bdea52c7a3f177fac",
       "bytes": 5330
+    },
+    "schemas/metamorphic-suite.schema.json": {
+      "sha256": "75e782a655f4fea92c0e0672ac6ea3cf92711c8c3b8ad83df6530990e75c5bc8",
+      "bytes": 1623
+    },
+    "templates/metamorphic-suite.json": {
+      "sha256": "12a68314abc80980e75627aad9cb23c9fc028918aa0562aacee971f6a1b53467",
+      "bytes": 553
+    },
+    "tools/metamorphic_engine.py": {
+      "sha256": "e416b806693afbf7f41a91d7e8770c2af7baecc3cbb30d3082e26ff5e8ed3e9b",
+      "bytes": 9106
+    },
+    "tests/test_metamorphic_engine.py": {
+      "sha256": "4d0549c7d133dd0fae575aec320ea311ba741a23ecfae554c80a13e96cae5db1",
+      "bytes": 5674
+    },
+    "schemas/differential-suite.schema.json": {
+      "sha256": "1b3ba74053893d0e366616da4c1b845ab88ba5728f283791e1c3d8a26cf3ab0f",
+      "bytes": 1253
+    },
+    "templates/differential-suite.json": {
+      "sha256": "1138b3c7da8a104ad8bfe3be308d15482d79b4f66c53795b0a7153157870d7e8",
+      "bytes": 379
+    },
+    "tools/differential_engine.py": {
+      "sha256": "d02b46438a42d1f916cf45375a9de13b16238b82c8fa2178e8a43f7d315b7455",
+      "bytes": 8754
+    },
+    "tests/test_differential_engine.py": {
+      "sha256": "cf66824ec0a0901ec76076a23630a200922b30f2ac16bd472f32b13a2d2946f5",
+      "bytes": 4602
+    },
+    "schemas/static-analyzer-report.schema.json": {
+      "sha256": "6f031b5bcc62eb394f123b83fb2261dc3850a39978ab62736c902e26b2bf60fc",
+      "bytes": 1519
+    },
+    "tools/taint_engine.py": {
+      "sha256": "273d432b532aee1f4dda5270947b80400c3b6b9d9dd526e1e479362fd828399b",
+      "bytes": 8581
+    },
+    "tools/detector_diversity.py": {
+      "sha256": "96803a923d46b4312576071fe3b02fce2f410a096cfef26190f2017dab25fcfd",
+      "bytes": 3044
+    },
+    "tools/static_analyzer_adapters.py": {
+      "sha256": "77a3bfe720307fb8fdd9cb5976b0c5c591b8f0a7452440954ef9f09784b44bbf",
+      "bytes": 3349
+    },
+    "tests/test_taint_and_diversity.py": {
+      "sha256": "9f4c6babf415ac4f6b90c2bd92b7b4f98ee75cb14718ab42ef192d884df7c54b",
+      "bytes": 5320
+    },
+    "schemas/fuzz-suite.schema.json": {
+      "sha256": "5d60602cb98cccac94a37b0bb6b0630f27471cf9feaaae5806740186ce39ea73",
+      "bytes": 1251
+    },
+    "templates/fuzz-suite.json": {
+      "sha256": "a82e2da47bdb145e340e027ffb29e3331a11a794e3ec28324300347e08abb4df",
+      "bytes": 326
+    },
+    "tools/fuzz_engine.py": {
+      "sha256": "7d5ac86508454cfe921ae7304b245c1debfbb8c22b0c62d8042cab7f4efc9a96",
+      "bytes": 10006
+    },
+    "tests/test_fuzz_engine.py": {
+      "sha256": "024eda61962d48edf73117ac4cc1a25a698e0559821d583a1a56f59682760296",
+      "bytes": 4170
+    },
+    "schemas/dast-suite.schema.json": {
+      "sha256": "6396cb3269284193c725b694f25572d9279b7066bb3693296cec385a1076a26a",
+      "bytes": 1719
+    },
+    "templates/dast-suite.json": {
+      "sha256": "26d028e34552190fd200e224a7f36a4ce3697c0a0e0e4232790494129db99a2f",
+      "bytes": 441
+    },
+    "tools/dynamic_security_engine.py": {
+      "sha256": "38c75dc4b9cb4ea7250c99d6a1c80b1c437b2c3a42924faff834baa164f01a3c",
+      "bytes": 6728
+    },
+    "tests/test_dynamic_security_engine.py": {
+      "sha256": "8d1f166b375264b9ac9c90e2e3bd1cea062c7c6d1a80feecd78c80157b274c5e",
+      "bytes": 4579
+    },
+    "tools/assurance_v2_cli.py": {
+      "sha256": "fa0d7c671af7d09e3ce8db9a53272c8cfb2b01bfe00ce88b7645acecce1afd33",
+      "bytes": 7020
     }
   }
 }

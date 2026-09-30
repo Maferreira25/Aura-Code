@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "DIFF-EXAMPLE-001",
+  "title": "Candidate versus reference behavior",
+  "requirements": ["REQ-EXAMPLE-001"],
+  "adapter": "python-callable",
+  "candidate": "src.candidate:transform",
+  "reference": "reference.implementation:transform",
+  "cases": [
+    {"value": 1},
+    {"value": 5},
+    {"value": -2}
+  ],
+  "timeout_seconds": 30
+}
