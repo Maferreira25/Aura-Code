@@ -4,6 +4,9 @@ from validation.tools.maturity_studies import (
     analyze_inter_rater,
     cohen_kappa,
     validate_burden_error_result,
+    validate_governance_1_0,
+    validate_independent_security_audit,
+    validate_multilang_qualification,
     validate_p2_plan,
     validate_p2_result,
     validate_p3_plan,
@@ -240,6 +243,98 @@ class MaturityStudiesTests(unittest.TestCase):
             result["burden"]["by_arm"]["A2"]["metrics"]["cost_usd"]["observed"],
             0,
         )
+
+    def test_multilang_qualification_uses_preregistered_thresholds(self):
+        data = {
+            "preregistered": True,
+            "revision": "abc123",
+            "acceptance_thresholds": {
+                "min_recall": 0.8,
+                "max_false_positive_rate": 0.2,
+            },
+            "languages": {
+                "python": {
+                    "cases": 20,
+                    "true_positive": 9,
+                    "true_negative": 9,
+                    "false_positive": 1,
+                    "false_negative": 1,
+                    "parser_available": True,
+                    "engine": "python-ast",
+                    "evidence": ["python-report.json"],
+                },
+                "typescript": {
+                    "cases": 20,
+                    "true_positive": 9,
+                    "true_negative": 9,
+                    "false_positive": 1,
+                    "false_negative": 1,
+                    "parser_available": True,
+                    "engine": "tree-sitter-typescript",
+                    "evidence": ["typescript-report.json"],
+                },
+            },
+        }
+        result = validate_multilang_qualification(data)
+        self.assertEqual(result["status"], "VALID")
+
+    def test_multilang_qualification_fails_below_frozen_recall(self):
+        data = {
+            "preregistered": True,
+            "revision": "abc123",
+            "acceptance_thresholds": {
+                "min_recall": 0.9,
+                "max_false_positive_rate": 0.2,
+            },
+            "languages": {
+                "python": {
+                    "cases": 10,
+                    "true_positive": 4,
+                    "true_negative": 5,
+                    "false_positive": 0,
+                    "false_negative": 1,
+                    "parser_available": True,
+                    "engine": "python-ast",
+                    "evidence": ["python-report.json"],
+                },
+                "typescript": {
+                    "cases": 10,
+                    "true_positive": 4,
+                    "true_negative": 5,
+                    "false_positive": 0,
+                    "false_negative": 1,
+                    "parser_available": True,
+                    "engine": "tree-sitter-typescript",
+                    "evidence": ["typescript-report.json"],
+                },
+            },
+        }
+        result = validate_multilang_qualification(data)
+        self.assertEqual(result["status"], "INVALID")
+        self.assertIn("recall does not meet", "\n".join(result["errors"]))
+
+    def test_independent_security_audit_rejects_open_high(self):
+        data = {
+            "independence_attestation": True,
+            "assessor_id": "external-reviewer",
+            "revision": "abc123",
+            "scope": "threat model and supply chain",
+            "threat_model": {"status": "PASS", "evidence": ["threat.md"]},
+            "supply_chain": {"status": "PASS", "evidence": ["supply.md"]},
+            "open_findings": {"critical": 0, "high": 1},
+        }
+        result = validate_independent_security_audit(data)
+        self.assertEqual(result["status"], "INVALID")
+        self.assertIn("open high findings must be zero", "\n".join(result["errors"]))
+
+    def test_governance_requires_adopted_release_authority(self):
+        result = validate_governance_1_0({
+            "status": "DRAFT",
+            "roles": {},
+            "evidence": [],
+        })
+        self.assertEqual(result["status"], "INVALID")
+        self.assertIn("governance status must be ADOPTED", result["errors"])
 
 
 if __name__ == "__main__":
