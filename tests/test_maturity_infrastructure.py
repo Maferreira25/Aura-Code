@@ -63,6 +63,17 @@ class MaturityInfrastructureTests(unittest.TestCase):
             self.assertEqual(report["status"], "INVALID")
             self.assertIn("canonical order", "\n".join(report["errors"]))
 
+    def test_operational_maturity_tools_are_covered(self):
+        from validation.tools.validate_maturity_infrastructure import COMMON_ARTIFACTS
+        for rel in [
+            "validation/tools/maturity_queue.py",
+            "validation/tools/maturity_readiness.py",
+            "validation/tools/maturity_handoff.py",
+            "validation/tools/validate_maturity_infrastructure.py",
+            "tools/maturity_cli.py",
+        ]:
+            self.assertIn(rel, COMMON_ARTIFACTS)
+
 
 if __name__ == "__main__":
     unittest.main()
