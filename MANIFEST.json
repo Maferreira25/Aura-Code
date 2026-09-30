@@ -1048,8 +1048,8 @@
       "bytes": 24613
     },
     "tools/pre_tool_guard.py": {
-      "sha256": "9751ec1d7e2937ea2b021bcca4486013410372b929da0c5c27bc6f345cc4e55d",
-      "bytes": 24799
+      "sha256": "228b3cb210ac46b85e4b5eb61183a2460a9f1c71986f67377bfb1aa19dbd75d2",
+      "bytes": 25004
     },
     "tools/preflight.py": {
       "sha256": "ba47a2f18da2631dd904fb2899c9cc6a37ec295ff5cae5727e29f2e8f5d4c47c",
