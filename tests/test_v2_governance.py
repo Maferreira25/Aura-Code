@@ -218,6 +218,43 @@ class TestSurgicalDiff(unittest.TestCase):
         self.assertIn("unauthorized_test_tampering", rules)
         self.assertIn("public_test_tampering", rules)
 
+    def test_protected_assurance_asset_modification_is_blocked(self):
+        res = check_surgical_diff(
+            repo_dir=Path("."),
+            direct_changes=[{"status": "M", "file": "tools/assess.py"}],
+            direct_stats={"complete": True, "files": {"tools/assess.py": {"added": 1, "deleted": 1}}, "total_added": 1, "total_deleted": 1},
+        )
+        self.assertFalse(res["success"])
+        self.assertTrue(any(v["rule"] == "protected_assurance_tampering" for v in res["violations"]))
+
+    def test_held_out_asset_modification_is_blocked(self):
+        res = check_surgical_diff(
+            repo_dir=Path("."),
+            direct_changes=[{"status": "M", "file": "validation/held_out/secret_test.py"}],
+            direct_stats={"complete": True, "files": {"validation/held_out/secret_test.py": {"added": 1, "deleted": 1}}, "total_added": 1, "total_deleted": 1},
+        )
+        self.assertFalse(res["success"])
+        self.assertTrue(any(v["rule"] == "held_out_tampering" for v in res["violations"]))
+
+    def test_existing_evidence_rewrite_is_blocked(self):
+        res = check_surgical_diff(
+            repo_dir=Path("."),
+            direct_changes=[{"status": "M", "file": "_auracode_evidence/EV-existing.json"}],
+            direct_stats={"complete": True, "files": {"_auracode_evidence/EV-existing.json": {"added": 1, "deleted": 1}}, "total_added": 1, "total_deleted": 1},
+        )
+        self.assertFalse(res["success"])
+        self.assertTrue(any(v["rule"] == "evidence_not_append_only" for v in res["violations"]))
+
+    def test_new_evidence_append_is_allowed_by_protected_plane(self):
+        res = check_surgical_diff(
+            repo_dir=Path("."),
+            direct_changes=[{"status": "??", "file": "_auracode_evidence/EV-new.json"}],
+            direct_stats={"complete": True, "files": {"_auracode_evidence/EV-new.json": {"added": 3, "deleted": 0}}, "total_added": 3, "total_deleted": 0},
+        )
+        protected = res["protected_assurance_plane"]
+        self.assertTrue(protected["success"])
+        self.assertFalse(any(v["rule"] == "evidence_not_append_only" for v in res["violations"]))
+
     def test_out_of_scope_change_detected(self):
         changes = [
             {"status": "M", "file": "src/domain.py"},
