@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
-from tools.assurance_state import load_state
+from tools.assurance_state import apply_continuous_regression, load_state, save_state
 from tools.audit import audit_workspace
 
 
@@ -179,6 +179,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     comp = sub.add_parser("compare", help="Compare two assurance snapshots")
     comp.add_argument("previous")
     comp.add_argument("current")
+    comp.add_argument("--apply-state", help="Apply a blocking comparison to this assurance-state.json")
+    comp.add_argument("--evidence", action="append", default=[], help="Evidence path/reference recorded when applying a regression")
     comp.add_argument("--json", action="store_true")
 
     args = parser.parse_args(argv)
@@ -205,6 +207,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
             print(f"ERROR: {exc}")
             return 2
+        if args.apply_state:
+            try:
+                state_path = Path(args.apply_state).resolve()
+                state = load_state(state_path)
+                applied = apply_continuous_regression(
+                    state,
+                    payload,
+                    args.evidence or [str(Path(args.current).resolve())],
+                )
+                if applied is not None:
+                    save_state(state_path, state)
+                payload["state_application"] = {
+                    "state_file": str(state_path),
+                    "finding_id": applied.get("id") if applied else None,
+                    "assurance_status": state.get("assurance_status"),
+                }
+            except (ValueError, OSError) as exc:
+                print(f"ERROR: {exc}")
+                return 2
         code = 0 if payload["decision"] == "ALLOW" else 1
 
     if getattr(args, "json", False):
