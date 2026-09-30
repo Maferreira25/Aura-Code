@@ -20,9 +20,21 @@ from validation.tools.runner import DEFAULT_CONTAINER_IMAGE, get_runner
 
 
 def _tree_hash(root: Path) -> str:
+    """Hash stable evaluator inputs, excluding interpreter-generated caches."""
     root = root.resolve()
     h = hashlib.sha256()
-    for path in sorted((p for p in root.rglob("*") if p.is_file()), key=lambda p: p.as_posix()):
+    files: List[Path] = []
+    for path in root.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(root)
+        if "__pycache__" in rel.parts:
+            continue
+        if rel.suffix.lower() in {".pyc", ".pyo"}:
+            continue
+        files.append(path)
+
+    for path in sorted(files, key=lambda p: p.relative_to(root).as_posix()):
         rel = path.relative_to(root).as_posix()
         h.update(rel.encode("utf-8"))
         h.update(b"\0")
