@@ -69,6 +69,21 @@ def _attach_canonical_result(result: Dict[str, Any], target_file: Path) -> Dict[
         canonical_status = "PASS"
         reason = "All non-disposed evaluated mutants were killed or explicitly classified as likely equivalent."
 
+    waiver_metadata = None
+    if canonical_status == "WAIVED":
+        waived_mutants = [
+            {
+                "mutant_id": item.get("mutant_id"),
+                "reason": item.get("disposition_reason"),
+            }
+            for item in findings
+            if item.get("status") == "WAIVED"
+        ]
+        waiver_metadata = {
+            "source": "mutation_dispositions",
+            "mutants": waived_mutants,
+        }
+
     enriched = dict(result)
     enriched["canonical_result"] = build_result(
         check_id="mutation",
@@ -79,6 +94,7 @@ def _attach_canonical_result(result: Dict[str, Any], target_file: Path) -> Dict[
         reason=reason,
         scope={"files_scanned": 1, "languages": ["python"]},
         findings=findings,
+        waiver=waiver_metadata,
         legacy={
             "source": "tools/mutation_engine.py",
             "source_status": legacy_status,
