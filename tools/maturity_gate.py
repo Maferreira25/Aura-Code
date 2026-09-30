@@ -63,6 +63,56 @@ def _verify_local_evidence(root: Path, values: object) -> Dict[str, Any]:
 
 
 
+
+def _collect_nested_evidence(value: object) -> List[str]:
+    """Collect nested fields explicitly named 'evidence' from a canonical package."""
+    refs: List[str] = []
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key == "evidence" and isinstance(item, list):
+                refs.extend(str(ref).strip() for ref in item if str(ref).strip())
+            else:
+                refs.extend(_collect_nested_evidence(item))
+    elif isinstance(value, list):
+        for item in value:
+            refs.extend(_collect_nested_evidence(item))
+    return refs
+
+
+def _verify_nested_evidence(root: Path, data: Mapping[str, Any]) -> Dict[str, Any]:
+    refs = _collect_nested_evidence(data)
+    missing: List[str] = []
+    rejected: List[str] = []
+    root_resolved = root.resolve()
+    for ref in refs:
+        if ref.lower().startswith(("http://", "https://", "ftp://", "urn:")):
+            rejected.append(ref)
+            continue
+        candidate = (root_resolved / ref).resolve()
+        try:
+            candidate.relative_to(root_resolved)
+        except ValueError:
+            rejected.append(ref)
+            continue
+        if not candidate.is_file():
+            missing.append(ref)
+    if rejected:
+        return {
+            "valid": False,
+            "reason": "nested evidence must be local repository files",
+            "rejected": sorted(set(rejected)),
+            "missing": sorted(set(missing)),
+        }
+    if missing:
+        return {
+            "valid": False,
+            "reason": "one or more nested evidence files do not exist",
+            "rejected": [],
+            "missing": sorted(set(missing)),
+        }
+    return {"valid": True, "reason": "", "rejected": [], "missing": []}
+
+
 def _semantic_validate_evidence(root: Path, criterion_id: str, evidence: object) -> Dict[str, Any]:
     """Validate maturity evidence content, not just path existence."""
     values = evidence if isinstance(evidence, list) else []
@@ -104,6 +154,15 @@ def _semantic_validate_evidence(root: Path, criterion_id: str, evidence: object)
         errors = result.get("errors", [])
         detail = "; ".join(str(item) for item in errors) if isinstance(errors, list) else "invalid evidence"
         return {"valid": False, "reason": detail or "semantic evidence validation failed"}
+
+    nested = _verify_nested_evidence(root, data)
+    if not nested["valid"]:
+        detail = str(nested["reason"])
+        if nested.get("missing"):
+            detail += ": " + ", ".join(nested["missing"])
+        if nested.get("rejected"):
+            detail += ": " + ", ".join(nested["rejected"])
+        return {"valid": False, "reason": detail}
     return {"valid": True, "reason": "", "report": result}
 
 
