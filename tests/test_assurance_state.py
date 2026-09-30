@@ -180,6 +180,28 @@ class AssuranceStateTests(unittest.TestCase):
             import_assessment(state, assessment, Path(tmp), ROOT)
         self.assertEqual(state["controls"]["GOV-01"]["status"], "PASS")
 
+    def test_auracode_dogfood_blocks_verification_without_independent_actors(self):
+        state = new_state("auracode", "AL2", "0.3.0.dev0")
+        assessment = __import__("json").loads(
+            (ROOT / "self-assessment.json").read_text(encoding="utf-8")
+        )
+        imported = import_assessment(state, assessment, ROOT, ROOT)
+        self.assertEqual(imported["downgraded_to_unknown"], [])
+
+        for target in (
+            "RISK_CLASSIFIED",
+            "REQUIREMENTS_VERIFIED",
+            "ARCHITECTURE_VERIFIED",
+            "IMPLEMENTATION",
+        ):
+            result = advance_state(state, target, ROOT)
+            self.assertEqual(result["decision"], "ALLOW", result["reasons"])
+
+        blocked = evaluate_gate(state, "VERIFICATION", ROOT)
+        self.assertEqual(blocked["decision"], "BLOCK")
+        self.assertIn("missing actor provenance for 'implementer'", blocked["reasons"])
+        self.assertIn("missing actor provenance for 'verifier'", blocked["reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()
