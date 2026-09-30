@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "suite_id": "DIFF-EXAMPLE-001",
+  "requirements": [
+    "REQ-EXAMPLE-001"
+  ],
+  "reference_command": [
+    "python",
+    "reference_adapter.py"
+  ],
+  "candidate_command": [
+    "python",
+    "candidate_adapter.py"
+  ],
+  "cases": [
+    {"input": "example"}
+  ],
+  "timeout_seconds": 30
+}
