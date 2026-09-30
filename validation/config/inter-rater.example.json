@@ -1,0 +1,22 @@
+{
+  "assessors": [
+    {
+      "id": "assessor-1"
+    },
+    {
+      "id": "assessor-2"
+    }
+  ],
+  "ratings": [
+    {
+      "control_id": "EXAMPLE-01",
+      "assessor_id": "assessor-1",
+      "rating": "FAIL"
+    },
+    {
+      "control_id": "EXAMPLE-01",
+      "assessor_id": "assessor-2",
+      "rating": "FAIL"
+    }
+  ]
+}
