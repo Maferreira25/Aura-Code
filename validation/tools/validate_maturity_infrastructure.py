@@ -75,6 +75,7 @@ COMMON_ARTIFACTS = [
     "validation/tools/maturity_reviews.py",
     "validation/tools/maturity_claims.py",
     "validation/tools/prepare_maturity_evidence.py",
+    "validation/tools/record_maturity_evidence.py",
     "tools/maturity_gate.py",
 ]
 
