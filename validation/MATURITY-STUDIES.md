@@ -393,3 +393,59 @@ auracode maturity gate . --json
 Stable 1.0 remains blocked until every required MAT criterion passes.
 
 This separation is intentional: generating a valid evidence package, reviewing it, recording it and satisfying the full maturity gate are distinct events.
+
+
+## Canonical package builders
+
+Raw experimental output should not be manually retyped into stable-maturity evidence when a deterministic transformation is available.
+
+AuraCode provides:
+
+### P2 package
+
+~~~text
+auracode maturity build p2 \
+  --root . \
+  --plan validation/private/p2-preregistration.json \
+  --results-dir <raw-results-directory> \
+  --output validation/evidence/p2-result.json
+~~~
+
+The builder:
+- validates the frozen preregistration;
+- reconstructs the exact expected run matrix;
+- selects runs by preregistered run ID;
+- rejects duplicate run IDs;
+- preserves the observed run payloads;
+- reports every missing run;
+- marks completed=false unless the full matrix exists;
+- runs the formal P2 result validator on the generated package.
+
+It never creates synthetic missing runs.
+
+### Replication package
+
+After two or more completed, validated P2 packages exist:
+
+~~~text
+auracode maturity build replication \
+  --root . \
+  --p2-package validation/evidence/p2-model-a.json \
+  --p2-package validation/evidence/p2-model-b.json \
+  --output validation/evidence/replication.json
+~~~
+
+The builder derives A0/A2 Qualified Success rates from the completed source packages and preserves source-package provenance. Invalid P2 sources are rejected.
+
+### Burden/error package
+
+~~~text
+auracode maturity build burden \
+  --results-dir <raw-results-directory> \
+  --calibration <error-calibration.json> \
+  --output validation/evidence/burden-errors.json
+~~~
+
+Only observed burden fields are copied. Missing token, cost or tool-call values remain missing rather than becoming zero.
+
+Builders produce evidence packages; they do not review or promote them. The resulting package must still follow the prepare → independent review → record → gate flow.
