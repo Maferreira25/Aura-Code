@@ -14,6 +14,7 @@ SUBCOMMANDS = {
     "infrastructure",
     "handoff",
     "record",
+    "build",
 }
 
 
@@ -59,6 +60,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if command == "record":
         from validation.tools import record_maturity_evidence
         return record_maturity_evidence.main(args)
+
+    if command == "build":
+        from validation.tools import build_maturity_packages
+        return build_maturity_packages.main(args)
 
     return 2
 
