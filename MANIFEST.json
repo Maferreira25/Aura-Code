@@ -1904,8 +1904,8 @@
       "bytes": 2005
     },
     "validation/maturity-workplan.json": {
-      "sha256": "debab32e83aa44fc032558daa0eeedc7c0c1006a71a7ef7831ef50b5d179f641",
-      "bytes": 7597
+      "sha256": "1505514842c9b15774a3452ecccc758f8f0b8e1e7f7a436ff1054a670337b1f3",
+      "bytes": 7922
     },
     "validation/schemas/maturity-workplan.schema.json": {
       "sha256": "5712b986d27d91786b1d1bc32ee62110f54f98275fcd5715366d702fa2ad277d",
