@@ -94,6 +94,53 @@ class MaturityCliTests(unittest.TestCase):
             self.assertEqual(code, 2)
             self.assertIn("confirm-reviewed", output)
 
+    def test_build_subcommand_routes_to_package_builder(self):
+        import tempfile, json
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plan = root / "p2.json"
+            results = root / "results"
+            results.mkdir()
+            plan.write_text(json.dumps({
+                "study_id": "P2-X",
+                "preregistered": True,
+                "private_or_fresh_split": True,
+                "arms": ["A0", "A1", "A2"],
+                "repetitions_per_arm": 5,
+                "private_split_commitment_sha256": "a" * 64,
+                "model_agent_pairings": [{
+                    "model_family": "family",
+                    "model_display_name": "Model X",
+                    "agent": "Agent X",
+                    "reasoning_effort": "medium",
+                }],
+                "scenarios": [
+                    {
+                        "id": f"S{i:02d}",
+                        "family": [
+                            "security","data-integrity","supply-chain",
+                            "evaluator-integrity","architecture","reliability"
+                        ][i % 6],
+                    }
+                    for i in range(30)
+                ],
+            }), encoding="utf-8")
+            output = root / "package.json"
+            code, text_output = self._run([
+                "build", "p2",
+                "--root", str(root),
+                "--plan", str(plan),
+                "--results-dir", str(results),
+                "--output", str(output),
+                "--allow-incomplete",
+            ])
+            self.assertEqual(code, 0)
+            self.assertTrue(output.is_file())
+            package = json.loads(output.read_text(encoding="utf-8"))
+            self.assertFalse(package["completed"])
+            self.assertEqual(package["expected_attempts"], 450)
+            self.assertEqual(package["builder"]["missing"], 450)
+
 
 if __name__ == "__main__":
     unittest.main()
