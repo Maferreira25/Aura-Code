@@ -13,6 +13,7 @@ SUBCOMMANDS = {
     "prepare",
     "infrastructure",
     "handoff",
+    "record",
 }
 
 
@@ -54,6 +55,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if command == "handoff":
         from validation.tools import maturity_handoff
         return maturity_handoff.main(args)
+
+    if command == "record":
+        from validation.tools import record_maturity_evidence
+        return record_maturity_evidence.main(args)
 
     return 2
 
