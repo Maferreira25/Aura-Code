@@ -60,6 +60,40 @@ class MaturityCliTests(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertIn("Maturity handoff generated", output)
 
+    def test_record_subcommand_requires_explicit_confirmation(self):
+        import tempfile, json
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "validation").mkdir()
+            (root / "validation" / "maturity-evidence.json").write_text(
+                json.dumps({
+                    "target": "stable-1.0",
+                    "criteria": {
+                        "MAT-10": {
+                            "status": "UNKNOWN",
+                            "evidence": [],
+                            "rationale": "not yet adopted",
+                        }
+                    },
+                }),
+                encoding="utf-8",
+            )
+            package = root / "governance.json"
+            package.write_text("{}", encoding="utf-8")
+            code, output = self._run([
+                "record",
+                "MAT-10",
+                str(package),
+                "--reviewed-by",
+                "reviewer",
+                "--reviewed-at",
+                "2026-09-30T12:00:00Z",
+                "--root",
+                str(root),
+            ])
+            self.assertEqual(code, 2)
+            self.assertIn("confirm-reviewed", output)
+
 
 if __name__ == "__main__":
     unittest.main()
