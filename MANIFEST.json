@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 482,
+  "file_count": 484,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -1784,8 +1784,8 @@
       "bytes": 21877
     },
     "validation/MATURITY-STUDIES.md": {
-      "sha256": "441f4a580263da6c46b5a1780eb50d2c313d04f706e299dc0fa40ac920344814",
-      "bytes": 12154
+      "sha256": "a6fc9585140f17fc220d8c4c895126108c0561b6bd842a2424f63e2a66830610",
+      "bytes": 13951
     },
     "validation/config/p2-preregistration.example.json": {
       "sha256": "2afc932f0a051be9078d561b1ade23842dab830255675edad9d14bc1dbb50cd4",
@@ -1884,8 +1884,8 @@
       "bytes": 3915
     },
     "tests/test_maturity_cli.py": {
-      "sha256": "acec0c419d08a2ffe0ca1cdc50dfc89adc0f1e993c519d7db31d432f67c21e47",
-      "bytes": 2150
+      "sha256": "2a340e105ef671532e9ace6be83aa29900a82cf8a65e5f71363eb9f486a3aee5",
+      "bytes": 3375
     },
     "tests/test_maturity_infrastructure.py": {
       "sha256": "46da197113e1d031b9b06039ac006ea909f111f703733f5ef1de8c6c17acaebc",
@@ -1900,8 +1900,8 @@
       "bytes": 2100
     },
     "tools/maturity_cli.py": {
-      "sha256": "2fd62cf7b4c78e92080abe2afa66276d9c88d037b2c9e092bd266fd658afd38a",
-      "bytes": 1697
+      "sha256": "e9266944595aaa8ddef433b49e66eec70298c890d1764995857d9af344216832",
+      "bytes": 1853
     },
     "validation/maturity-workplan.json": {
       "sha256": "debab32e83aa44fc032558daa0eeedc7c0c1006a71a7ef7831ef50b5d179f641",
@@ -1930,6 +1930,14 @@
     "validation/tools/maturity_handoff.py": {
       "sha256": "b8669ad04f54ab46907756dc11fce9846717af9e6043d0512ae222e77033129b",
       "bytes": 6350
+    },
+    "validation/tools/record_maturity_evidence.py": {
+      "sha256": "d6f2e8e06f4bd8c70085b840f8e922bbee0342a1d854f0748a85ac2a77c1d2a9",
+      "bytes": 6493
+    },
+    "tests/test_record_maturity_evidence.py": {
+      "sha256": "780776ab5f66f2d91aaece374f61d848c21f04b2d532d55cc799ed4aa0786f26",
+      "bytes": 4308
     }
   }
 }
