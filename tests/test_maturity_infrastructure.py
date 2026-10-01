@@ -70,6 +70,7 @@ class MaturityInfrastructureTests(unittest.TestCase):
             "validation/tools/maturity_readiness.py",
             "validation/tools/maturity_handoff.py",
             "validation/tools/record_maturity_evidence.py",
+            "validation/tools/build_maturity_packages.py",
             "validation/tools/validate_maturity_infrastructure.py",
             "tools/maturity_cli.py",
         ]:
