@@ -29,7 +29,7 @@
       "validator": "python validation/tools/maturity_studies.py p2-result <package.json> --root . --json",
       "evidence_package": "completed P2 canonical JSON package",
       "completion_condition": "P2_RESULT validator returns VALID and reviewed package is pinned in maturity ledger",
-      "next_action": "Freeze a private/fresh P2 preregistration, execute the full matrix, then prepare a reviewed maturity entry."
+      "next_action": "Freeze the private/fresh P2 preregistration and split commitment, execute only the deterministic MISSING queue, then run `auracode maturity build p2` to create the canonical package. After independent review, use `auracode maturity record MAT-02 ... --confirm-reviewed`."
     },
     {
       "id": "MAT-03",
@@ -42,7 +42,7 @@
       "validator": "python validation/tools/maturity_studies.py replication <package.json> --json",
       "evidence_package": "replication canonical JSON package",
       "completion_condition": "REPLICATION validator returns VALID and reviewed package is pinned in maturity ledger",
-      "next_action": "Complete studies on at least two distinct model/agent pairings and record comparative rates without inventing effect thresholds post hoc."
+      "next_action": "Complete validated P2 studies on at least two distinct model/agent pairings, then run `auracode maturity build replication` over the completed P2 packages. Review the generated package before recording MAT-03."
     },
     {
       "id": "MAT-04",
@@ -102,7 +102,7 @@
       "validator": "python validation/tools/maturity_studies.py burden-errors <package.json> --json",
       "evidence_package": "burden/error canonical JSON package",
       "completion_condition": "BURDEN_ERRORS validator returns VALID and reviewed package is pinned",
-      "next_action": "Collect elapsed time and human interventions for A0/A1/A2 plus false-positive/false-negative calibration; preserve missing metrics as missing."
+      "next_action": "Collect real elapsed-time and human-intervention metrics for A0/A1/A2 plus error-calibration counts, then run `auracode maturity build burden`. Missing token/cost/tool-call fields must remain missing. Review before recording MAT-07."
     },
     {
       "id": "MAT-08",
