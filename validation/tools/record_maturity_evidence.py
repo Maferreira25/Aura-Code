@@ -37,10 +37,7 @@ def _atomic_write_json(path: Path, data: Dict[str, Any]) -> None:
             os.fsync(handle.fileno())
         os.replace(tmp_name, path)
     except Exception:
-        try:
-            os.unlink(tmp_name)
-        except OSError:
-            pass
+        Path(tmp_name).unlink(missing_ok=True)
         raise
 
 
@@ -131,10 +128,7 @@ def record_entry(
         if not semantic.get("valid"):
             raise ValueError(str(semantic.get("reason", "semantic evidence invalid")))
     finally:
-        try:
-            candidate_path.unlink()
-        except OSError:
-            pass
+        candidate_path.unlink(missing_ok=True)
 
     _atomic_write_json(ledger_path, ledger)
 
