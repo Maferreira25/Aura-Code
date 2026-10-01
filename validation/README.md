@@ -166,3 +166,36 @@ python validation/tools/maturity_readiness.py . --json
 ~~~
 
 validation/maturity-workplan.json is operational metadata only. It cannot grant PASS. The authoritative maturity decision remains tools/maturity_gate.py.
+
+## Stable-1.0 evidence promotion workflow
+
+The canonical promotion path for MAT-02 through MAT-10 is deliberately separated into four stages:
+
+1. **Prepare** — validate the canonical evidence package without mutating the maturity ledger.
+2. **Review** — an independent reviewer examines the package and its underlying evidence. Preparation is not approval, and the producer/implementer must not self-certify an independence-required criterion.
+3. **Record** — only after the review actually occurred, revalidate the package and atomically persist the reviewed PASS with an explicit acknowledgement.
+4. **Gate** — evaluate the complete stable-1.0 maturity ledger. One recorded PASS never authorizes release by itself.
+
+~~~bash
+# 1. Prepare: validation only; no ledger mutation.
+python -m auracode maturity prepare MAT-XX <package.json> \
+  --reviewed-by "<independent-reviewer>" \
+  --reviewed-at "<ISO-8601>" \
+  --root . --json
+
+# 2. Review: performed outside the mutation command.
+# The reviewer checks the package, nested evidence, provenance, independence
+# requirements, claim boundaries, and any criterion-specific review guide.
+
+# 3. Record: revalidates and atomically writes only after explicit confirmation.
+python -m auracode maturity record MAT-XX <package.json> \
+  --reviewed-by "<independent-reviewer>" \
+  --reviewed-at "<ISO-8601>" \
+  --root . --confirm-reviewed --json
+
+# 4. Gate: authoritative aggregate decision for stable 1.0.
+python -m auracode maturity gate . --json
+~~~
+
+This sequence is fail-closed. Missing, stale, malformed, unreviewed, semantically invalid, or hash-mismatched evidence must not be promoted to PASS. A pre-existing PASS with a different evidence hash is not silently overwritten. MAT-01 remains driven by the frozen P1 evidence validator rather than the manual record path. Stable 1.0 remains blocked until every required maturity criterion independently satisfies its own evidence contract.
+
