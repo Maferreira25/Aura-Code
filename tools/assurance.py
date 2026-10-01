@@ -48,6 +48,11 @@ from tools import brainstorm_engine
 from tools import forward_engine
 from tools import debugger_engine
 from tools import refactor_engine
+from tools import assurance_state
+from tools import continuous_assurance
+from tools import maturity_gate
+from tools import maturity_cli
+from tools import dogfood_assurance
 
 
 def _serve_studio(port: int, open_browser: bool) -> None:
@@ -280,6 +285,22 @@ def main() -> None:
     preflight_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+
+    # Subcommand: maturity
+    maturity_p = subparsers.add_parser("maturity", help="Evaluate stable 1.0 evidence readiness", add_help=False)
+    maturity_p.add_argument("maturity_args", nargs=argparse.REMAINDER)
+
+    # Subcommand: dogfood
+    dogfood_p = subparsers.add_parser("dogfood", help="Run fail-closed self-assurance against a repository", add_help=False)
+    dogfood_p.add_argument("dogfood_args", nargs=argparse.REMAINDER)
+
+    # Subcommand: continuous
+    continuous_p = subparsers.add_parser("continuous", help="Continuous assurance snapshots and drift detection", add_help=False)
+    continuous_p.add_argument("continuous_args", nargs=argparse.REMAINDER)
+
+    # Subcommand: state
+    state_p = subparsers.add_parser("state", help="Persistent fail-closed assurance state and gate decisions", add_help=False)
+    state_p.add_argument("state_args", nargs=argparse.REMAINDER)
 
     # Subcommand: audit
     audit_p = subparsers.add_parser("audit", help="Evidence-based audit with explicit guarantee states")
@@ -640,6 +661,18 @@ def main() -> None:
         if args.json:
             argv.append("--json")
         _dispatch_with_argv(argv, preflight.main)
+
+    elif args.command == "maturity":
+        sys.exit(maturity_cli.main(args.maturity_args))
+
+    elif args.command == "dogfood":
+        sys.exit(dogfood_assurance.main(args.dogfood_args))
+
+    elif args.command == "continuous":
+        sys.exit(continuous_assurance.main(args.continuous_args))
+
+    elif args.command == "state":
+        sys.exit(assurance_state.main(args.state_args))
 
     elif args.command == "audit":
         audit_argv = ["audit.py", args.target]

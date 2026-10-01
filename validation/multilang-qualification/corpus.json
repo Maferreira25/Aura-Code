@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "purpose": "development qualification baseline; public corpus; not sufficient alone for MAT-08 stable-maturity evidence",
+  "preregistered": true,
+  "acceptance_thresholds": {
+    "min_recall": 1,
+    "max_false_positive_rate": 0
+  },
+  "cases": [
+    {
+      "id": "PY-SLOP-P1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "slop",
+      "expected_type": "silent_exception_swallowing",
+      "source": "def f():\n    try:\n        return 1\n    except Exception:\n        pass\n"
+    },
+    {
+      "id": "PY-SLOP-N1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "slop",
+      "expected_type": null,
+      "source": "def f():\n    try:\n        return 1\n    except Exception as exc:\n        raise RuntimeError('failed') from exc\n"
+    },
+    {
+      "id": "PY-LEAK-P1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "leaks",
+      "expected_type": "potential_unclosed_resource",
+      "source": "def f():\n    handle = open('x.txt', 'r')\n    return handle.read()\n"
+    },
+    {
+      "id": "PY-LEAK-N1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "leaks",
+      "expected_type": null,
+      "source": "def f():\n    with open('x.txt', 'r') as handle:\n        return handle.read()\n"
+    },
+    {
+      "id": "PY-SEC-P1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "security",
+      "expected_type": "unsafe_eval_exec",
+      "source": "def f(value):\n    return eval(value)\n"
+    },
+    {
+      "id": "PY-SEC-N1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "security",
+      "expected_type": null,
+      "source": "import ast\n\ndef f(value):\n    return ast.literal_eval(value)\n"
+    },
+    {
+      "id": "PY-SQL-P1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "security",
+      "expected_type": "potential_sql_injection",
+      "source": "def q(user_id):\n    return f'SELECT * FROM users WHERE id = {user_id}'\n"
+    },
+    {
+      "id": "PY-SQL-N1",
+      "language": "python",
+      "suffix": ".py",
+      "detector": "security",
+      "expected_type": null,
+      "source": "def q():\n    return 'SELECT * FROM users WHERE id = ?'\n"
+    },
+    {
+      "id": "TS-SLOP-P1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "slop",
+      "expected_type": "silent_exception_swallowing",
+      "source": "export function f(): number { try { return 1; } catch (e) { } }\n"
+    },
+    {
+      "id": "TS-SLOP-N1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "slop",
+      "expected_type": null,
+      "source": "export function f(): number { try { return 1; } catch (e) { throw e; } }\n"
+    },
+    {
+      "id": "TS-LEAK-P1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "leaks",
+      "expected_type": "unclosed_resource_leak",
+      "source": "import fs from 'fs';\nexport function f() { const h = fs.openSync('x.txt', 'r'); return h; }\n"
+    },
+    {
+      "id": "TS-LEAK-N1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "leaks",
+      "expected_type": null,
+      "source": "import fs from 'fs';\nexport function f() { const h = fs.openSync('x.txt', 'r'); fs.closeSync(h); }\n"
+    },
+    {
+      "id": "TS-SEC-P1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "security",
+      "expected_type": "eval_execution",
+      "source": "export function f(value: string) { return eval(value); }\n"
+    },
+    {
+      "id": "TS-SEC-N1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "security",
+      "expected_type": null,
+      "source": "export function f(value: string) { return JSON.parse(value); }\n"
+    },
+    {
+      "id": "TS-SQL-P1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "security",
+      "expected_type": "sql_injection_vector",
+      "source": "export function q(id: string) { return `SELECT * FROM users WHERE id = ${id}`; }\n"
+    },
+    {
+      "id": "TS-SQL-N1",
+      "language": "typescript",
+      "suffix": ".ts",
+      "detector": "security",
+      "expected_type": null,
+      "source": "export function q() { return 'SELECT * FROM users WHERE id = ?'; }\n"
+    }
+  ]
+}

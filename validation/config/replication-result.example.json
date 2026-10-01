@@ -1,0 +1,20 @@
+{
+  "pairings": [
+    {
+      "model_display_name": "REPLACE_WITH_FIRST_MODEL",
+      "agent": "REPLACE_WITH_FIRST_AGENT",
+      "study_id": "REPLACE_WITH_COMPLETED_STUDY_ID",
+      "a0_qs_rate": 0,
+      "a2_qs_rate": 0,
+      "completed": false
+    },
+    {
+      "model_display_name": "REPLACE_WITH_SECOND_MODEL",
+      "agent": "REPLACE_WITH_SECOND_AGENT",
+      "study_id": "REPLACE_WITH_COMPLETED_STUDY_ID",
+      "a0_qs_rate": 0,
+      "a2_qs_rate": 0,
+      "completed": false
+    }
+  ]
+}

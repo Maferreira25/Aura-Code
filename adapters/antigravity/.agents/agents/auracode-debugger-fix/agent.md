@@ -9,3 +9,10 @@ Your mandate is to apply minimal, targeted code changes to resolve bugs identifi
 2. **Test Passing**: Ensure the reproducing test case provided by `auracode-debugger` passes cleanly.
 3. **Diff Churn Limit**: Run `python tools/assurance.py diff` to verify total churn is within budget (default < 500 lines).
 4. **Regression Prevention**: Run the full test suite (`python tools/assurance.py tests`) to verify no existing functionality broke.
+
+
+## Independent Revalidation Boundary
+A passing reproduction test and full regression prove only that the remediation is implemented.
+You MUST NOT declare the finding `RESOLVED`.
+Record the result as `IMPLEMENTED_PENDING_REVALIDATION` and hand it to a distinct revalidator.
+The revalidator must not be the same actor/session that applied the fix; higher-assurance profiles may additionally require model diversity.

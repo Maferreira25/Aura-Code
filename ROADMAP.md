@@ -39,6 +39,33 @@
 - Red-teaming indirect prompt injection vectors inside DevContainers.
 
 ## 1.0 Enterprise Candidate
+
+**Maturity evidence infrastructure implemented; empirical/external evidence still incomplete.**
+
+Implemented infrastructure now includes:
+- frozen P1 validity/missing-run matrix;
+- P2 private/fresh preregistration/result validation and cryptographic split commitment;
+- P3 external benchmark preregistration/result validation;
+- P4 operational preregistration/result validation;
+- multi-model replication evidence validation;
+- independent inter-rater analysis;
+- burden and false-positive/false-negative measurement;
+- Python/TypeScript qualification harness with public baseline explicitly non-eligible for MAT-08;
+- independent threat-model/supply-chain review contract;
+- draft human governance adoption package for MAT-10;
+- reviewer provenance and SHA-256 pinning for any maturity PASS.
+
+These mechanisms make the remaining evidence executable and auditable. They do not replace the real studies or human decisions required by MAT-01 through MAT-10.
+
+
+A machine-enforced **Maturity Gate** now protects this boundary. Run:
+
+```bash
+auracode maturity . --json
+```
+
+A stable numeric `1.x.y` version is rejected by `tools/validate_framework.py` unless every non-waivable maturity criterion has evidence and the gate returns `ALLOW`.
+
 Requires:
 - Completed empirical multi-repository validation protocol;
 - Independent external assessor certification;

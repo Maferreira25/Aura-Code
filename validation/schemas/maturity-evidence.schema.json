@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuraCode Stable Maturity Evidence Ledger",
+  "type": "object",
+  "required": [
+    "target",
+    "criteria"
+  ],
+  "properties": {
+    "target": {
+      "const": "stable-1.0"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "criteria": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "status",
+          "evidence",
+          "rationale"
+        ],
+        "properties": {
+          "status": {
+            "enum": [
+              "UNKNOWN",
+              "FAIL",
+              "PASS"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "reviewed_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reviewed_at": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "PASS"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "reviewed_by",
+                "reviewed_at",
+                "evidence_sha256"
+              ],
+              "properties": {
+                "evidence": {
+                  "minItems": 1,
+                  "maxItems": 1
+                }
+              }
+            }
+          }
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

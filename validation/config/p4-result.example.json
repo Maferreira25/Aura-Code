@@ -1,0 +1,42 @@
+{
+  "service_id": "REPLACE_WITH_SERVICE_ID",
+  "revision": "REPLACE_WITH_IMMUTABLE_REVISION",
+  "load": {
+    "status": "FAIL",
+    "evidence": [
+      "REPLACE_WITH_LOAD_REPORT"
+    ],
+    "target_rps": 1,
+    "duration_minutes": 1
+  },
+  "soak": {
+    "status": "FAIL",
+    "evidence": [
+      "REPLACE_WITH_SOAK_REPORT"
+    ],
+    "duration_minutes": 1
+  },
+  "rollback": {
+    "status": "FAIL",
+    "evidence": [
+      "REPLACE_WITH_ROLLBACK_REPORT"
+    ]
+  },
+  "recovery": {
+    "status": "FAIL",
+    "evidence": [
+      "REPLACE_WITH_RECOVERY_REPORT"
+    ]
+  },
+  "observability": {
+    "status": "FAIL",
+    "evidence": [
+      "REPLACE_WITH_OBSERVABILITY_REPORT"
+    ]
+  },
+  "study": "P4",
+  "preregistered": false,
+  "preregistration_path": "REPLACE_WITH_P4_PLAN.json",
+  "preregistration_sha256": "REPLACE_WITH_64_HEX_SHA256",
+  "environment": "staging"
+}

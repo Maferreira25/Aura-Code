@@ -1,0 +1,27 @@
+{
+  "study_id": "P4-OPERATIONAL-001",
+  "preregistered": false,
+  "service_id": "REPLACE_WITH_REPRESENTATIVE_SERVICE",
+  "revision": "REPLACE_WITH_IMMUTABLE_REVISION",
+  "environment": "staging",
+  "acceptance_criteria": {
+    "load": {
+      "success_criteria": "REPLACE_BEFORE_EXECUTION",
+      "target_rps": 1,
+      "duration_minutes": 1
+    },
+    "soak": {
+      "success_criteria": "REPLACE_BEFORE_EXECUTION",
+      "duration_minutes": 1
+    },
+    "rollback": {
+      "success_criteria": "REPLACE_BEFORE_EXECUTION"
+    },
+    "recovery": {
+      "success_criteria": "REPLACE_BEFORE_EXECUTION"
+    },
+    "observability": {
+      "success_criteria": "REPLACE_BEFORE_EXECUTION"
+    }
+  }
+}

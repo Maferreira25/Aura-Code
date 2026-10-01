@@ -1,0 +1,55 @@
+{
+  "study": "P3",
+  "preregistered": false,
+  "preregistration_path": "validation/config/p3-plan.json",
+  "preregistration_sha256": "REPLACE_WITH_64_HEX_SHA256",
+  "model_agent_pairing": {
+    "model_display_name": "REPLACE_BEFORE_EXECUTION",
+    "agent": "REPLACE_BEFORE_EXECUTION",
+    "reasoning_effort": "REPLACE_BEFORE_EXECUTION"
+  },
+  "benchmarks": [
+    {
+      "id": "BAXBENCH",
+      "license_verified": false,
+      "upstream_revision": "REPLACE_WITH_IMMUTABLE_UPSTREAM_REVISION",
+      "task_subset_commitment_sha256": "REPLACE_WITH_64_HEX_SHA256",
+      "completed": false,
+      "arms": {
+        "A0": {
+          "attempts": 0,
+          "qualified_successes": 0
+        },
+        "A1": {
+          "attempts": 0,
+          "qualified_successes": 0
+        },
+        "A2": {
+          "attempts": 0,
+          "qualified_successes": 0
+        }
+      }
+    },
+    {
+      "id": "SWE-BENCH-LIVE",
+      "license_verified": false,
+      "upstream_revision": "REPLACE_WITH_IMMUTABLE_UPSTREAM_REVISION",
+      "task_subset_commitment_sha256": "REPLACE_WITH_64_HEX_SHA256",
+      "completed": false,
+      "arms": {
+        "A0": {
+          "attempts": 0,
+          "qualified_successes": 0
+        },
+        "A1": {
+          "attempts": 0,
+          "qualified_successes": 0
+        },
+        "A2": {
+          "attempts": 0,
+          "qualified_successes": 0
+        }
+      }
+    }
+  ]
+}

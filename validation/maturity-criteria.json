@@ -1,0 +1,67 @@
+{
+  "version": "1.0",
+  "target": "stable-1.0",
+  "policy": "No maturity criterion may be waived for the first stable 1.0 release.",
+  "criteria": [
+    {
+      "id": "MAT-01",
+      "title": "Frozen P1 methodology pilot completed with interpretable comparative signal",
+      "mode": "auto_p1",
+      "required": true
+    },
+    {
+      "id": "MAT-02",
+      "title": "Private/fresh P2 confirmatory suite completed and preregistered",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-03",
+      "title": "Effect replicated across more than one model/agent pairing",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-04",
+      "title": "External ecological validation completed on selected upstream benchmark families",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-05",
+      "title": "Operational P4 validation completed for load, soak, rollback and recovery",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-06",
+      "title": "Independent assessor / inter-rater evaluation completed",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-07",
+      "title": "Assurance burden, cost, false-positive and false-negative analysis completed",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-08",
+      "title": "Multi-language verification maturity demonstrated for Python and TypeScript",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-09",
+      "title": "Threat model and software supply chain independently audited with no open critical/high blockers",
+      "mode": "evidence",
+      "required": true
+    },
+    {
+      "id": "MAT-10",
+      "title": "1.0 governance roles and release authority formally established",
+      "mode": "evidence",
+      "required": true
+    }
+  ]
+}

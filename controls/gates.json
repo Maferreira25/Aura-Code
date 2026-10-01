@@ -1,0 +1,100 @@
+{
+  "version": "1.0",
+  "principle": "Fail closed: FAIL, UNKNOWN, missing mandatory evidence, unresolved material decisions, or violated independence block advancement.",
+  "gates": [
+    {
+      "id": "G0",
+      "target_stage": "RISK_CLASSIFIED",
+      "required_controls": ["GOV-01"],
+      "allow_waiver": false,
+      "blocking_finding_severities": ["CRITICAL"]
+    },
+    {
+      "id": "G1",
+      "target_stage": "REQUIREMENTS_VERIFIED",
+      "required_controls": ["INT-01", "INT-02", "INT-03", "INT-04", "INT-05", "INT-06"],
+      "allow_waiver": true,
+      "block_on_open_material_decisions": true,
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G2",
+      "target_stage": "ARCHITECTURE_VERIFIED",
+      "required_controls": ["ARC-01", "ARC-02", "ARC-03", "ARC-04", "ARC-05", "ARC-06", "SEC-01"],
+      "allow_waiver": true,
+      "block_on_open_material_decisions": true,
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G3",
+      "target_stage": "IMPLEMENTATION",
+      "required_controls": ["AGT-01", "AGT-03", "AGT-04", "AGT-06", "AGT-07", "AGT-08", "SUP-01"],
+      "allow_waiver": true,
+      "block_on_open_material_decisions": true,
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G4",
+      "target_stage": "VERIFICATION",
+      "required_controls": ["AGT-02", "AGT-05", "VER-01", "VER-02", "VER-03", "VER-04", "VER-05", "VER-06", "VER-07", "VER-08", "VER-09"],
+      "allow_waiver": false,
+      "independence_from_level": "AL2",
+      "strong_model_independence_from_level": "AL3",
+      "independence_pairs": [["implementer", "verifier"]],
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G4S",
+      "target_stage": "SECURITY_VERIFIED",
+      "required_controls": ["SEC-02", "SEC-03", "SEC-04", "SEC-05", "SEC-06", "SEC-07", "SEC-08"],
+      "allow_waiver": false,
+      "independence_from_level": "AL2",
+      "strong_model_independence_from_level": "AL3",
+      "independence_pairs": [["implementer", "auditor"]],
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G5",
+      "target_stage": "RELEASE_READY",
+      "required_controls": [
+        "SUP-02", "SUP-03", "SUP-04", "SUP-05", "SUP-06",
+        "DAT-01", "DAT-02", "DAT-03", "DAT-04", "DAT-05",
+        "REL-01", "REL-02", "REL-03", "REL-04", "REL-05", "REL-06",
+        "RLS-01", "RLS-02", "RLS-03", "RLS-04",
+        "GOV-03", "GOV-04", "GOV-09", "GOV-10"
+      ],
+      "allow_waiver": true,
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G5A",
+      "target_stage": "RELEASE_APPROVED",
+      "required_controls": ["RLS-05", "GOV-07", "GOV-08"],
+      "allow_waiver": false,
+      "independence_from_level": "AL3",
+      "independence_pairs": [["implementer", "approver"]],
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G6D",
+      "target_stage": "DEPLOYED",
+      "required_controls": [],
+      "allow_waiver": false,
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G6P",
+      "target_stage": "PRODUCTION_VERIFIED",
+      "required_controls": ["OPS-01", "OPS-02", "OPS-03", "OPS-04", "OPS-05", "OPS-06"],
+      "allow_waiver": true,
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    },
+    {
+      "id": "G6C",
+      "target_stage": "CONTINUOUS_ASSURANCE",
+      "required_controls": ["GOV-05", "GOV-06", "OPS-06"],
+      "allow_waiver": true,
+      "blocking_finding_severities": ["CRITICAL", "HIGH"]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "preregistered": false,
+  "public_corpus": false,
+  "corpus_commitment_sha256": "REPLACE_WITH_64_HEX_SHA256",
+  "independent_labels": false,
+  "revision": "REPLACE_WITH_IMMUTABLE_REVISION",
+  "acceptance_thresholds": {
+    "min_recall": 0,
+    "max_false_positive_rate": 1
+  },
+  "languages": {
+    "python": {
+      "cases": 0,
+      "true_positive": 0,
+      "true_negative": 0,
+      "false_positive": 0,
+      "false_negative": 0,
+      "parser_available": true,
+      "engine": "python-ast",
+      "evidence": [
+        "REPLACE_WITH_PRIVATE_PYTHON_REPORT.json"
+      ]
+    },
+    "typescript": {
+      "cases": 0,
+      "true_positive": 0,
+      "true_negative": 0,
+      "false_positive": 0,
+      "false_negative": 0,
+      "parser_available": false,
+      "engine": "tree-sitter-typescript",
+      "evidence": [
+        "REPLACE_WITH_PRIVATE_TYPESCRIPT_REPORT.json"
+      ]
+    }
+  }
+}

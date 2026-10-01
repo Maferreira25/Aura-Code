@@ -76,3 +76,37 @@ Required:
 - technical-debt/architecture trend.
 
 A production incident reopens the assurance loop; it is not merely an operations event.
+
+
+## Fail-closed state semantics
+
+Lifecycle gates are machine-enforced through controls/gates.json and the persistent Assurance State engine.
+
+For required evidence:
+- FAIL blocks;
+- UNKNOWN blocks;
+- missing evidence blocks;
+- PASS without evidence blocks;
+- NOT_APPLICABLE requires rationale;
+- WAIVED is accepted only where the gate permits it and the waiver is valid.
+
+A later successful stage never repairs an earlier failed or unknown requirement by implication.
+
+## Independent verification boundary
+
+At G4 and later gates where independence applies:
+- the implementing actor cannot be the sole verifier/auditor;
+- actor provenance must be recorded;
+- prohibited same-session verification blocks advancement;
+- AL3/AL4 AI-to-AI verification additionally follows the current model-diversity policy;
+- protected/deterministic evidence is not overridden by agent confidence.
+
+A remediator cannot self-declare a finding resolved. Resolution requires independent revalidation.
+
+See docs/ASSURANCE-STATE.md for the complete state model and finding lifecycle.
+
+## Stable-release maturity boundary
+
+The AuraCode stable-1.0 maturity gate is intentionally separate from G0-G6. G0-G6 govern project/change lifecycle assurance. The maturity gate governs whether AuraCode itself has the preregistered evidence needed for a stable 1.0 maturity claim.
+
+UNKNOWN maturity evidence blocks stable release.

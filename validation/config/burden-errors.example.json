@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "arm": "A0",
+      "elapsed_seconds": 0,
+      "human_interventions": 0
+    },
+    {
+      "arm": "A1",
+      "elapsed_seconds": 0,
+      "human_interventions": 0
+    },
+    {
+      "arm": "A2",
+      "elapsed_seconds": 0,
+      "human_interventions": 0
+    }
+  ],
+  "error_calibration": {
+    "true_positive": 0,
+    "true_negative": 0,
+    "false_positive": 0,
+    "false_negative": 0
+  }
+}

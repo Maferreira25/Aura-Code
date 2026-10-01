@@ -73,6 +73,12 @@ def is_ignored_by_framework(rel_path: Path, gitignore_patterns: Optional[List[st
     return False
 
 
+
+def is_stable_release_version(raw_version: str) -> bool:
+    """Return True only for stable numeric major>=1 versions such as 1.0.0."""
+    return re.fullmatch(r"([1-9][0-9]*)\.[0-9]+\.[0-9]+", raw_version.strip()) is not None
+
+
 def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
     """Execute complete internal integrity and governance checks.
 
@@ -167,10 +173,53 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
         "docs/FRAMEWORK.md", "docs/VALIDATION.md", "templates/assessment.json",
         "schemas/control.schema.json", "schemas/assessment.schema.json",
         "schemas/contracts.schema.json", "schemas/evidence.schema.json",
+        "schemas/assurance-state.schema.json", "controls/gates.json",
+        "validation/tools/validate_experiment_evidence.py",
+        "validation/tools/p1_matrix.py",
+        "validation/tools/maturity_studies.py",
+        "validation/schemas/maturity-evidence.schema.json",
+        "validation/maturity-criteria.json",
+        "validation/maturity-evidence.json",
+        "validation/maturity-workplan.json",
+        "validation/tools/maturity_readiness.py",
+        "tools/maturity_cli.py",
+        "validation/tools/validate_maturity_infrastructure.py",
+        "validation/tools/maturity_handoff.py",
+        "validation/tools/maturity_queue.py",
+        "validation/schemas/maturity-workplan.schema.json",
+        "tools/maturity_gate.py",
         "MANIFEST.json",
     ]:
         if not (root_dir / rel).exists():
             errors.append(f"Missing repository file: {rel}")
+
+    # Stable-maturity infrastructure coverage
+    try:
+        from validation.tools.validate_maturity_infrastructure import validate_maturity_infrastructure
+        maturity_infra = validate_maturity_infrastructure(root_dir)
+        if maturity_infra.get("status") != "VALID":
+            for item in maturity_infra.get("errors", []):
+                errors.append(f"maturity infrastructure: {item}")
+        for item in maturity_infra.get("warnings", []):
+            warnings.append(f"maturity infrastructure: {item}")
+    except Exception as exc:
+        errors.append(f"maturity infrastructure validation failed: {exc}")
+
+    # Stable-release maturity enforcement
+    version_file = root_dir / "VERSION"
+    if version_file.exists():
+        raw_version = version_file.read_text(encoding="utf-8").strip()
+        if is_stable_release_version(raw_version):
+            try:
+                from tools.maturity_gate import evaluate_maturity
+                maturity = evaluate_maturity(root_dir)
+                if not maturity.get("ready"):
+                    errors.append(
+                        f"Stable version {raw_version} is blocked by maturity gate: "
+                        + "; ".join(maturity.get("blockers", []))
+                    )
+            except Exception as exc:
+                errors.append(f"Stable version {raw_version} maturity evaluation failed: {exc}")
 
     # Manifest integrity verification (REM-002, REM-021, REM-027)
     manifest_path = root_dir / "MANIFEST.json"
@@ -215,7 +264,10 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
     for s_rel in [
         "schemas/control.schema.json", "schemas/assessment.schema.json",
         "schemas/contracts.schema.json", "schemas/evidence.schema.json",
-        "validation/schemas/result.schema.json", "validation/schemas/scenario.schema.json"
+        "schemas/assurance-state.schema.json",
+        "validation/schemas/result.schema.json", "validation/schemas/scenario.schema.json",
+        "validation/schemas/maturity-evidence.schema.json",
+        "validation/schemas/maturity-workplan.schema.json"
     ]:
         sp = root_dir / s_rel
         if sp.exists():
@@ -225,6 +277,37 @@ def validate_framework(root_dir: Path = ROOT) -> Dict[str, Any]:
                     errors.append(f"{s_rel}: invalid schema object or missing $schema")
             except Exception as e:
                 errors.append(f"{s_rel}: failed to parse JSON schema: {e}")
+
+    # Assurance gate-policy verification
+    gates_file = root_dir / "controls" / "gates.json"
+    if gates_file.exists():
+        try:
+            gate_data = load("controls/gates.json")
+            gates = gate_data.get("gates", [])
+            if not isinstance(gates, list) or not gates:
+                errors.append("controls/gates.json: gates must be a non-empty array")
+            else:
+                seen_targets = set()
+                for gate in gates:
+                    if not isinstance(gate, dict):
+                        errors.append("controls/gates.json: each gate must be an object")
+                        continue
+                    target = gate.get("target_stage")
+                    if not isinstance(target, str) or not target:
+                        errors.append("controls/gates.json: gate missing target_stage")
+                    elif target in seen_targets:
+                        errors.append(f"controls/gates.json: duplicate target_stage {target}")
+                    else:
+                        seen_targets.add(target)
+                    required_controls = gate.get("required_controls", [])
+                    if not isinstance(required_controls, list):
+                        errors.append(f"controls/gates.json: {target} required_controls must be an array")
+                        continue
+                    for cid in required_controls:
+                        if cid not in idset:
+                            errors.append(f"controls/gates.json: unknown control {cid}")
+        except Exception as exc:
+            errors.append(f"controls/gates.json: failed to validate gate policy: {exc}")
 
     # Contracts schema conformity
     contracts_file = root_dir / "contracts.json"

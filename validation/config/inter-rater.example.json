@@ -1,0 +1,17 @@
+{
+  "assurance_level": "AL2",
+  "control_ids": [],
+  "assessors": [
+    {
+      "id": "REPLACE_WITH_ASSESSOR_1",
+      "independence_attestation": false,
+      "implementation_role": false
+    },
+    {
+      "id": "REPLACE_WITH_ASSESSOR_2",
+      "independence_attestation": false,
+      "implementation_role": false
+    }
+  ],
+  "ratings": []
+}

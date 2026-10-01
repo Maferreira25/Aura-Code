@@ -2,6 +2,11 @@
 from pathlib import Path
 import json, math, sys, collections, statistics
 
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from validation.tools.validate_experiment_evidence import evaluate_p1
+
 def wilson(k,n,z=1.96):
     if n==0: return (None,None)
     p=k/n
@@ -45,3 +50,17 @@ if diff:
     print(f"Matched A2-A0 QS difference: mean={statistics.mean(diff):.3f} over {len(diff)} pairs")
 else:
     print("No matched A0/A2 pair_id data.")
+
+
+print("\nExperimental-validity guard:")
+validity = evaluate_p1(rows)
+print(f"  P1 status: {validity['status']}")
+print(f"  Automated runs: {validity['automated_runs']}/{validity['automated_expected']}")
+print(f"  Ceiling effect: {validity['ceiling_effect']}")
+print(f"  Comparative signal interpretable: {validity['comparative_signal_interpretable']}")
+print(f"  Headline effectiveness claim allowed: {validity['headline_effectiveness_claim_allowed']}")
+for warning in validity["warnings"]:
+    print("  WARN:", warning)
+for error in validity["errors"]:
+    print("  ERROR:", error)
+print(" ", validity["claim_boundary"])
