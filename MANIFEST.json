@@ -1148,8 +1148,8 @@
       "bytes": 5729
     },
     "validation/README.md": {
-      "sha256": "a5a71f54e867d3fab129315b4476e97cf74d9f759e7de42fbd16748edb1cf067",
-      "bytes": 7783
+      "sha256": "60cb8610ed4bc2d8f502d285c3aa73434e9a49b7345197d5f3a881a44622c9d0",
+      "bytes": 9729
     },
     "validation/reference/public/DAT-ATOMIC-001/ledger.py": {
       "sha256": "cc56d11ce46278675723aaa67307e51f542dca672acc7b1d37ab5d5ce57b5fbd",
