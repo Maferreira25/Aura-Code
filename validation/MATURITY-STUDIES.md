@@ -332,3 +332,64 @@ auracode maturity handoff . \
 The export contains the frozen revision, current maturity blockers, P1 progress, selected review-file hashes, and the MANIFEST hash. It intentionally excludes private/fresh scenario contents and hidden evaluator material.
 
 The handoff is not an approval and does not alter validation/maturity-evidence.json.
+
+
+## Reviewed evidence promotion
+
+AuraCode separates evidence validation from ledger mutation.
+
+### 1. Prepare
+
+Validate a canonical package and generate the proposed PASS entry without changing the ledger:
+
+~~~text
+auracode maturity prepare MAT-10 validation/evidence/governance.json \
+  --reviewed-by <reviewer-id> \
+  --reviewed-at 2026-10-01T12:00:00Z \
+  --root .
+~~~
+
+Preparation:
+- runs the criterion-specific semantic validator;
+- checks nested local evidence;
+- computes the package SHA-256;
+- produces the exact proposed ledger entry;
+- does not mutate validation/maturity-evidence.json.
+
+### 2. Independent review
+
+The reviewer must actually inspect the package and supporting artifacts.
+
+The CLI does not authenticate reviewer identity. The project remains responsible for ensuring that the named reviewer satisfies the applicable independence rule.
+
+### 3. Record
+
+After review, record the evidence atomically:
+
+~~~text
+auracode maturity record MAT-10 validation/evidence/governance.json \
+  --reviewed-by <reviewer-id> \
+  --reviewed-at 2026-10-01T12:00:00Z \
+  --rationale "Reviewed and accepted under the adopted governance process" \
+  --root . \
+  --confirm-reviewed
+~~~
+
+The record command:
+- re-runs semantic validation;
+- verifies reviewer metadata and package hash;
+- writes through an atomic replace;
+- is idempotent for identical evidence;
+- refuses to silently overwrite an existing PASS with a different evidence hash.
+
+### 4. Gate
+
+A recorded criterion is still not a stable-release approval. Run:
+
+~~~text
+auracode maturity gate . --json
+~~~
+
+Stable 1.0 remains blocked until every required MAT criterion passes.
+
+This separation is intentional: generating a valid evidence package, reviewing it, recording it and satisfying the full maturity gate are distinct events.
