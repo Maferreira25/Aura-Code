@@ -122,6 +122,27 @@ POWERSHELL_DANGEROUS_TARGET = re.compile(
 )
 
 
+def load_guard_rules_schema(schema_path: Optional[Path] = None) -> Dict[str, Any]:
+    """Loads guardrail safety rules from schemas/guard_rules.json if present."""
+    if schema_path is None:
+        schema_path = Path(__file__).resolve().parent.parent / "schemas" / "guard_rules.json"
+    if schema_path.exists():
+        try:
+            with open(schema_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {
+        "forbidden_rm_targets": list(FORBIDDEN_RM_TARGETS),
+        "protected_branches": list(PROTECTED_BRANCHES),
+        "inspection_binaries": list(INSPECTION_BINARIES),
+        "direct_danger_patterns": [
+            {"pattern": p[0], "risk": p[1], "category": p[2], "reason": p[3]}
+            for p in DIRECT_DANGER_PATTERNS
+        ],
+    }
+
+
 def split_shell_pipeline(cmd_str: str) -> List[str]:
     """Splits a composite shell command line by operators (;, &&, ||, |, &)."""
     if not cmd_str or not cmd_str.strip():

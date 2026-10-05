@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 423,
+  "file_count": 424,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -422,6 +422,10 @@
     "schemas/evidence.schema.json": {
       "sha256": "268ac37c8c895174a8232054385c11dfb8df648b6e83ef0b68c5f55c8410db28",
       "bytes": 903
+    },
+    "schemas/guard_rules.json": {
+      "sha256": "958b58e9987704fad9f5ea07cc5dceaacf5d85ca41b8a4a678ee77ca5d3798ad",
+      "bytes": 3101
     },
     "SECURITY.md": {
       "sha256": "0c8e7c6d91b7c3d5826d47f8a20ad9eb296bfec2368bb372781b5b87fb8ed28e",
@@ -1048,8 +1052,8 @@
       "bytes": 21833
     },
     "tools/pre_tool_guard.py": {
-      "sha256": "cf0f8874d74e5ab8ff1df2f3933768adc5d8fdb4f77af8deb23fe24f72e1fe22",
-      "bytes": 23621
+      "sha256": "1c5cf06fa06bf7a919f86b787f6592b8e6c43a6a7ae3aad1dbf8a13519b3d489",
+      "bytes": 24456
     },
     "tools/preflight.py": {
       "sha256": "5e5e7fc350f3a41a313343fd384ee635586cb3749315ff01fba302a4c80dec14",

@@ -1,0 +1,82 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PreToolGuardRules",
+  "description": "Configuração de regras e padrões para o guardrail de execução de terminal do AuraCode.",
+  "forbidden_rm_targets": [
+    "/", "/*", "~", "~/*", "*", "..", "../", "./*",
+    "/bin", "/boot", "/dev", "/etc", "/lib", "/lib64",
+    "/proc", "/root", "/sbin", "/sys", "/usr", "/var",
+    "c:", "c:\\", "c:/", "c:\\*", "c:/*",
+    "%systemroot%", "%windir%"
+  ],
+  "protected_branches": [
+    "main", "master", "develop", "prod", "production", "release"
+  ],
+  "inspection_binaries": [
+    "cat", "type", "more", "less", "head", "tail",
+    "grep", "egrep", "fgrep", "awk", "sed", "strings",
+    "base64", "xxd", "hexdump", "od", "gc", "get-content"
+  ],
+  "direct_danger_patterns": [
+    {
+      "pattern": ":\\(\\)\\s*\\{\\s*:\\s*\\|\\s*:\\s*&\\s*\\}\\s*;\\s*:",
+      "risk": "CRITICAL",
+      "category": "DESTRUCTIVE_OS",
+      "reason": "Classic shell forkbomb detected"
+    },
+    {
+      "pattern": "\\bdd\\s+.*(?:of=/dev/[hs]d[a-z]|of=/dev/nvme|of=/dev/null\\b(?!\\s))",
+      "risk": "CRITICAL",
+      "category": "DESTRUCTIVE_OS",
+      "reason": "Raw block device overwrite via dd detected"
+    },
+    {
+      "pattern": "\\b(?:mkfs(?:\\.[a-z0-9]+)?|format\\s+[a-zA-Z]:|fdisk\\s+/dev/|diskpart)(?:\\s|/|$)",
+      "risk": "CRITICAL",
+      "category": "DESTRUCTIVE_OS",
+      "reason": "Filesystem formatting or disk partitioning command detected"
+    },
+    {
+      "pattern": "\\b(?:shutdown\\s+-[hHrR]|reboot|init\\s+[06]|halt\\s+-p|poweroff)\\b",
+      "risk": "HIGH",
+      "category": "DESTRUCTIVE_OS",
+      "reason": "System shutdown or reboot command detected"
+    },
+    {
+      "pattern": "(?i)\\bDROP\\s+DATABASE\\b",
+      "risk": "CRITICAL",
+      "category": "DANGEROUS_DB",
+      "reason": "High-risk database destruction (DROP DATABASE) detected"
+    },
+    {
+      "pattern": "(?i)\\bDROP\\s+TABLE\\b",
+      "risk": "HIGH",
+      "category": "DANGEROUS_DB",
+      "reason": "High-risk table destruction (DROP TABLE) detected without migration harness"
+    },
+    {
+      "pattern": "(?i)\\bTRUNCATE\\s+TABLE\\b",
+      "risk": "HIGH",
+      "category": "DANGEROUS_DB",
+      "reason": "High-risk table truncation (TRUNCATE TABLE) detected without migration harness"
+    },
+    {
+      "pattern": "\\b(?:cat|type|gc|get-content)\\s+.*(?:\\.env|id_rsa|credentials).*\\|\\s*(?:curl|wget|nc|netcat|iwr|irm|invoke-webrequest|invoke-restmethod)\\b",
+      "risk": "CRITICAL",
+      "category": "SECRET_LEAK",
+      "reason": "Exfiltration pipeline detected: streaming sensitive file into network tool"
+    },
+    {
+      "pattern": "(?i)\\b(?:format-volume|clear-disk|remove-partition|initialize-disk)\\b",
+      "risk": "CRITICAL",
+      "category": "DESTRUCTIVE_OS",
+      "reason": "PowerShell disk formatting or partitioning cmdlet detected"
+    },
+    {
+      "pattern": "(?i)\\b(?:stop-computer|restart-computer)\\b",
+      "risk": "HIGH",
+      "category": "DESTRUCTIVE_OS",
+      "reason": "PowerShell system shutdown or restart cmdlet detected"
+    }
+  ]
+}
