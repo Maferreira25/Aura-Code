@@ -167,6 +167,10 @@ def main(argv: List[str]) -> int:
     check = sub.add_parser("verify")
     check.add_argument("record")
     check.add_argument("--root", default=".")
+    gate = sub.add_parser("gate")
+    gate.add_argument("--policy", required=True)
+    gate.add_argument("--bundle", required=True, help="JSON array of execution records")
+    gate.add_argument("--root", default=".")
     args = parser.parse_args(argv)
     try:
         if args.action == "run":
@@ -176,6 +180,9 @@ def main(argv: List[str]) -> int:
             with Path(args.output).open("x", encoding="utf-8") as file:
                 json.dump(record, file, indent=2)
             result = verify(record, Path(args.root))
+        elif args.action == "gate":
+            from tools.evidence_policy import read_json, decide
+            result = decide(read_json(Path(args.policy)), read_json(Path(args.bundle)), Path(args.root))
         else:
             record = json.loads(Path(args.record).read_text(encoding="utf-8"),
                                 object_pairs_hook=reject_duplicates)

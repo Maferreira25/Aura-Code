@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 429,
+  "file_count": 433,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -956,8 +956,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "1387da9d8864b47a3ee2e21fa8b8ab43292995a781aa8bbfb5452fdc718cc505",
-      "bytes": 44468
+      "sha256": "301837c304f848bcb13f7d60ca36b638ee5d94c6385a1e240abae4288eff5591",
+      "bytes": 44860
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1056,8 +1056,8 @@
       "bytes": 24568
     },
     "tools/preflight.py": {
-      "sha256": "e8e6b1839a543a776792c567fa3ea08b733d5356053d96c10756f95d8a914082",
-      "bytes": 10693
+      "sha256": "29d7479521bd54f379ce6aa7c106f3651555c0cd23b63219cb6dee2f83528927",
+      "bytes": 11956
     },
     "tools/refactor_engine.py": {
       "sha256": "2ad924d4638f770f4bcd821e1293905f2bbe794e47cc6ea02ad41c91811f21cb",
@@ -1704,8 +1704,8 @@
       "bytes": 1690
     },
     "tools/evidence_engine.py": {
-      "sha256": "bf0b881a4118ed6c4b400070e91d26135e207488345064524af6feb9ae3a1e59",
-      "bytes": 9085
+      "sha256": "b22998ce4438403ccbbd46dc66f15ac5812557915a71893f04d7fbabab7eea63",
+      "bytes": 9507
     },
     "tests/test_evidence_engine.py": {
       "sha256": "c69a2103031c6e5cde1b135f5442867fb38cb9620f8c7c0bf7baf369c8115fe4",
@@ -1718,6 +1718,22 @@
     "schemas/execution-evidence-v1.schema.json": {
       "sha256": "d9ce1b0e0592c756e116dcfcc65a49e65d2f98f90e00d510625095f44dac17f8",
       "bytes": 2196
+    },
+    "tools/evidence_policy.py": {
+      "sha256": "4d6676a8e82945f50fc75e933b684a1384c074e4cbf7ca294612b9bdc49fe46f",
+      "bytes": 4838
+    },
+    "tests/test_evidence_policy.py": {
+      "sha256": "b58540c38c6dd64f52268bd150382c0fb6e6fcb798ba56c57c46f8e8ef29979f",
+      "bytes": 5127
+    },
+    "docs/EVIDENCE-POLICY.md": {
+      "sha256": "7a7888d990f75971513d2e54e8b154363050ca6e2ffb1b1354e14f45d85e6cf8",
+      "bytes": 2223
+    },
+    "schemas/evidence-policy-v1.schema.json": {
+      "sha256": "b71341f4406c444b37790a83bf719ac8595d4ffedb1cb17be8f2c4bea859fbc9",
+      "bytes": 1429
     }
   }
 }

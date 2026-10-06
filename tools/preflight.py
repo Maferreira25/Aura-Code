@@ -94,7 +94,9 @@ def get_preflight_steps(root: Path) -> List[Dict[str, Any]]:
 PREFLIGHT_STEPS = get_preflight_steps(ROOT_DIR)
 
 
-def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = False) -> Dict[str, Any]:
+def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = False,
+                         evidence_policy: Optional[Path] = None,
+                         evidence_bundle: Optional[Path] = None) -> Dict[str, Any]:
     """Execute all preflight verification steps, returning complete summary report."""
     root = workspace_root.resolve() if workspace_root else ROOT_DIR
 
@@ -106,6 +108,18 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
         print(">> Inspecionando conformidade local antes do envio para o GitHub...\n")
 
     steps = get_preflight_steps(root)
+    if evidence_policy is not None or evidence_bundle is not None:
+        policy_path = root / evidence_policy if evidence_policy is not None else None
+        bundle_path = root / evidence_bundle if evidence_bundle is not None else None
+        steps.insert(0, {
+            "name": "Politica e Evidencias Obrigatorias",
+            "description": "Todos os requisitos declarados exigem evidencias validas e vinculadas.",
+            "condition": lambda r: (policy_path is not None and bundle_path is not None
+                                     and policy_path.is_file() and bundle_path.is_file()),
+            "cmd": [sys.executable, str(ROOT_DIR / "tools" / "assurance.py"),
+                    "evidence", "gate", "--policy", str(policy_path),
+                    "--bundle", str(bundle_path), "--root", str(root)],
+        })
     steps_executed = 0
     passed_steps = 0
     failed_step: Optional[Dict[str, Any]] = None
@@ -249,18 +263,17 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
 
 def main() -> None:
     """CLI entrypoint for auracode preflight."""
-    args = sys.argv[1:]
-    quiet = "--quiet" in args or "-q" in args
-    is_json = "--json" in args
-
-    target = None
-    for a in args:
-        if not a.startswith("-"):
-            target = Path(a)
-            break
-
-    res = run_preflight_checks(workspace_root=target, quiet=quiet or is_json)
-    if is_json:
+    import argparse
+    parser = argparse.ArgumentParser(prog="auracode preflight")
+    parser.add_argument("target", nargs="?", type=Path)
+    parser.add_argument("--quiet", "-q", action="store_true")
+    parser.add_argument("--json", action="store_true")
+    parser.add_argument("--evidence-policy", type=Path)
+    parser.add_argument("--evidence-bundle", type=Path)
+    args = parser.parse_args()
+    res = run_preflight_checks(workspace_root=args.target, quiet=args.quiet or args.json,
+                              evidence_policy=args.evidence_policy, evidence_bundle=args.evidence_bundle)
+    if args.json:
         import json
         print(json.dumps(res, indent=2, ensure_ascii=False))
 

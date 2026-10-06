@@ -282,6 +282,8 @@ def main() -> None:
     preflight_p.add_argument("target", nargs="?", default=".", help="Target workspace directory")
     preflight_p.add_argument("--quiet", "-q", action="store_true", help="Quiet mode (only print banner and failures)")
     preflight_p.add_argument("--json", action="store_true", help="Output results in JSON format")
+    preflight_p.add_argument("--evidence-policy", help="Require policy-bound execution evidence")
+    preflight_p.add_argument("--evidence-bundle", help="JSON array of execution records")
 
     # Subcommand: audit
     audit_p = subparsers.add_parser("audit", help="Evidence-based audit with explicit guarantee states")
@@ -639,6 +641,10 @@ def main() -> None:
 
     elif args.command == "preflight":
         argv = ["preflight.py"]
+        if args.evidence_policy:
+            argv.extend(["--evidence-policy", args.evidence_policy])
+        if args.evidence_bundle:
+            argv.extend(["--evidence-bundle", args.evidence_bundle])
         if args.target:
             argv.append(args.target)
         if args.quiet:
