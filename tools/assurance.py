@@ -103,6 +103,8 @@ def main() -> None:
         description="AuraCode - Agentic Unified Reliability & Assurance for AI Software Engineering"
     )
     subparsers = parser.add_subparsers(dest="command", help="Assurance command to execute")
+    evidence_p = subparsers.add_parser("evidence", help="Record and verify explicit execution evidence")
+    evidence_p.add_argument("evidence_args", nargs=argparse.REMAINDER)
 
     # Subcommand: init
     init_p = subparsers.add_parser("init", help="Initialize workspace assurance environment directories")
@@ -382,7 +384,11 @@ def main() -> None:
         parser.print_help()
         sys.exit(0)
 
-    if args.command == "init":
+    if args.command == "evidence":
+        from tools.evidence_engine import main as evidence_main
+        sys.exit(evidence_main(args.evidence_args))
+
+    elif args.command == "init":
         profile = getattr(args, "profile", "basic")
         copy_tpl = not getattr(args, "no_templates", False)
         setup_auracode_environment(profile=profile, copy_templates=copy_tpl)
