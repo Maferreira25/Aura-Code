@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 425,
+  "file_count": 429,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -956,8 +956,8 @@
       "bytes": 6712
     },
     "tools/assurance.py": {
-      "sha256": "df047118d908343c6eeb092ef9bbdb82dc42ffd08042b2b290d686cf0d9899b6",
-      "bytes": 44138
+      "sha256": "1387da9d8864b47a3ee2e21fa8b8ab43292995a781aa8bbfb5452fdc718cc505",
+      "bytes": 44468
     },
     "tools/assurance_mcp.py": {
       "sha256": "ec0d6664ae75b677f77da1a4e4888f8ca57d7d73b3a96f201c9e4df8ef23d371",
@@ -1702,6 +1702,22 @@
     "docs/PREFLIGHT-FAIL-CLOSED.md": {
       "sha256": "c06f89a7c754abb5686cbddb138d1e7b37e2a8715de656211b7d2e0b0cc09cbc",
       "bytes": 1690
+    },
+    "tools/evidence_engine.py": {
+      "sha256": "bf0b881a4118ed6c4b400070e91d26135e207488345064524af6feb9ae3a1e59",
+      "bytes": 9085
+    },
+    "tests/test_evidence_engine.py": {
+      "sha256": "c69a2103031c6e5cde1b135f5442867fb38cb9620f8c7c0bf7baf369c8115fe4",
+      "bytes": 4234
+    },
+    "docs/EVIDENCE-ENGINE.md": {
+      "sha256": "953586270f68789e1728615d6922db48bdada8b0a9dd783c65be169caa106667",
+      "bytes": 1899
+    },
+    "schemas/execution-evidence-v1.schema.json": {
+      "sha256": "d9ce1b0e0592c756e116dcfcc65a49e65d2f98f90e00d510625095f44dac17f8",
+      "bytes": 2196
     }
   }
 }
