@@ -1,7 +1,7 @@
 {
   "framework_version": "0.3.0.dev0",
   "validation_suite": "0.1.1-alpha",
-  "file_count": 424,
+  "file_count": 425,
   "files": {
     ".gitignore": {
       "sha256": "fe4064546546d817017f53bb1beb4d155181edf7495d8ac22763b154398e0c77",
@@ -880,12 +880,12 @@
       "bytes": 5168
     },
     "tests/test_pre_tool_guard.py": {
-      "sha256": "9cedd1454ce24e049b5aaeeeabf4aeb466742414791016cd8a807ba3c7140d51",
-      "bytes": 7754
+      "sha256": "dabe66147951a6ab1f2e6fa39cd7efcc629a44d04102ce7a618fafefc422b5a7",
+      "bytes": 9304
     },
     "tests/test_preflight.py": {
-      "sha256": "9f6a5484219894f0fd875d08bd9023f74b03213413c223de587743e700865725",
-      "bytes": 4242
+      "sha256": "46d47b4324033aa181b21759d36c78a2810b8cdf4c4c3809f4c9e3e4ef03822b",
+      "bytes": 6631
     },
     "tests/test_release_truthfulness.py": {
       "sha256": "0c03eda6901bac3b7c217569c0c88cdb18fce8e7f27bf9ac2e52c622f42cd671",
@@ -1052,12 +1052,12 @@
       "bytes": 21833
     },
     "tools/pre_tool_guard.py": {
-      "sha256": "1c5cf06fa06bf7a919f86b787f6592b8e6c43a6a7ae3aad1dbf8a13519b3d489",
-      "bytes": 24456
+      "sha256": "f8d7d6063aee2aa9f30a68c6fcbac337c8ec4229933833eeb7cbd8e48e689f00",
+      "bytes": 24568
     },
     "tools/preflight.py": {
-      "sha256": "5e5e7fc350f3a41a313343fd384ee635586cb3749315ff01fba302a4c80dec14",
-      "bytes": 9797
+      "sha256": "e8e6b1839a543a776792c567fa3ea08b733d5356053d96c10756f95d8a914082",
+      "bytes": 10693
     },
     "tools/refactor_engine.py": {
       "sha256": "2ad924d4638f770f4bcd821e1293905f2bbe794e47cc6ea02ad41c91811f21cb",
@@ -1698,6 +1698,10 @@
     "VERSION": {
       "sha256": "9bab5660ff944ab1556cce8285381a4af093c2f9fb4a672f5423cc086de7abf2",
       "bytes": 11
+    },
+    "docs/PREFLIGHT-FAIL-CLOSED.md": {
+      "sha256": "c06f89a7c754abb5686cbddb138d1e7b37e2a8715de656211b7d2e0b0cc09cbc",
+      "bytes": 1690
     }
   }
 }

@@ -18,11 +18,41 @@ from tools.pre_tool_guard import (
     install_hooks,
     generate_hooks_config,
     main,
+    load_guard_rules_schema,
 )
 
 
 class TestPreToolGuard(unittest.TestCase):
     """Test suite verifying Aura Guard deterministic safety rules."""
+
+    def test_rules_loader_rejects_corrupt_existing_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "rules.json"
+            for content in (b"{invalid", b"\xff"):
+                path.write_bytes(content)
+                with self.assertRaises(ValueError) as raised:
+                    load_guard_rules_schema(path)
+                self.assertIsNotNone(raised.exception.__cause__)
+
+    def test_rules_loader_reports_read_error(self):
+        with patch("pathlib.Path.exists", return_value=True):
+            with patch("builtins.open", side_effect=PermissionError("denied")):
+                with self.assertRaises(ValueError) as raised:
+                    load_guard_rules_schema(Path("rules.json"))
+        self.assertIsInstance(raised.exception.__cause__, PermissionError)
+
+    def test_rules_loader_accepts_utf8_bom(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "rules.json"
+            expected = {"protected_branches": ["main"]}
+            path.write_text(json.dumps(expected), encoding="utf-8-sig")
+            self.assertEqual(load_guard_rules_schema(path), expected)
+
+    def test_rules_loader_keeps_defaults_for_absent_optional_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = load_guard_rules_schema(Path(directory) / "absent.json")
+        self.assertIn("main", result["protected_branches"])
+        self.assertIn("/", result["forbidden_rm_targets"])
 
     def test_safe_commands_approved(self):
         safe_commands = [
