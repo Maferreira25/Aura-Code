@@ -123,15 +123,15 @@ POWERSHELL_DANGEROUS_TARGET = re.compile(
 
 
 def load_guard_rules_schema(schema_path: Optional[Path] = None) -> Dict[str, Any]:
-    """Loads guardrail safety rules from schemas/guard_rules.json if present."""
+    """Load optional rules; unreadable existing configuration is an error."""
     if schema_path is None:
         schema_path = Path(__file__).resolve().parent.parent / "schemas" / "guard_rules.json"
     if schema_path.exists():
         try:
-            with open(schema_path, "r", encoding="utf-8") as f:
+            with open(schema_path, "r", encoding="utf-8-sig") as f:
                 return json.load(f)
-        except Exception:
-            pass
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            raise ValueError(f"Cannot load guard rules from {schema_path}") from exc
     return {
         "forbidden_rm_targets": list(FORBIDDEN_RM_TARGETS),
         "protected_branches": list(PROTECTED_BRANCHES),

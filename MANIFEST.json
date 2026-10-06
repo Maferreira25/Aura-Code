@@ -880,8 +880,8 @@
       "bytes": 5168
     },
     "tests/test_pre_tool_guard.py": {
-      "sha256": "9cedd1454ce24e049b5aaeeeabf4aeb466742414791016cd8a807ba3c7140d51",
-      "bytes": 7754
+      "sha256": "dabe66147951a6ab1f2e6fa39cd7efcc629a44d04102ce7a618fafefc422b5a7",
+      "bytes": 9304
     },
     "tests/test_preflight.py": {
       "sha256": "46d47b4324033aa181b21759d36c78a2810b8cdf4c4c3809f4c9e3e4ef03822b",
@@ -1052,8 +1052,8 @@
       "bytes": 21833
     },
     "tools/pre_tool_guard.py": {
-      "sha256": "1c5cf06fa06bf7a919f86b787f6592b8e6c43a6a7ae3aad1dbf8a13519b3d489",
-      "bytes": 24456
+      "sha256": "f8d7d6063aee2aa9f30a68c6fcbac337c8ec4229933833eeb7cbd8e48e689f00",
+      "bytes": 24568
     },
     "tools/preflight.py": {
       "sha256": "e8e6b1839a543a776792c567fa3ea08b733d5356053d96c10756f95d8a914082",
