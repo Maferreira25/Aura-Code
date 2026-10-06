@@ -59,6 +59,48 @@ class PreflightTests(unittest.TestCase):
             self.assertEqual(report["failed_step"]["returncode"], 1)
             self.assertIn("Violation detected", report["failed_step"]["stdout"])
 
+    def test_missing_required_inputs_block_without_running_later_gates(self):
+        """Missing verification inputs cannot silently reduce gate coverage."""
+        for missing, expected_executions in (
+            ("manifest", 0), ("benchmark", 1), ("tests", 2)
+        ):
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                if missing != "manifest":
+                    (root / "MANIFEST.json").write_text("{}", encoding="utf-8")
+                if missing != "benchmark":
+                    suite = root / "validation" / "tools" / "validate_suite.py"
+                    suite.parent.mkdir(parents=True)
+                    suite.write_text("", encoding="utf-8")
+                if missing != "tests":
+                    (root / "tests").mkdir()
+                success = MagicMock(returncode=0, stdout="OK", stderr="")
+                with patch("subprocess.run", return_value=success) as run:
+                    report = run_preflight_checks(root, quiet=True)
+                self.assertEqual(report["status"], "FAIL")
+                self.assertEqual(report["failed_step"]["status"], "NOT_ASSESSED")
+                self.assertIsNone(report["failed_step"]["returncode"])
+                self.assertEqual(report["steps_executed"], expected_executions)
+                self.assertEqual(report["passed_steps"], expected_executions)
+                self.assertEqual(run.call_count, expected_executions)
+
+    def test_empty_gate_plan_cannot_pass(self):
+        """An empty verification plan is absence of proof, not approval."""
+        with patch("tools.preflight.get_preflight_steps", return_value=[]):
+            report = run_preflight_checks(ROOT, quiet=True)
+        self.assertEqual(report["status"], "FAIL")
+        self.assertEqual(report["steps_executed"], 0)
+        self.assertEqual(report["failed_step"]["status"], "NOT_ASSESSED")
+
+    def test_missing_inputs_exit_nonzero_in_cli(self):
+        """CLI consumers and pre-push hooks receive a blocking exit code."""
+        from tools.preflight import main
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("sys.argv", ["preflight", directory, "--quiet"]):
+                with self.assertRaises(SystemExit) as raised:
+                    main()
+        self.assertEqual(raised.exception.code, 1)
+
     def test_install_git_pre_push_hook(self):
         """Verify that pre-push hook is written to .git/hooks/pre-push when .git exists."""
         temp_dir = Path(tempfile.mkdtemp())

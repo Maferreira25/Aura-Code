@@ -116,7 +116,17 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
     for idx, step in enumerate(steps, 1):
         condition = step.get("condition")
         if condition and not condition(root):
-            continue
+            failed_step = {
+                "step_number": idx,
+                "name": step["name"],
+                "description": step["description"],
+                "command": " ".join(step["cmd"]),
+                "returncode": None,
+                "status": "NOT_ASSESSED",
+                "stdout": "",
+                "stderr": "Verificacao obrigatoria indisponivel: os arquivos necessarios estao ausentes.",
+            }
+            break
 
         steps_executed += 1
         name = step["name"]
@@ -180,6 +190,18 @@ def run_preflight_checks(workspace_root: Optional[Path] = None, quiet: bool = Fa
                 "stderr": str(exc)
             }
             break
+
+    if failed_step is None and steps_executed == 0:
+        failed_step = {
+            "step_number": 0,
+            "name": "Cobertura do preflight",
+            "description": "Ao menos uma verificacao obrigatoria deve ser executada.",
+            "command": "",
+            "returncode": None,
+            "status": "NOT_ASSESSED",
+            "stdout": "",
+            "stderr": "Nenhuma verificacao foi configurada; aprovacao sem prova bloqueada.",
+        }
 
     if failed_step is not None:
         if not quiet:
